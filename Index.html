@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1D9E75">
+<title>Open des Brisants — ITF Sand Series</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F4F4F0;min-height:100vh}
+:root{--cp:#1D9E75;--cpd:#0F6E56;--ca:#E24B4A;--cw:#EF9F27;--cy:#F5C800;
+  --bg:#ffffff;--bg2:#F7F7F5;--bg3:#F0F0EC;
+  --text:#1A1A1A;--text2:#666;--text3:#999;
+  --border:#E0E0D8;--border2:#C8C8C0;
+  --r:10px;--rl:14px}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1C1C1E;--bg2:#2C2C2E;--bg3:#3A3A3C;
+  --text:#F5F5F0;--text2:#AEAEB2;--text3:#636366;
+  --border:#3A3A3C;--border2:#48484A}}
+.app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+
+/* TOPBAR */
+.topbar{background:var(--cp);color:#fff;padding:0 16px 12px;padding-top:max(env(safe-area-inset-top),14px)}
+.topbar-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.topbar-title{font-size:12px;font-weight:500;opacity:0.85;letter-spacing:0.04em;text-transform:uppercase}
+.topbar-name{font-size:17px;font-weight:700;letter-spacing:-0.01em}
+.topbar-row2{display:flex;align-items:center;justify-content:center;gap:0}
+.terrain-nav-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.terrain-nav-btn:disabled{opacity:0.25;cursor:default}
+.terrain-nav-btn:active{background:rgba(255,255,255,0.35)}
+.terrain-name-box{flex:1;text-align:center;padding:0 10px}
+.terrain-label-sub{font-size:10px;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1px}
+.terrain-name{font-size:16px;font-weight:700;letter-spacing:-0.01em}
+.terrain-dots{display:flex;justify-content:center;gap:5px;margin-top:5px}
+.terrain-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.35);transition:background 0.2s}
+.terrain-dot.active{background:#fff}
+
+/* DAY BAR */
+.day-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.day-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--text);font-weight:500}
+.day-btn:disabled{opacity:0.3;cursor:default}
+.day-label{font-size:13px;font-weight:600;color:var(--text);text-align:center;flex:1;padding:0 6px}
+
+/* MATCH NAV */
+.match-nav{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--bg)}
+.match-nav button{background:none;border:1px solid var(--border2);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--text);font-weight:500}
+.match-nav button:disabled{opacity:0.3;cursor:default}
+.match-counter{font-size:13px;color:var(--text2);font-weight:500}
+
+/* MATCH CARD */
+.match-card{padding:14px}
+.match-header{background:var(--bg2);border-radius:var(--rl);padding:14px;margin-bottom:12px;border:1px solid var(--border)}
+.match-time{font-size:26px;font-weight:700;color:var(--cp);letter-spacing:-0.02em}
+.badge{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;letter-spacing:0.02em}
+.badge-cat{background:#E1F5EE;color:#0F6E56}
+.badge-tour{background:#E6F1FB;color:#185FA5}
+.status-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+
+/* BUTTONS */
+.action-btn{width:100%;padding:14px 16px;border-radius:var(--rl);border:none;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:9px;transition:transform 0.1s;text-align:left;display:flex;align-items:center;justify-content:space-between;line-height:1.3}
+.action-btn:active{transform:scale(0.97)}
+.btn-warm{background:#FFF8ED;border:1.5px solid var(--cw);color:#7A4A00}
+.btn-endwarm{background:#FFF0DC;border:1.5px solid #D08020;color:#6A3800}
+.btn-play{background:#E8F5E9;border:1.5px solid var(--cp);color:var(--cpd)}
+.btn-endset{background:#E3F0FD;border:1.5px solid #378ADD;color:#0C447C}
+.btn-end{background:#FEECEC;border:1.5px solid var(--ca);color:#8B1C1C}
+.btn-done{background:var(--bg2);border:1.5px solid var(--border);color:var(--text3);cursor:default}
+.tag-time{font-size:11px;font-weight:500;opacity:0.75;margin-left:6px}
+
+/* CHRONO */
+.chrono-box{display:flex;gap:10px;margin-bottom:12px}
+.chrono-pill{flex:1;background:var(--bg2);border-radius:var(--rl);padding:12px;text-align:center;border:1px solid var(--border)}
+.chrono-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;font-weight:600}
+.chrono-val{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:0.02em}
+.chrono-val.warm{color:var(--cw)}
+.chrono-val.play{color:var(--cp)}
+.chrono-val.over{color:var(--ca)}
+
+/* SCORE */
+.score-section{margin-bottom:12px}
+.team-row{display:flex;align-items:center;gap:7px;margin-bottom:10px;min-height:40px}
+.serve-ball{display:inline-block;width:15px;height:15px;border-radius:50%;background:var(--cy);border:2px solid #A89000;flex-shrink:0;transition:opacity 0.25s}
+.serve-ball.hidden{opacity:0}
+.team-name{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.team-nat{font-size:11px;color:var(--text3);margin-left:4px;font-weight:400}
+.set-scores{display:flex;gap:5px}
+.score-ctrl{display:flex;align-items:center}
+.score-display{width:36px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);background:var(--bg);color:var(--text)}
+.score-display.locked{background:var(--bg3);color:var(--text3)}
+.score-btn{width:30px;height:40px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.score-btn.minus{border-radius:8px 0 0 8px}
+.score-btn.plus{border-radius:0 8px 8px 0;background:var(--cp);color:#fff;border-color:var(--cpd);font-weight:700}
+.score-btn.locked{background:var(--bg3);color:var(--text3);cursor:default;pointer-events:none}
+.score-btn:active{transform:scale(0.93)}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--bg2);border-radius:var(--r);margin-bottom:8px;cursor:pointer;border:1px solid var(--border)}
+.toggle-label{font-size:13px;color:var(--text2);flex:1;font-weight:500}
+.toggle-sw{width:38px;height:22px;border-radius:11px;background:#C8C8C0;position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle-sw.on{background:var(--cp)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-sw.on .toggle-knob{left:18px}
+
+/* SERVE SELECT */
+.serve-select{padding:12px 13px;background:var(--bg2);border-radius:var(--rl);margin-bottom:9px;border:1px solid var(--border)}
+.serve-select-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px;font-weight:600}
+.serve-btn{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg);margin-bottom:6px;font-size:14px;cursor:pointer;color:var(--text);font-weight:500}
+.serve-btn.selected{border-color:var(--cp);background:#E8F5E9;color:var(--cpd);font-weight:600}
+.serve-btn:last-child{margin-bottom:0}
+
+/* LIST */
+.divider{height:1px;background:var(--border)}
+.match-list-section{padding:12px 14px 40px}
+.section-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;font-weight:600}
+.mini-match{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:6px;background:var(--bg);cursor:pointer}
+.mini-match.active{border-color:var(--cp);background:#E8F5E9}
+.mini-match.done{opacity:0.45}
+.mini-time{font-size:13px;font-weight:700;min-width:40px;color:var(--text2)}
+.mini-teams{font-size:12px;flex:1;min-width:0;color:var(--text);font-weight:500}
+.mini-score{font-size:12px;font-weight:700;color:var(--cp)}
+.mini-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* LOG */
+.log-item{font-size:12px;color:var(--text2);padding:4px 0;display:flex;gap:10px;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none}
+.log-time{font-weight:700;color:var(--text);min-width:44px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-row1">
+      <div>
+        <div class="topbar-title">ITF Sand Series</div>
+        <div class="topbar-name">Open des Brisants</div>
+      </div>
+    </div>
+    <div class="topbar-row2">
+      <button class="terrain-nav-btn" id="btn-terrain-prev" onclick="changeTerrain(-1)">‹</button>
+      <div class="terrain-name-box">
+        <div class="terrain-label-sub">Terrain</div>
+        <div class="terrain-name" id="terrain-name-display"></div>
+      </div>
+      <button class="terrain-nav-btn" id="btn-terrain-next" onclick="changeTerrain(1)">›</button>
+    </div>
+    <div class="terrain-dots" id="terrain-dots"></div>
+  </div>
+
+  <div class="day-bar">
+    <button class="day-btn" id="btn-day-prev" onclick="changeDay(-1)">← Préc.</button>
+    <span class="day-label" id="day-label"></span>
+    <button class="day-btn" id="btn-day-next" onclick="changeDay(1)">Suiv. →</button>
+  </div>
+
+  <div class="match-nav">
+    <button id="btn-prev" onclick="navigateMatch(-1)">← Préc.</button>
+    <span class="match-counter" id="match-counter"></span>
+    <button id="btn-next" onclick="navigateMatch(1)">Suiv. →</button>
+  </div>
+
+  <div id="main-content"></div>
+</div>
+
+<script>
+/* ── CONFIGURATION ─────────────────────────────────────────────────────────
+   Modifie ici les noms de terrains et les données du tournoi.
+   ───────────────────────────────────────────────────────────────────────── */
+const TERRAINS = [
+  "Orangina",
+  "Uriage",
+  "Zeop",
+  "Mairie de St-Paul"
+];
+
+const allDays = [
+  {
+    label: "Jour 1 — Mer. 21 mai",
+    matchesByTerrain: {
+      "Orangina": [
+        {id:"1-A-0",time:"09:00",cat:"Double Hommes",tour:"100K$",t1:["Martin / Durand","FRA"],t2:["Garcia / Lopez","ESP"]},
+        {id:"1-A-1",time:"10:30",cat:"Double Femmes",tour:"100K$",t1:["Silva / Ferreira","BRA"],t2:["Russo / Bianchi","ITA"]},
+        {id:"1-A-2",time:"12:00",cat:"Double Hommes",tour:"Amateurs",t1:["Dupont / Bernard","FRA"],t2:["Müller / Schmidt","GER"]},
+        {id:"1-A-3",time:"14:00",cat:"U18 Mixte",tour:"U18",t1:["Lefebvre / Moreau","FRA"],t2:["Alves / Costa","BRA"]},
+      ],
+      "Uriage": [
+        {id:"1-B-0",time:"09:30",cat:"Double Femmes",tour:"100K$",t1:["Laurent / Petit","FRA"],t2:["Jensen / Hansen","DEN"]},
+        {id:"1-B-1",time:"11:00",cat:"Double Hommes",tour:"100K$",t1:["Rossi / Conti","ITA"],t2:["Smith / Jones","GBR"]},
+        {id:"1-B-2",time:"13:30",cat:"U16 Filles",tour:"U16",t1:["Lebrun / Faure","FRA"],t2:["Gomez / Ruiz","ESP"]},
+      ],
+      "Zeop": [
+        {id:"1-C-0",time:"10:00",cat:"Double Hommes",tour:"100K$",t1:["Tanaka / Sato","JPN"],t2:["Brown / Miller","USA"]},
+        {id:"1-C-1",time:"12:00",cat:"Double Femmes",tour:"Amateurs",t1:["Moreau / Girard","FRA"],t2:["Novak / Kovac","CRO"]},
+        {id:"1-C-2",time:"14:30",cat:"U14 Garçons",tour:"U14",t1:["Petit / Simon","FRA"],t2:["Meyer / Braun","GER"]},
+      ],
+      "Mairie de St-Paul": [
+        {id:"1-D-0",time:"09:00",cat:"Double Hommes",tour:"Amateurs",t1:["Blanc / Noir","FRA"],t2:["Rouge / Vert","FRA"]},
+        {id:"1-D-1",time:"11:30",cat:"U12 Mixte",tour:"U12",t1:["Fontaine / Roux","FRA"],t2:["Sanchez / Torres","ESP"]},
+      ],
+    }
+  },
+  {
+    label: "Jour 2 — Jeu. 22 mai",
+    matchesByTerrain: {
+      "Orangina": [
+        {id:"2-A-0",time:"09:00",cat:"Double Hommes",tour:"100K$",t1:["Garcia / Lopez","ESP"],t2:["Tanaka / Sato","JPN"]},
+        {id:"2-A-1",time:"10:30",cat:"Double Femmes",tour:"100K$",t1:["Russo / Bianchi","ITA"],t2:["Jensen / Hansen","DEN"]},
+        {id:"2-A-2",time:"14:00",cat:"U18 Garçons",tour:"U18",t1:["Duval / Colin","FRA"],t2:["Berg / Holm","SWE"]},
+      ],
+      "Uriage": [
+        {id:"2-B-0",time:"09:30",cat:"Double Hommes",tour:"100K$",t1:["Brown / Miller","USA"],t2:["Rossi / Conti","ITA"]},
+        {id:"2-B-1",time:"11:00",cat:"Double Femmes",tour:"Amateurs",t1:["Moreau / Girard","FRA"],t2:["Laurent / Petit","FRA"]},
+      ],
+      "Zeop": [
+        {id:"2-C-0",time:"10:00",cat:"Double Hommes",tour:"Amateurs",t1:["Dupont / Bernard","FRA"],t2:["Blanc / Noir","FRA"]},
+        {id:"2-C-1",time:"12:30",cat:"U16 Filles",tour:"U16",t1:["Gomez / Ruiz","ESP"],t2:["Lebrun / Faure","FRA"]},
+        {id:"2-C-2",time:"15:00",cat:"U14 Garçons",tour:"U14",t1:["Meyer / Braun","GER"],t2:["Petit / Simon","FRA"]},
+      ],
+      "Mairie de St-Paul": [
+        {id:"2-D-0",time:"09:00",cat:"U12 Mixte",tour:"U12",t1:["Torres / Sanchez","ESP"],t2:["Fontaine / Roux","FRA"]},
+        {id:"2-D-1",time:"11:00",cat:"Double Hommes",tour:"Amateurs",t1:["Rouge / Vert","FRA"],t2:["Dupont / Bernard","FRA"]},
+      ],
+    }
+  },
+  {
+    label: "Jour 3 — Ven. 23 mai",
+    matchesByTerrain: {
+      "Orangina": [
+        {id:"3-A-0",time:"10:00",cat:"Double Hommes",tour:"100K$",t1:["Martin / Durand","FRA"],t2:["Brown / Miller","USA"]},
+        {id:"3-A-1",time:"14:00",cat:"Finale — Double Femmes",tour:"100K$",t1:["Silva / Ferreira","BRA"],t2:["Russo / Bianchi","ITA"]},
+      ],
+      "Uriage": [
+        {id:"3-B-0",time:"10:30",cat:"Demi-finale — Double Hommes",tour:"100K$",t1:["Garcia / Lopez","ESP"],t2:["Rossi / Conti","ITA"]},
+        {id:"3-B-1",time:"13:00",cat:"Double Femmes",tour:"Amateurs",t1:["Laurent / Petit","FRA"],t2:["Moreau / Girard","FRA"]},
+      ],
+      "Zeop": [
+        {id:"3-C-0",time:"09:30",cat:"U18 Garçons",tour:"U18",t1:["Duval / Colin","FRA"],t2:["Berg / Holm","SWE"]},
+        {id:"3-C-1",time:"11:30",cat:"U16 Filles",tour:"U16",t1:["Lebrun / Faure","FRA"],t2:["Gomez / Ruiz","ESP"]},
+        {id:"3-C-2",time:"14:00",cat:"U14 Garçons",tour:"U14",t1:["Petit / Simon","FRA"],t2:["Meyer / Braun","GER"]},
+      ],
+      "Mairie de St-Paul": [
+        {id:"3-D-0",time:"10:00",cat:"U12 Mixte",tour:"U12",t1:["Fontaine / Roux","FRA"],t2:["Sanchez / Torres","ESP"]},
+      ],
+    }
+  },
+];
+
+/* ── STATE ─────────────────────────────────────────────────────────────────*/
+let terrainIdx = 0;
+let dayIdx = 0;
+let matchIdx = 0;
+const state = {};
+const timers = {};
+
+function getState(mid) {
+  if (!state[mid]) state[mid] = {
+    status: 'wait',
+    scores: [[0,0],[0,0],[0,0]],
+    set3: false,
+    currentSet: 0,
+    lockedSets: [],
+    server: null,
+    serverCurrent: null,
+    timestamps: {},
+    log: [],
+    setTimes: [],
+    warmSec: 0,
+    matchSec: 0,
+  };
+  return state[mid];
+}
+
+function fmt(s) { return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function nowFull() { return new Date().toISOString(); }
+function nowStr() { return new Date().toTimeString().slice(0,5); }
+function elapsed(a,b) { if(!a||!b)return 0; return Math.round((new Date(b)-new Date(a))/1000); }
+function startTimer(mid,key,cb) { stopTimer(mid); timers[mid]=setInterval(()=>{getState(mid)[key]++;cb();},1000); }
+function stopTimer(mid) { if(timers[mid]){clearInterval(timers[mid]);delete timers[mid];} }
+function addLog(mid,msg) { getState(mid).log.push({t:nowStr(),msg}); }
+
+function curTerrain() { return TERRAINS[terrainIdx]; }
+function curMatches() {
+  const day = allDays[dayIdx];
+  return day.matchesByTerrain[curTerrain()] || [];
+}
+function curMid() { return curMatches()[matchIdx]?.id; }
+
+function changeTerrain(d) {
+  terrainIdx = Math.max(0, Math.min(TERRAINS.length-1, terrainIdx+d));
+  matchIdx = 0;
+  render();
+}
+function changeDay(d) {
+  dayIdx = Math.max(0, Math.min(allDays.length-1, dayIdx+d));
+  matchIdx = 0;
+  render();
+}
+function navigateMatch(d) {
+  matchIdx = Math.max(0, Math.min(curMatches().length-1, matchIdx+d));
+  render();
+}
+
+/* ── ACTIONS ───────────────────────────────────────────────────────────────*/
+function doStartWarm(mid) {
+  const s=getState(mid); if(s.timestamps.warmStart)return;
+  s.timestamps.warmStart=nowFull(); s.status='warm';
+  addLog(mid,'Début échauffement');
+  startTimer(mid,'warmSec',render); render();
+}
+function doEndWarm(mid) {
+  const s=getState(mid); if(s.timestamps.warmEnd||!s.timestamps.warmStart)return;
+  s.timestamps.warmEnd=nowFull(); stopTimer(mid);
+  s.warmDuration=s.warmSec;
+  addLog(mid,'Fin échauffement — durée '+fmt(s.warmSec));
+  s.status='serve-select'; render();
+}
+function doSelectServer(mid,team) {
+  const s=getState(mid); if(s.status!=='serve-select')return;
+  s.server=team; s.serverCurrent=team; render();
+}
+function doStartMatch(mid) {
+  const s=getState(mid); if(s.timestamps.matchStart||s.server===null)return;
+  s.timestamps.matchStart=nowFull(); s.status='play';
+  s.setTimes=[{start:nowFull()}];
+  const m=allMatches().find(x=>x.id===mid);
+  const srvName=m?(s.server===0?m.t1[0]:m.t2[0]):'Équipe '+(s.server+1);
+  addLog(mid,'Début du match — serveur: '+srvName);
+  startTimer(mid,'matchSec',render); render();
+}
+function doEndSet(mid) {
+  const s=getState(mid); if(s.status!=='play')return;
+  const cs=s.currentSet; const ts=nowFull();
+  if(!s.setTimes[cs]) s.setTimes[cs]={start:ts};
+  const dur=elapsed(s.setTimes[cs].start,ts);
+  s.setTimes[cs].end=ts; s.setTimes[cs].duration=dur;
+  s.lockedSets.push(cs);
+  const sc=s.scores[cs];
+  addLog(mid,'Fin Set '+(cs+1)+' ('+sc[0]+'-'+sc[1]+') — durée '+fmt(dur));
+  s.serverCurrent=s.serverCurrent===0?1:0;
+  s.currentSet=cs+1;
+  if(s.currentSet<3) s.setTimes.push({start:ts});
+  render();
+}
+function doEndMatch(mid) {
+  const s=getState(mid); if(s.timestamps.matchEnd)return;
+  stopTimer(mid);
+  s.timestamps.matchEnd=nowFull();
+  const dur=elapsed(s.timestamps.matchStart,s.timestamps.matchEnd);
+  s.matchDuration=dur; s.status='done';
+  addLog(mid,'Fin du match — durée totale '+fmt(dur));
+  render();
+}
+function changeScore(mid,team,set,delta) {
+  const s=getState(mid); if(s.lockedSets.includes(set))return;
+  s.scores[set][team]=Math.max(0,s.scores[set][team]+delta);
+  if(delta===1) s.serverCurrent=s.serverCurrent===0?1:0;
+  render();
+}
+function toggleSet3(mid) { const s=getState(mid); s.set3=!s.set3; render(); }
+
+function allMatches() {
+  let all=[];
+  allDays.forEach(d=>Object.values(d.matchesByTerrain).forEach(ms=>all=all.concat(ms)));
+  return all;
+}
+
+/* ── RENDER ────────────────────────────────────────────────────────────────*/
+function mkBtn(label,cls,handler,locked,tag) {
+  const tagHtml=tag?'<span class="tag-time">'+tag+'</span>':'';
+  if(locked) return '<div class="action-btn btn-done"><span>'+label+tagHtml+'</span><span style="font-size:14px">✓</span></div>';
+  return '<div class="action-btn '+cls+'" onclick="'+handler+'">'+label+tagHtml+'</div>';
+}
+
+function render() {
+  const terrain = curTerrain();
+  const matches = curMatches();
+
+  /* topbar */
+  document.getElementById('terrain-name-display').textContent = terrain;
+  document.getElementById('btn-terrain-prev').disabled = terrainIdx===0;
+  document.getElementById('btn-terrain-next').disabled = terrainIdx===TERRAINS.length-1;
+  let dotsHtml='';
+  TERRAINS.forEach((_,i)=>{ dotsHtml+='<div class="terrain-dot'+(i===terrainIdx?' active':'')+'"></div>'; });
+  document.getElementById('terrain-dots').innerHTML=dotsHtml;
+
+  /* day bar */
+  document.getElementById('day-label').textContent=allDays[dayIdx].label;
+  document.getElementById('btn-day-prev').disabled=dayIdx===0;
+  document.getElementById('btn-day-next').disabled=dayIdx===allDays.length-1;
+
+  if(matches.length===0){
+    document.getElementById('btn-prev').disabled=true;
+    document.getElementById('btn-next').disabled=true;
+    document.getElementById('match-counter').textContent='Aucun match';
+    document.getElementById('main-content').innerHTML='<div style="padding:40px 20px;text-align:center;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">🏖</div><div style="font-size:15px;font-weight:500">Aucun match prévu<br>sur ce terrain ce jour</div></div>';
+    return;
+  }
+
+  if(matchIdx>=matches.length) matchIdx=0;
+  const m=matches[matchIdx];
+  const mid=m.id;
+  const s=getState(mid);
+
+  document.getElementById('btn-prev').disabled=matchIdx===0;
+  document.getElementById('btn-next').disabled=matchIdx===matches.length-1;
+  document.getElementById('match-counter').textContent='Match '+(matchIdx+1)+' / '+matches.length;
+
+  const statusMap={
+    wait:['#AAA','En attente'],
+    warm:['var(--cw)','Échauffement'],
+    'serve-select':['var(--cw)','Choix du serveur'],
+    play:['var(--cp)','En cours'],
+    done:['#888','Terminé']
+  };
+  const [sc2,sl]=statusMap[s.status]||statusMap.wait;
+
+  let html='<div class="match-card"><div class="match-header">';
+  html+='<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+  html+='<div class="match-time">'+m.time+'</div>';
+  html+='<span class="status-chip" style="color:'+sc2+'"><span style="width:8px;height:8px;border-radius:50%;background:'+sc2+';display:inline-block"></span>'+sl+'</span></div>';
+  html+='<div style="display:flex;gap:6px;margin-top:8px"><span class="badge badge-cat">'+m.cat+'</span><span class="badge badge-tour">'+m.tour+'</span></div>';
+  html+='<div style="margin-top:10px">';
+  html+='<div style="font-size:13px;font-weight:600;color:var(--text)">'+m.t1[0]+'<span style="font-size:11px;color:var(--text3);margin-left:5px">'+m.t1[1]+'</span></div>';
+  html+='<div style="font-size:11px;color:var(--text3);margin:3px 0">vs</div>';
+  html+='<div style="font-size:13px;font-weight:600;color:var(--text)">'+m.t2[0]+'<span style="font-size:11px;color:var(--text3);margin-left:5px">'+m.t2[1]+'</span></div>';
+  html+='</div></div>';
+
+  if(s.status!=='wait'){
+    const ws=s.warmSec||0; const ms=s.matchSec||0;
+    html+='<div class="chrono-box">';
+    html+='<div class="chrono-pill"><div class="chrono-label">Échauffement</div><div class="chrono-val warm'+(ws>300?' over':'')+'">'+fmt(ws)+'</div>'+(ws>300?'<div style="font-size:10px;color:var(--ca);margin-top:2px">Temps dépassé</div>':'')+'</div>';
+    html+='<div class="chrono-pill"><div class="chrono-label">Temps de jeu</div><div class="chrono-val play">'+fmt(ms)+'</div></div>';
+    html+='</div>';
+  }
+
+  const tWS=s.timestamps.warmStart?new Date(s.timestamps.warmStart).toTimeString().slice(0,5):'';
+  const tWE=s.timestamps.warmEnd?new Date(s.timestamps.warmEnd).toTimeString().slice(0,5):'';
+  const tMS=s.timestamps.matchStart?new Date(s.timestamps.matchStart).toTimeString().slice(0,5):'';
+  const tME=s.timestamps.matchEnd?new Date(s.timestamps.matchEnd).toTimeString().slice(0,5):'';
+
+  html+=mkBtn('▶  Début échauffement','btn-warm',"doStartWarm('"+mid+"')",!!s.timestamps.warmStart,tWS);
+  html+=mkBtn('◼  Fin échauffement','btn-endwarm',"doEndWarm('"+mid+"')",!!s.timestamps.warmEnd,tWE);
+
+  if(s.status==='serve-select'){
+    html+='<div class="serve-select"><div class="serve-select-label">Équipe qui engage</div>';
+    html+='<button class="serve-btn'+(s.server===0?' selected':'')+'" onclick="doSelectServer(\''+mid+'\',0)">'+m.t1[0]+'</button>';
+    html+='<button class="serve-btn'+(s.server===1?' selected':'')+'" onclick="doSelectServer(\''+mid+'\',1)">'+m.t2[0]+'</button>';
+    html+='</div>';
+  }
+
+  html+=mkBtn('▶  Début du match','btn-play',"doStartMatch('"+mid+"')",!!s.timestamps.matchStart,tMS);
+
+  if(s.status==='play'||s.status==='done'){
+    const sets=s.set3?3:2;
+    const cs=s.currentSet;
+    const endSetLocked=s.lockedSets.includes(cs)||s.status==='done';
+    const tsCS=s.setTimes[cs]&&s.setTimes[cs].end?new Date(s.setTimes[cs].end).toTimeString().slice(0,5):'';
+    html+=mkBtn('◼  Fin set '+(cs+1),'btn-endset',"doEndSet('"+mid+"')",endSetLocked,tsCS);
+
+    html+='<div class="score-section"><div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:8px">';
+    for(let i=0;i<sets;i++) html+='<div style="width:36px;text-align:center;font-size:10px;color:var(--text3);font-weight:600">Set '+(i+1)+'</div>';
+    html+='</div>';
+    [0,1].forEach(team=>{
+      const isServing=s.serverCurrent===team&&s.status==='play';
+      const tname=team===0?m.t1:m.t2;
+      html+='<div class="team-row"><span class="serve-ball'+(isServing?'':' hidden')+'"></span>';
+      html+='<span class="team-name">'+tname[0]+'<span class="team-nat">'+tname[1]+'</span></span>';
+      html+='<div class="set-scores">';
+      for(let i=0;i<sets;i++){
+        const lk=s.lockedSets.includes(i);
+        const v=s.scores[i][team];
+        html+='<div class="score-ctrl"><button class="score-btn minus'+(lk?' locked':'')+'" onclick="changeScore(\''+mid+'\','+team+','+i+',-1)">−</button>';
+        html+='<div class="score-display'+(lk?' locked':'')+'">'+v+'</div>';
+        html+='<button class="score-btn plus'+(lk?' locked':'')+'" onclick="changeScore(\''+mid+'\','+team+','+i+',1)">+</button></div>';
+      }
+      html+='</div></div>';
+    });
+    if(s.status==='play'){
+      html+='<div class="toggle-row" onclick="toggleSet3(\''+mid+'\')"><span class="toggle-label">3ème set (super tie-break)</span><div class="toggle-sw'+(s.set3?' on':'')+'"><div class="toggle-knob"></div></div></div>';
+    }
+    html+='</div>';
+  }
+
+  html+=mkBtn('◼  Fin du match','btn-end',"doEndMatch('"+mid+"')",!!s.timestamps.matchEnd,tME);
+
+  if(s.log.length){
+    html+='<div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;font-weight:600">Horodatage</div>';
+    s.log.forEach(l=>{ html+='<div class="log-item"><span class="log-time">'+l.t+'</span><span>'+l.msg+'</span></div>'; });
+    html+='</div>';
+  }
+
+  html+='</div><div class="divider"></div><div class="match-list-section"><div class="section-label">Programme — '+terrain+'</div>';
+  matches.forEach((mm,i)=>{
+    const mst=getState(mm.id);
+    const dotC=mst.status==='done'?'#888':mst.status==='play'?'var(--cp)':mst.status==='warm'||mst.status==='serve-select'?'var(--cw)':'#CCC';
+    const sc3=mst.status!=='wait'?mst.scores.slice(0,mst.set3?3:2).filter(s=>s[0]+s[1]>0).map(s=>s[0]+'-'+s[1]).join(' '):'';
+    html+='<div class="mini-match'+(i===matchIdx?' active':mst.status==='done'?' done':'')+'" onclick="matchIdx='+i+';render()">';
+    html+='<span class="mini-time">'+mm.time+'</span>';
+    html+='<span class="mini-dot" style="background:'+dotC+'"></span>';
+    html+='<div class="mini-teams">'+mm.t1[0].split('/')[0].trim()+' / '+mm.t2[0].split('/')[0].trim()+'<br><span style="font-size:11px;color:var(--text3)">'+mm.cat+' · '+mm.tour+'</span></div>';
+    html+=(sc3?'<span class="mini-score">'+sc3+'</span>':'');
+    html+='</div>';
+  });
+  html+='</div>';
+
+  document.getElementById('main-content').innerHTML=html;
+}
+
+render();
+</script>
+</body>
+</html>
