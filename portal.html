@@ -7,27 +7,26 @@
 <title>Open des Brisants — Portail</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.hero { background: var(--cp); color: #fff; padding: 40px 20px 32px; text-align: center; }
-.hero-badge { font-size: 11px; font-weight: 600; opacity: .8; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
-.hero-title { font-size: 32px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 4px; }
-.hero-sub { font-size: 15px; opacity: .85; margin-bottom: 20px; }
-.hero-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.18); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 500; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
-.portal-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rxl); padding: 24px; text-decoration: none; color: var(--text); display: flex; flex-direction: column; gap: 10px; transition: box-shadow .2s, transform .15s; cursor: pointer; }
-.portal-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
-.portal-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-.portal-card-title { font-size: 17px; font-weight: 700; }
-.portal-card-desc { font-size: 13px; color: var(--text2); line-height: 1.5; flex: 1; }
-.portal-card-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; align-self: flex-start; }
-.tag-terrain { background: var(--cpl); color: var(--cpd); }
-.tag-admin   { background: var(--cbl); color: #185FA5; }
-.tag-arbitre { background: var(--cwl); color: #7A4A00; }
-.tag-stats   { background: #EEEDFE; color: #534AB7; }
-.section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; padding: 0 20px; max-width: 1100px; margin: 16px auto 0; }
-.live-bar { background: var(--bg); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; overflow-x: auto; white-space: nowrap; }
-.live-bar-label { font-size: 11px; font-weight: 600; color: var(--text3); flex-shrink: 0; }
-.live-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; background: var(--bg2); border-radius: 8px; padding: 5px 10px; border: 1px solid var(--border); }
-.footer { text-align: center; padding: 24px; font-size: 12px; color: var(--text3); }
+.hero{background:var(--cp);color:#fff;padding:36px 20px 28px;text-align:center}
+.hero-badge{font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.hero-title{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-bottom:3px}
+.hero-sub{font-size:14px;opacity:.85;margin-bottom:16px}
+.hero-status{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.18);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;padding:20px;max-width:1100px;margin:0 auto}
+.portal-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rxl);padding:22px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:10px;transition:box-shadow .2s,transform .15s}
+.portal-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px)}
+.portal-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.portal-card-title{font-size:16px;font-weight:700}
+.portal-card-desc{font-size:12px;color:var(--text2);line-height:1.5;flex:1}
+.portal-card-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;align-self:flex-start}
+.tag-terrain{background:var(--cpl);color:var(--cpd)}
+.tag-admin{background:var(--cbl);color:#185FA5}
+.tag-arbitre{background:var(--cwl);color:#7A4A00}
+.tag-stats{background:#EEEDFE;color:#534AB7}
+.section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:0 20px;max-width:1100px;margin:12px auto 0}
+.live-bar{background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:12px;overflow-x:auto;white-space:nowrap}
+.live-item{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--bg2);border-radius:8px;padding:5px 10px;border:1px solid var(--border)}
+.user-chip{background:rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500}
 </style>
 </head>
 <body>
@@ -36,113 +35,101 @@
     <div class="hero-badge">ITF Sand Series</div>
     <div class="hero-title">Open des Brisants</div>
     <div class="hero-sub" id="hero-sub">Chargement…</div>
-    <div class="hero-status">
-      <span class="live-dot"></span>
-      <span id="live-summary">— matchs en cours</span>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
+      <div class="hero-status"><span class="live-dot"></span><span id="live-summary">— matchs en cours</span></div>
+      <div class="user-chip" id="user-chip">…</div>
     </div>
   </div>
 
   <div id="live-bar" class="live-bar" style="display:none">
-    <span class="live-bar-label">En direct</span>
+    <span style="font-size:11px;font-weight:600;color:var(--text3);flex-shrink:0">En direct</span>
     <span id="live-items"></span>
   </div>
 
-  <div class="section-title">Applications terrain</div>
+  <div class="section-title" id="section-terrain" style="display:none">Applications terrain</div>
   <div class="grid" id="terrain-cards"></div>
 
-  <div class="section-title" style="margin-top:8px">Back-office & analyse</div>
-  <div class="grid">
-    <a href="admin.html" class="portal-card">
-      <div class="portal-icon" style="background:#E6F1FB">⚙️</div>
-      <div>
-        <div class="portal-card-title">Administration</div>
-        <div class="portal-card-desc">Gérer le tournoi, les compétitions, les équipes, les joueurs, la planification des matchs et l'assignation des terrains.</div>
-      </div>
-      <span class="portal-card-tag tag-admin">Direction</span>
-    </a>
-    <a href="dashboard.html" class="portal-card">
-      <div class="portal-icon" style="background:#FFF8ED">📊</div>
-      <div>
-        <div class="portal-card-title">Dashboard arbitre</div>
-        <div class="portal-card-desc">Vue temps réel de tous les terrains. Scores, durées, statuts. Mise à jour instantanée dès qu'un responsable terrain saisit une information.</div>
-      </div>
-      <span class="portal-card-tag tag-arbitre">Juge-arbitre</span>
-    </a>
-    <a href="stats.html" class="portal-card">
-      <div class="portal-icon" style="background:#EEEDFE">📈</div>
-      <div>
-        <div class="portal-card-title">Statistiques</div>
-        <div class="portal-card-desc">Durées moyennes par catégorie, tournoi et round. Analyse des échauffements, des sets, des abandons. Export CSV pour l'ITF.</div>
-      </div>
-      <span class="portal-card-tag tag-stats">Analyse</span>
-    </a>
-    <a href="rest.html" class="portal-card">
-      <div class="portal-icon" style="background:#E1F5EE">⏱️</div>
-      <div>
-        <div class="portal-card-title">Temps de repos</div>
-        <div class="portal-card-desc">Visualiser en temps réel le temps de repos de chaque équipe depuis son dernier match. Alerte si une équipe est sous le minimum réglementaire.</div>
-      </div>
-      <span class="portal-card-tag tag-terrain">Logistique</span>
-    </a>
-  </div>
+  <div class="section-title" id="section-backoffice" style="display:none">Back-office & analyse</div>
+  <div class="grid" id="backoffice-cards"></div>
 
-  <div class="footer">
-    Open des Brisants ITF Sand Series — Application de gestion v2.0<br>
-    <span id="conn-status" style="color:var(--cp)">Connexion Supabase…</span>
+  <div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">
+    <span id="conn-status">Connexion…</span>
+    &nbsp;·&nbsp;<a href="login.html" onclick="auth.logout();return false;" style="color:var(--text3)">Déconnexion</a>
   </div>
 </div>
 
 <script src="supabase.js"></script>
 <script>
+const session = auth.require(['admin','arbitre','terrain']);
+document.getElementById('user-chip').textContent = session.name;
+
+const role = session.role;
+
 async function init() {
   try {
-    const tournaments = await sb.get('tournament', 'order=start_date.desc&limit=5');
-    const active = tournaments.find(t => t.status === 'active') || tournaments[0];
+    const tournaments = await sb.get('tournament','order=start_date.desc&limit=5');
+    const active = tournaments.find(t=>t.status==='active')||tournaments[0];
     if (active) {
       setActiveTournament(active.id);
-      document.getElementById('hero-sub').textContent =
-        `${sb.fmt.date(active.start_date)} → ${sb.fmt.date(active.end_date)} · ${active.location || ''}`;
+      document.getElementById('hero-sub').textContent = sb.fmt.date(active.start_date)+' → '+sb.fmt.date(active.end_date)+(active.location?' · '+active.location:'');
     }
 
-    // Terrains → une carte par terrain
+    // Terrain cards (visible to all roles)
     if (active) {
-      const courts = await sb.get('court', `tournament_id=eq.${active.id}&is_active=eq.true&order=sort_order`);
-      const grid = document.getElementById('terrain-cards');
-      grid.innerHTML = courts.map(c => `
-        <a href="terrain.html?court=${c.id}" class="portal-card">
-          <div class="portal-icon" style="background:var(--cpl)">🏖️</div>
-          <div>
-            <div class="portal-card-title">Terrain ${c.name}</div>
-            <div class="portal-card-desc">Application responsable terrain. Gestion du timing, saisie des scores, horodatage automatique.</div>
-          </div>
-          <span class="portal-card-tag tag-terrain">Terrain</span>
-        </a>`).join('');
-    }
+      const courts = await sb.get('court','tournament_id=eq.'+active.id+'&is_active=eq.true&order=sort_order');
+      if (courts.length) {
+        document.getElementById('section-terrain').style.display='block';
+        document.getElementById('terrain-cards').innerHTML = courts.map(c=>
+          '<a href="terrain.html?court='+c.id+'" class="portal-card">'+
+          '<div class="portal-icon" style="background:var(--cpl)">🏖️</div>'+
+          '<div><div class="portal-card-title">Terrain '+c.name+'</div>'+
+          '<div class="portal-card-desc">Application responsable terrain — timing, scores, horodatage.</div></div>'+
+          '<span class="portal-card-tag tag-terrain">Terrain</span></a>'
+        ).join('');
+      }
 
-    // Matchs en cours
-    if (active) {
+      // Live matches
       const live = await sb.get('match',
-        `tournament_id=eq.${active.id}&status=in.in_progress,warmup&select=*,court(*),team1:team1_id(name),team2:team2_id(name)`);
-      document.getElementById('live-summary').textContent =
-        live.length ? `${live.length} match${live.length > 1 ? 's' : ''} en cours` : 'Aucun match en cours';
+        'competition_id=in.(select id from competition where tournament_id='+active.id+')'
+        +'&status=in.(in_progress,warmup)'
+        +'&select=*,court(name),team1:team1_id(name),team2:team2_id(name)'
+      ).catch(async ()=>{
+        const comps = await sb.get('competition','tournament_id=eq.'+active.id).catch(()=>[]);
+        const cids = comps.map(c=>c.id);
+        if (!cids.length) return [];
+        return sb.get('match','competition_id=in.('+cids.join(',')+')'+'&status=in.(in_progress,warmup)'+'&select=*,court(name),team1:team1_id(name),team2:team2_id(name)').catch(()=>[]);
+      });
+      document.getElementById('live-summary').textContent = live.length?live.length+' match'+(live.length>1?'s':'')+' en cours':'Aucun match en cours';
       if (live.length) {
-        document.getElementById('live-bar').style.display = 'flex';
-        document.getElementById('live-items').innerHTML = live.map(m =>
-          `<span class="live-item"><span class="status-dot ${m.status === 'in_progress' ? 'dot-play' : 'dot-warm'}"></span>
-          <strong>${m.court?.name || '?'}</strong> — ${m.team1?.name || '?'} vs ${m.team2?.name || '?'}</span>`
+        document.getElementById('live-bar').style.display='flex';
+        document.getElementById('live-items').innerHTML = live.map(m=>
+          '<span class="live-item"><span class="status-dot '+(m.status==='in_progress'?'dot-play':'dot-warm')+'"></span>'+
+          '<strong>'+(m.court?.name||'?')+'</strong> — '+(m.team1?.name||'?')+' vs '+(m.team2?.name||'?')+'</span>'
         ).join(' ');
       }
     }
 
-    document.getElementById('conn-status').textContent = '✓ Connecté à Supabase';
+    // Back-office cards (admin & arbitre only)
+    const bo = document.getElementById('backoffice-cards');
+    const cards = [];
+    if (role==='admin'||role==='arbitre') {
+      cards.push('<a href="dashboard.html" class="portal-card"><div class="portal-icon" style="background:var(--cwl)">📊</div><div><div class="portal-card-title">Dashboard arbitre</div><div class="portal-card-desc">Vue temps réel de tous les terrains. Scores, durées, alertes.</div></div><span class="portal-card-tag tag-arbitre">Juge-Arbitre</span></a>');
+      cards.push('<a href="stats.html" class="portal-card"><div class="portal-icon" style="background:#EEEDFE">📈</div><div><div class="portal-card-title">Statistiques</div><div class="portal-card-desc">Durées, analyses par catégorie et round. Export CSV ITF.</div></div><span class="portal-card-tag tag-stats">Analyse</span></a>');
+      cards.push('<a href="rest.html" class="portal-card"><div class="portal-icon" style="background:var(--cpl)">⏱️</div><div><div class="portal-card-title">Temps de repos</div><div class="portal-card-desc">Repos de chaque équipe. Alertes si sous le minimum réglementaire.</div></div><span class="portal-card-tag tag-terrain">Logistique</span></a>');
+      cards.push('<a href="onepointchallenge.html" class="portal-card"><div class="portal-icon" style="background:#f5f0e8">☕</div><div><div class="portal-card-title">1 Point Challenge</div><div class="portal-card-desc">Tableau du tournoi spécial by Lavazza. Désignation du gagnant par point.</div></div><span class="portal-card-tag tag-stats">Tournoi spécial</span></a>');
+    }
+    if (role==='admin') {
+      cards.push('<a href="admin.html" class="portal-card"><div class="portal-icon" style="background:var(--cbl)">⚙️</div><div><div class="portal-card-title">Administration</div><div class="portal-card-desc">Tournoi, compétitions, équipes, joueurs, planification, import CSV.</div></div><span class="portal-card-tag tag-admin">Admin</span></a>');
+      cards.push('<a href="qrcodes.html" class="portal-card"><div class="portal-icon" style="background:#F0F0EC">📱</div><div><div class="portal-card-title">QR Codes terrains</div><div class="portal-card-desc">Générer et imprimer les QR codes pour chaque terrain. Document PDF pour la table de marque.</div></div><span class="portal-card-tag tag-admin">Admin</span></a>');
+    }
+    if (cards.length) { document.getElementById('section-backoffice').style.display='block'; bo.innerHTML=cards.join(''); }
 
-    // Realtime
-    sb.realtime('match', () => init());
-
+    document.getElementById('conn-status').textContent='✓ Connecté à Supabase';
+    sb.realtime('match',()=>init());
   } catch(e) {
-    document.getElementById('conn-status').textContent = '✗ Erreur connexion : ' + e.message;
-    document.getElementById('conn-status').style.color = 'var(--ca)';
-    document.getElementById('hero-sub').textContent = 'Données fictives (Supabase non configuré)';
+    document.getElementById('conn-status').textContent='✗ Erreur: '+e.message;
+    document.getElementById('conn-status').style.color='var(--ca)';
+    document.getElementById('hero-sub').textContent='Erreur de connexion Supabase';
   }
 }
 init();

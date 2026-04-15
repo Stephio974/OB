@@ -6,62 +6,59 @@
 <title>Dashboard Arbitre — Open des Brisants</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-.courts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
-.court-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
-.court-header { background: var(--cp); color: #fff; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
-.court-header-name { font-size: 15px; font-weight: 700; }
-.court-header-count { font-size: 12px; opacity: .8; }
-.match-row { padding: 12px 14px; border-bottom: 1px solid var(--border); }
-.match-row:last-child { border-bottom: none; }
-.match-row.live { background: #F0FBF6; border-left: 3px solid var(--cp); }
-.match-row.warm { background: var(--cwl); border-left: 3px solid var(--cw); }
-.match-row.done { opacity: .55; }
-.match-row.retired { background: var(--cal); border-left: 3px solid var(--ca); }
-.match-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.match-time-badge { font-size: 12px; font-weight: 700; color: var(--text2); }
-.match-duration { font-size: 11px; color: var(--text3); font-variant-numeric: tabular-nums; }
-.team-line { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
-.team-line-name { font-size: 13px; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.team-line-score { display: flex; gap: 5px; }
-.set-score { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border-radius: 5px; background: var(--bg2); color: var(--text); }
-.set-score.active { background: var(--cp); color: #fff; }
-.set-score.winner { background: var(--cpl); color: var(--cpd); }
-.serve-dot { width: 8px; height: 8px; border-radius: 50%; background: #F5C800; border: 1.5px solid #A89000; margin-right: 5px; flex-shrink: 0; }
-.serve-dot.hidden { opacity: 0; }
-.empty-court { padding: 20px; text-align: center; color: var(--text3); font-size: 12px; }
-.global-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.last-update { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 5px; }
-.alert-panel { background: var(--cal); border: 1px solid #F7C1C1; border-radius: var(--r); padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #8B1C1C; display: none; }
+.courts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.court-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.court-header{background:var(--cp);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.court-header-name{font-size:15px;font-weight:700}
+.match-row{padding:12px 14px;border-bottom:1px solid var(--border)}
+.match-row:last-child{border-bottom:none}
+.match-row.live{background:#F0FBF6;border-left:3px solid var(--cp)}
+.match-row.warm{background:var(--cwl);border-left:3px solid var(--cw)}
+.match-row.done{opacity:.55}
+.match-row.retired{background:var(--cal);border-left:3px solid var(--ca)}
+.match-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.team-line{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.team-line-name{font-size:13px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.set-score{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border-radius:5px;background:var(--bg2)}
+.set-score.active{background:var(--cp);color:#fff}
+.serve-dot{width:8px;height:8px;border-radius:50%;background:#F5C800;border:1.5px solid #A89000;margin-right:5px;flex-shrink:0}
+.serve-dot.hidden{opacity:0}
+.empty-court{padding:18px;text-align:center;color:var(--text3);font-size:12px}
+.global-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.last-update{font-size:11px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:5px}
+/* ── MASTER ALERT BANNER ── */
+.master-alert-banner{background:#E24B4A;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px;animation:alertpulse 1s ease-in-out infinite}
+@keyframes alertpulse{0%,100%{opacity:1}50%{opacity:.8}}
+.master-alert-icon{font-size:24px;flex-shrink:0;animation:shake .5s ease-in-out infinite alternate}
+@keyframes shake{0%{transform:rotate(-8deg)}100%{transform:rotate(8deg)}}
+.master-alert-text{flex:1;font-size:14px;font-weight:600}
+.master-alert-sub{font-size:12px;opacity:.85;margin-top:2px}
+.master-alert-close{background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
+.master-alert-close:hover{background:rgba(255,255,255,.4)}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="topbar-brand">
-      <div>
-        <div class="topbar-logo">ITF Sand Series — Juge-Arbitre</div>
-        <div class="topbar-name" id="topbar-name">Open des Brisants</div>
-      </div>
-    </div>
+    <div class="topbar-brand"><div><div class="topbar-logo">ITF Sand Series — Juge-Arbitre</div><div class="topbar-name" id="topbar-name">Open des Brisants</div></div></div>
     <div class="topbar-nav">
-      <a href="portal.html">Portail</a>
-      <a href="admin.html">Admin</a>
-      <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="stats.html">Stats</a>
-      <a href="rest.html">Repos</a>
+      <a href="portal.html">Portail</a><a href="admin.html">Admin</a>
+      <a href="dashboard.html" class="active">Dashboard</a><a href="stats.html">Stats</a><a href="rest.html">Repos</a>
     </div>
-    <div class="last-update">
-      <span class="live-dot"></span>
-      <span id="last-update">Connexion…</span>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="last-update"><span class="live-dot"></span><span id="last-update">Connexion…</span></div>
+      <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.8)" onclick="auth.logout()">⎋</button>
     </div>
   </div>
 
+  <!-- Master alert banners (dynamically injected here) -->
+  <div id="master-alerts-zone"></div>
+
   <div class="page-body full">
-    <div id="alert-panel" class="alert-panel"></div>
+    <div id="warmup-alerts"></div>
 
     <div class="global-metrics" id="global-metrics">
-      <div class="metric"><div class="metric-label">Matchs prévus</div><div class="metric-value" id="m-total">—</div></div>
+      <div class="metric"><div class="metric-label">Prévus</div><div class="metric-value" id="m-total">—</div></div>
       <div class="metric green"><div class="metric-label">En cours</div><div class="metric-value" id="m-live">—</div></div>
       <div class="metric amber"><div class="metric-label">Échauffement</div><div class="metric-value" id="m-warm">—</div></div>
       <div class="metric"><div class="metric-label">Terminés</div><div class="metric-value" id="m-done">—</div></div>
@@ -77,131 +74,135 @@
 
 <script src="supabase.js"></script>
 <script>
+auth.require(['admin','arbitre']);
+
 const activeTournamentId = getActiveTournament();
 let courts = [], allMatches = [], allSets = [];
-let liveTimers = {};
-let refreshInterval;
+let dismissedAlerts = new Set(); // Track acknowledged master alerts
 
 async function init() {
-  courts = await sb.get('court', `tournament_id=eq.${activeTournamentId}&is_active=eq.true&order=sort_order`).catch(() => []);
+  courts = await sb.get('court', 'tournament_id=eq.'+activeTournamentId+'&is_active=eq.true&order=sort_order').catch(()=>[]);
   await refresh();
-  // Realtime
-  sb.realtime('match', () => refresh());
-  sb.realtime('set', () => refresh());
-  // Fallback poll toutes les 15s
-  refreshInterval = setInterval(refresh, 15000);
+  sb.realtime('match', ()=>refresh());
+  sb.realtime('set', ()=>refresh());
+  setInterval(refresh, 15000);
 }
 
 async function refresh() {
   try {
+    const comps = await sb.get('competition', 'tournament_id=eq.'+activeTournamentId).catch(()=>[]);
+    const cids = comps.map(c=>c.id);
+    if (!cids.length) { allMatches=[]; renderAll(); return; }
     allMatches = await sb.get('match',
-      `competition_id=in.(select id from competition where tournament_id=${activeTournamentId})` +
-      `&select=*,competition(*),team1:team1_id(name,nationality),team2:team2_id(name,nationality)` +
-      `&order=scheduled_at`
-    ).catch(async () => {
-      // Fallback si la requête imbriquée n'est pas supportée
-      const comps = await sb.get('competition', `tournament_id=eq.${activeTournamentId}`);
-      const cids = comps.map(c => c.id);
-      if (!cids.length) return [];
-      return sb.get('match', `competition_id=in.(${cids.join(',')})&select=*,competition(*),team1:team1_id(name,nationality),team2:team2_id(name,nationality)&order=scheduled_at`);
-    });
+      'competition_id=in.('+cids.join(',')+')'+'&select=*,competition(name,category),court(name),team1:team1_id(name,nationality),team2:team2_id(name,nationality)'+'&order=scheduled_at'
+    ).catch(()=>[]);
+    const mids = allMatches.map(m=>m.id);
+    allSets = mids.length ? await sb.get('set','match_id=in.('+mids.join(',')+')&order=set_number').catch(()=>[]) : [];
 
-    allSets = allMatches.length ?
-      await sb.get('set', `match_id=in.(${allMatches.map(m=>m.id).join(',') || 'null'})&order=set_number`) : [];
-
-    updateMetrics();
-    renderCourts();
-    checkAlerts();
+    // Check master alerts from match table (master_alert field)
+    renderMasterAlerts();
+    renderAll();
     document.getElementById('last-update').textContent = 'Mis à jour ' + sb.fmt.ago(new Date().toISOString());
-  } catch(e) {
-    document.getElementById('last-update').textContent = 'Erreur: ' + e.message;
-  }
+  } catch(e) { document.getElementById('last-update').textContent = 'Erreur: '+e.message; }
+}
+
+function renderMasterAlerts() {
+  // Matches where master_alert = true and not yet dismissed
+  const alerts = allMatches.filter(m => m.master_alert && !dismissedAlerts.has(m.id));
+  const zone = document.getElementById('master-alerts-zone');
+  if (!alerts.length) { zone.innerHTML=''; return; }
+  zone.innerHTML = alerts.map(m => {
+    const court = courts.find(c=>c.id===m.court_id);
+    const t1 = m.team1?.name||'?', t2 = m.team2?.name||'?';
+    return '<div class="master-alert-banner" id="alert-'+m.id+'">' +
+      '<div class="master-alert-icon">🚨</div>' +
+      '<div class="master-alert-text">ALERTE TERRAIN — '+( court?.name||'Terrain inconnu')+' demande votre présence' +
+      '<div class="master-alert-sub">Match en cours : '+t1+' vs '+t2+' · '+(m.competition?.category||'')+' '+( m.round||'')+'</div></div>' +
+      '<button class="master-alert-close" onclick="dismissAlert(\''+m.id+'\')">J\'y vais ✓</button>' +
+      '</div>';
+  }).join('');
+}
+
+async function dismissAlert(matchId) {
+  dismissedAlerts.add(matchId);
+  // Clear the flag in DB
+  await sb.patch('match','id=eq.'+matchId,{master_alert:false}).catch(()=>{});
+  renderMasterAlerts();
+}
+
+function renderAll() {
+  updateMetrics();
+  renderWarmupAlerts();
+  renderCourts();
 }
 
 function updateMetrics() {
   document.getElementById('m-total').textContent   = allMatches.length;
-  document.getElementById('m-live').textContent    = allMatches.filter(m => m.status === 'in_progress').length;
-  document.getElementById('m-warm').textContent    = allMatches.filter(m => m.status === 'warmup').length;
-  document.getElementById('m-done').textContent    = allMatches.filter(m => m.status === 'finished').length;
-  document.getElementById('m-wait').textContent    = allMatches.filter(m => m.status === 'scheduled').length;
-  document.getElementById('m-retired').textContent = allMatches.filter(m => m.status === 'retired').length;
+  document.getElementById('m-live').textContent    = allMatches.filter(m=>m.status==='in_progress').length;
+  document.getElementById('m-warm').textContent    = allMatches.filter(m=>m.status==='warmup').length;
+  document.getElementById('m-done').textContent    = allMatches.filter(m=>m.status==='finished').length;
+  document.getElementById('m-wait').textContent    = allMatches.filter(m=>m.status==='scheduled').length;
+  document.getElementById('m-retired').textContent = allMatches.filter(m=>m.status==='retired').length;
 }
 
-function checkAlerts() {
-  const alerts = [];
-  allMatches.filter(m => m.status === 'warmup').forEach(m => {
-    if (!m.ts_warm_start) return;
-    const min = Math.round((Date.now() - new Date(m.ts_warm_start)) / 60000);
-    if (min > 6) alerts.push(`⚠ Échauffement dépassé (${min} min) : ${m.team1?.name} vs ${m.team2?.name}`);
-  });
-  const panel = document.getElementById('alert-panel');
-  if (alerts.length) { panel.style.display = 'block'; panel.innerHTML = alerts.join('<br>'); }
-  else { panel.style.display = 'none'; }
+function renderWarmupAlerts() {
+  const over = allMatches.filter(m=>m.status==='warmup'&&m.ts_warm_start&&Math.round((Date.now()-new Date(m.ts_warm_start))/60000)>6);
+  const panel = document.getElementById('warmup-alerts');
+  panel.innerHTML = over.length ? '<div class="alert alert-warning" style="margin-bottom:12px">⚠ Échauffement dépassé (>6 min) : '+over.map(m=>'<strong>'+( m.team1?.name||'?')+' vs '+(m.team2?.name||'?')+'</strong>').join(', ')+'</div>' : '';
 }
 
 function renderCourts() {
   const grid = document.getElementById('courts-grid');
+  const unassigned = allMatches.filter(m=>!m.court_id);
   grid.innerHTML = courts.map(court => {
-    const ms = allMatches.filter(m => m.court_id === court.id);
-    const live = ms.filter(m => ['warmup','in_progress'].includes(m.status));
-    return `<div class="court-card">
-      <div class="court-header">
-        <span class="court-header-name">Terrain ${court.name}</span>
-        <span class="court-header-count">${ms.length} match${ms.length !== 1 ? 's' : ''} · ${live.length} en cours</span>
-      </div>
-      ${ms.length ? ms.map(m => renderMatch(m)).join('') : '<div class="empty-court">Aucun match assigné</div>'}
-    </div>`;
-  }).join('');
+    const ms = allMatches.filter(m=>m.court_id===court.id);
+    const live = ms.filter(m=>['warmup','in_progress'].includes(m.status));
+    const hasAlert = ms.some(m=>m.master_alert);
+    return '<div class="court-card"'+( hasAlert?' style="border:2px solid var(--ca)"':'')+'>'+
+      '<div class="court-header"'+(hasAlert?' style="background:var(--ca)"':'')+'>'+
+      '<span class="court-header-name">'+( hasAlert?'🚨 ':'')+court.name+'</span>'+
+      '<span style="font-size:11px;opacity:.8">'+ms.length+' matchs · '+live.length+' en cours</span></div>'+
+      (ms.length ? ms.map(m=>renderMatch(m)).join('') : '<div class="empty-court">Aucun match assigné</div>')+
+      '</div>';
+  }).join('')+
+  (unassigned.length ? '<div class="court-card"><div class="court-header" style="background:var(--text3)"><span class="court-header-name">Non assignés</span></div>'+unassigned.map(m=>renderMatch(m)).join('')+'</div>' : '');
 }
 
 function renderMatch(m) {
-  const sets = allSets.filter(s => s.match_id === m.id);
-  const statusClass = { warmup: 'warm', in_progress: 'live', finished: 'done', retired: 'retired', scheduled: '' }[m.status] || '';
-  const serving = m.server_team; // 1 or 2 or null
-
-  // compute live duration
+  const sets = allSets.filter(s=>s.match_id===m.id);
+  const statusClass = {warmup:'warm',in_progress:'live',finished:'done',retired:'retired',scheduled:''}[m.status]||'';
+  const serving = m.server_team;
   let dur = '';
-  if (m.status === 'in_progress' && m.ts_match_start) {
-    const sec = Math.round((Date.now() - new Date(m.ts_match_start)) / 1000);
-    dur = sb.fmt.dur(sec);
-  } else if (m.match_duration_sec) {
-    dur = sb.fmt.dur(m.match_duration_sec);
-  }
+  if (m.status==='in_progress'&&m.ts_match_start) dur = sb.fmt.dur(Math.round((Date.now()-new Date(m.ts_match_start))/1000));
+  else if (m.match_duration_sec) dur = sb.fmt.dur(m.match_duration_sec);
 
-  const maxSets = 3;
-  const renderTeam = (team, tname, tnat, tNum) => {
-    const isServing = m.status === 'in_progress' && serving === tNum;
-    const score = sets.map(s => {
-      const v = tNum === 1 ? s.score_t1 : s.score_t2;
-      const opp = tNum === 1 ? s.score_t2 : s.score_t1;
-      const won = m.status !== 'scheduled' && v > opp;
-      const active = !['finished','retired'].includes(m.status) && s.set_number === sets.length;
-      return `<div class="set-score ${active ? 'active' : won ? 'winner' : ''}">${v}</div>`;
+  const renderTeam = (tname,tnat,tNum) => {
+    const isServing = m.status==='in_progress'&&serving===tNum;
+    const score = sets.map(s=>{
+      const v=tNum===1?s.score_t1:s.score_t2, opp=tNum===1?s.score_t2:s.score_t1;
+      const won = m.status!=='scheduled'&&v>opp;
+      const active = !['finished','retired'].includes(m.status)&&s.set_number===sets.length;
+      return '<div class="set-score'+(active?' active':won?' winner':'')+'">'+v+'</div>';
     }).join('');
-    return `<div class="team-line">
-      <span class="serve-dot ${isServing ? '' : 'hidden'}"></span>
-      <span class="team-line-name">${tname || '?'} <span style="font-size:11px;color:var(--text3)">${tnat || ''}</span></span>
-      <div class="team-line-score">${score}</div>
-    </div>`;
+    return '<div class="team-line"><span class="serve-dot'+(isServing?'':' hidden')+'"></span>'+
+      '<span class="team-line-name">'+(tname||'?')+' <span style="font-size:10px;color:var(--text3)">'+(tnat||'')+'</span></span>'+
+      '<div style="display:flex;gap:4px">'+score+'</div></div>';
   };
-
-  return `<div class="match-row ${statusClass}">
-    <div class="match-top">
-      <span class="match-time-badge">
-        <span class="status-dot dot-${statusClass || 'wait'}"></span>
-        ${m.scheduled_at ? sb.fmt.time(m.scheduled_at) : '—'}
-        <span style="font-size:10px;color:var(--text3);margin-left:4px">${m.competition?.name || ''} · ${m.competition?.category || ''} · ${m.round || ''}</span>
-      </span>
-      <span class="match-duration">${dur}</span>
-    </div>
-    ${renderTeam(1, m.team1?.name, m.team1?.nationality, 1)}
-    ${renderTeam(2, m.team2?.name, m.team2?.nationality, 2)}
-    ${m.status === 'retired' ? `<div style="font-size:11px;color:var(--ca);margin-top:4px">Abandon équipe ${m.retirement_team} — ${m.retirement_reason || ''}</div>` : ''}
-  </div>`;
+  return '<div class="match-row '+statusClass+'">'+
+    '<div class="match-top"><span style="font-size:12px;font-weight:700;color:var(--text2)">'+
+    '<span class="status-dot dot-'+(statusClass||'wait')+'"></span>'+
+    (m.scheduled_at?sb.fmt.time(m.scheduled_at):'—')+
+    '<span style="font-size:10px;color:var(--text3);margin-left:4px">'+(m.competition?.category||'')+' · '+(m.round||'')+'</span></span>'+
+    '<span style="font-size:11px;color:var(--text3)">'+dur+'</span></div>'+
+    renderTeam(m.team1?.name,m.team1?.nationality,1)+
+    renderTeam(m.team2?.name,m.team2?.nationality,2)+
+    (m.status==='retired'?'<div style="font-size:11px;color:var(--ca);margin-top:3px">Abandon équipe '+(m.retirement_team||'?')+' — '+(m.retirement_reason||'')+'</div>':'')+
+    (m.master_alert?'<div style="font-size:11px;color:var(--ca);font-weight:600;margin-top:4px">🚨 Responsable demande votre présence</div>':'')+
+    '</div>';
 }
 
 if (activeTournamentId) init();
-else document.getElementById('courts-grid').innerHTML = '<div class="alert alert-warning" style="grid-column:1/-1">Aucun tournoi actif sélectionné. <a href="portal.html">Aller au portail</a></div>';
+else document.getElementById('courts-grid').innerHTML='<div class="alert alert-warning" style="grid-column:1/-1">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
 </script>
 </body>
 </html>
