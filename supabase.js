@@ -1,8 +1,8 @@
 // ─────────────────────────────────────────────────────────────
 // CONFIGURATION SUPABASE — à remplir avec vos clés
 // ─────────────────────────────────────────────────────────────
-const SUPABASE_URL  = 'https://VOTRE_ID.supabase.co';   // ← remplacer
-const SUPABASE_ANON = 'VOTRE_ANON_PUBLIC_KEY';           // ← remplacer
+const SUPABASE_URL  = 'https://sslmdxnpbapsqrcjpbwv.supabase.co';   // ← remplacer
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbG1keG5wYmFwc3FyY2pwYnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNjkxNjIsImV4cCI6MjA5MTc0NTE2Mn0.zW13ZhE0GwUxm42tEIwjA3XWOA6HRNqJ2AebzSFFvYA';           // ← remplacer
 
 // ─────────────────────────────────────────────────────────────
 // Client Supabase léger (sans SDK — appels REST + Realtime natifs)
