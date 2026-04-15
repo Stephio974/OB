@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1D9E75">
+<title>Open des Brisants — Terrain</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F4F4F0;min-height:100vh}
+:root{--cp:#1D9E75;--cpd:#0F6E56;--ca:#E24B4A;--cw:#EF9F27;--cy:#F5C800;
+  --bg:#fff;--bg2:#F7F7F5;--bg3:#F0F0EC;
+  --text:#1A1A1A;--text2:#666;--text3:#999;
+  --border:#E0E0D8;--border2:#C8C8C0;--r:10px;--rl:14px}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1C1C1E;--bg2:#2C2C2E;--bg3:#3A3A3C;
+  --text:#F5F5F0;--text2:#AEAEB2;--text3:#636366;
+  --border:#3A3A3C;--border2:#48484A}}
+.app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.topbar{background:var(--cp);color:#fff;padding:0 16px 12px;padding-top:max(env(safe-area-inset-top),14px)}
+.topbar-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.topbar-title{font-size:12px;font-weight:500;opacity:.85;letter-spacing:.04em;text-transform:uppercase}
+.topbar-name{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.topbar-row2{display:flex;align-items:center;justify-content:center;gap:0}
+.terrain-nav-btn{background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.terrain-nav-btn:disabled{opacity:.25;cursor:default}
+.terrain-name-box{flex:1;text-align:center;padding:0 10px}
+.terrain-label-sub{font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px}
+.terrain-name{font-size:16px;font-weight:700}
+.terrain-dots{display:flex;justify-content:center;gap:5px;margin-top:5px}
+.terrain-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.35)}
+.terrain-dot.active{background:#fff}
+.day-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.day-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--text);font-weight:500}
+.day-btn:disabled{opacity:.3}
+.day-label{font-size:13px;font-weight:600;color:var(--text);flex:1;text-align:center;padding:0 6px}
+.match-nav{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border)}
+.match-nav button{background:none;border:1px solid var(--border2);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--text);font-weight:500}
+.match-nav button:disabled{opacity:.3}
+.match-counter{font-size:13px;color:var(--text2);font-weight:500}
+.match-card{padding:14px}
+.match-header{background:var(--bg2);border-radius:var(--rl);padding:14px;margin-bottom:12px;border:1px solid var(--border)}
+.match-time{font-size:26px;font-weight:700;color:var(--cp);letter-spacing:-.02em}
+.badge{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600}
+.badge-cat{background:#E1F5EE;color:#0F6E56}
+.badge-tour{background:#E6F1FB;color:#185FA5}
+.status-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+.action-btn{width:100%;padding:14px 16px;border-radius:var(--rl);border:none;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:9px;transition:transform .1s;text-align:left;display:flex;align-items:center;justify-content:space-between;line-height:1.3}
+.action-btn:active{transform:scale(.97)}
+.btn-warm{background:#FFF8ED;border:1.5px solid var(--cw);color:#7A4A00}
+.btn-endwarm{background:#FFF0DC;border:1.5px solid #D08020;color:#6A3800}
+.btn-play{background:#E8F5E9;border:1.5px solid var(--cp);color:var(--cpd)}
+.btn-endset{background:#E3F0FD;border:1.5px solid #378ADD;color:#0C447C}
+.btn-end{background:#FEECEC;border:1.5px solid var(--ca);color:#8B1C1C}
+.btn-done{background:var(--bg2);border:1.5px solid var(--border);color:var(--text3);cursor:default}
+.btn-retire{background:#FEECEC;border:1.5px dashed var(--ca);color:#8B1C1C;font-size:13px;padding:10px 14px}
+.tag-time{font-size:11px;font-weight:500;opacity:.75;margin-left:6px}
+.chrono-box{display:flex;gap:10px;margin-bottom:12px}
+.chrono-pill{flex:1;background:var(--bg2);border-radius:var(--rl);padding:12px;text-align:center;border:1px solid var(--border)}
+.chrono-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;font-weight:600}
+.chrono-val{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.chrono-val.warm{color:var(--cw)}
+.chrono-val.play{color:var(--cp)}
+.chrono-val.over{color:var(--ca)}
+.team-row{display:flex;align-items:center;gap:7px;margin-bottom:10px;min-height:40px}
+.serve-ball{display:inline-block;width:15px;height:15px;border-radius:50%;background:var(--cy);border:2px solid #A89000;flex-shrink:0;transition:opacity .25s}
+.serve-ball.hidden{opacity:0}
+.team-name{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.team-nat{font-size:11px;color:var(--text3);margin-left:4px;font-weight:400}
+.set-scores{display:flex;gap:5px}
+.score-ctrl{display:flex;align-items:center}
+.score-display{width:36px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);background:var(--bg);color:var(--text)}
+.score-display.locked{background:var(--bg3);color:var(--text3)}
+.score-btn{width:30px;height:40px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.score-btn.minus{border-radius:8px 0 0 8px}
+.score-btn.plus{border-radius:0 8px 8px 0;background:var(--cp);color:#fff;border-color:var(--cpd);font-weight:700}
+.score-btn.locked{background:var(--bg3);color:var(--text3);cursor:default;pointer-events:none}
+.score-btn:active{transform:scale(.93)}
+.toggle-row{display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--bg2);border-radius:var(--r);margin-bottom:8px;cursor:pointer;border:1px solid var(--border)}
+.toggle-label{font-size:13px;color:var(--text2);flex:1;font-weight:500}
+.toggle-sw{width:38px;height:22px;border-radius:11px;background:#C8C8C0;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-sw.on{background:var(--cp)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-sw.on .toggle-knob{left:18px}
+.serve-select{padding:12px 13px;background:var(--bg2);border-radius:var(--rl);margin-bottom:9px;border:1px solid var(--border)}
+.serve-select-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px;font-weight:600}
+.serve-btn{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg);margin-bottom:6px;font-size:14px;cursor:pointer;color:var(--text);font-weight:500}
+.serve-btn.selected{border-color:var(--cp);background:#E8F5E9;color:var(--cpd);font-weight:600}
+.divider{height:1px;background:var(--border)}
+.match-list-section{padding:12px 14px 40px}
+.section-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-weight:600}
+.mini-match{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:6px;background:var(--bg);cursor:pointer}
+.mini-match.active{border-color:var(--cp);background:#E8F5E9}
+.mini-match.done{opacity:.45}
+.mini-time{font-size:13px;font-weight:700;min-width:40px;color:var(--text2)}
+.mini-teams{font-size:12px;flex:1;min-width:0;color:var(--text);font-weight:500}
+.mini-score{font-size:12px;font-weight:700;color:var(--cp)}
+.mini-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.log-item{font-size:12px;color:var(--text2);padding:4px 0;display:flex;gap:10px;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none}
+.log-time{font-weight:700;color:var(--text);min-width:44px}
+.sync-badge{position:fixed;bottom:16px;right:16px;background:var(--cp);color:#fff;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none}
+.sync-badge.show{opacity:1}
+.sync-badge.error{background:var(--ca)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-row1">
+      <div>
+        <div class="topbar-title">ITF Sand Series</div>
+        <div class="topbar-name">Open des Brisants</div>
+      </div>
+      <a href="portal.html" style="color:rgba(255,255,255,.7);font-size:12px;text-decoration:none">Portail</a>
+    </div>
+    <div class="topbar-row2">
+      <button class="terrain-nav-btn" id="btn-terrain-prev" onclick="changeTerrain(-1)">‹</button>
+      <div class="terrain-name-box">
+        <div class="terrain-label-sub">Terrain</div>
+        <div class="terrain-name" id="terrain-name-display">…</div>
+      </div>
+      <button class="terrain-nav-btn" id="btn-terrain-next" onclick="changeTerrain(1)">›</button>
+    </div>
+    <div class="terrain-dots" id="terrain-dots"></div>
+  </div>
+  <div class="day-bar">
+    <button class="day-btn" id="btn-day-prev" onclick="changeDay(-1)">← Préc.</button>
+    <span class="day-label" id="day-label">…</span>
+    <button class="day-btn" id="btn-day-next" onclick="changeDay(1)">Suiv. →</button>
+  </div>
+  <div class="match-nav">
+    <button id="btn-prev" onclick="navigateMatch(-1)">← Préc.</button>
+    <span class="match-counter" id="match-counter">…</span>
+    <button id="btn-next" onclick="navigateMatch(1)">Suiv. →</button>
+  </div>
+  <div id="main-content"></div>
+</div>
+<div class="sync-badge" id="sync-badge">✓ Synchronisé</div>
+
+<script src="supabase.js"></script>
+<script>
+// ── STATE ──────────────────────────────────────────────────────
+let courts = [], days = [], matchesByCourtDay = {};
+let terrainIdx = 0, dayIdx = 0, matchIdx = 0;
+const localState = {}; // cache local
+const timers = {};
+
+// Lire court_id depuis URL si fourni (depuis le portail)
+const urlParams = new URLSearchParams(location.search);
+const forcedCourtId = urlParams.get('court');
+
+// ── INIT ──────────────────────────────────────────────────────
+async function init() {
+  const tid = getActiveTournament();
+  if (!tid) { document.getElementById('main-content').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text3)">Aucun tournoi actif. <a href="portal.html">Portail</a></div>'; return; }
+  courts = await sb.get('court', `tournament_id=eq.${tid}&is_active=eq.true&order=sort_order`).catch(() => []);
+  if (!courts.length) { document.getElementById('main-content').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text3)">Aucun terrain configuré.</div>'; return; }
+  if (forcedCourtId) terrainIdx = Math.max(0, courts.findIndex(c => c.id === forcedCourtId));
+  await loadMatchesForTerrain();
+}
+
+async function loadMatchesForTerrain() {
+  const court = courts[terrainIdx];
+  const tid = getActiveTournament();
+  const comps = await sb.get('competition', `tournament_id=eq.${tid}`).catch(() => []);
+  const cids = comps.map(c => c.id);
+  if (!cids.length) { days = []; render(); return; }
+  const matches = await sb.get('match',
+    `competition_id=in.(${cids.join(',')})&court_id=eq.${court.id}&select=*,competition(*),team1:team1_id(name,nationality),team2:team2_id(name,nationality)&order=scheduled_at`
+  ).catch(() => []);
+
+  // Init local state from DB
+  matches.forEach(m => {
+    if (!localState[m.id]) {
+      localState[m.id] = {
+        status: m.status,
+        scores: [[m.score_t1_s1 || 0, m.score_t2_s1 || 0],[m.score_t1_s2 || 0, m.score_t2_s2 || 0],[0,0]],
+        set3: false, currentSet: 0, lockedSets: [], server: null, serverCurrent: null,
+        timestamps: { warmStart: m.ts_warm_start, warmEnd: m.ts_warm_end, matchStart: m.ts_match_start, matchEnd: m.ts_match_end },
+        log: [], warmSec: 0, matchSec: 0, dbMatch: m,
+      };
+      // Recalc warmSec / matchSec from timestamps
+      if (m.ts_warm_start) {
+        const end = m.ts_warm_end ? new Date(m.ts_warm_end) : new Date();
+        localState[m.id].warmSec = Math.round((end - new Date(m.ts_warm_start)) / 1000);
+      }
+      if (m.ts_match_start) {
+        const end = m.ts_match_end ? new Date(m.ts_match_end) : (m.status === 'in_progress' ? new Date() : new Date());
+        localState[m.id].matchSec = Math.round((end - new Date(m.ts_match_start)) / 1000);
+      }
+    }
+  });
+
+  // Reload sets from DB
+  const mids = matches.map(m => m.id);
+  const sets = mids.length ? await sb.get('set', `match_id=in.(${mids.join(',')})&order=set_number`).catch(() => []) : [];
+  matches.forEach(m => {
+    const ms = sets.filter(s => s.match_id === m.id);
+    if (ms.length) {
+      ms.forEach(s => {
+        localState[m.id].scores[s.set_number - 1] = [s.score_t1, s.score_t2];
+        if (['finished','retired'].includes(m.status) || s.set_number < ms.length) {
+          if (!localState[m.id].lockedSets.includes(s.set_number - 1))
+            localState[m.id].lockedSets.push(s.set_number - 1);
+        }
+      });
+      localState[m.id].currentSet = ms.length - (localState[m.id].lockedSets.includes(ms.length-1) ? 0 : 1);
+    }
+  });
+
+  // Group by day
+  const dayMap = {};
+  matches.forEach(m => {
+    const d = m.scheduled_at ? m.scheduled_at.slice(0, 10) : 'no-date';
+    if (!dayMap[d]) dayMap[d] = { date: d, label: d === 'no-date' ? 'Sans date' : new Date(d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}), matches: [] };
+    dayMap[d].matches.push(m);
+  });
+  days = Object.values(dayMap).sort((a,b) => a.date.localeCompare(b.date));
+  if (!days.length) days = [{ date: null, label: 'Aucun match', matches: [] }];
+  if (dayIdx >= days.length) dayIdx = 0;
+  render();
+
+  // Restart timers for in_progress matches
+  matches.filter(m => m.status === 'in_progress').forEach(m => startMatchTimer(m.id));
+  matches.filter(m => m.status === 'warmup').forEach(m => startWarmTimer(m.id));
+}
+
+// ── TIMERS ────────────────────────────────────────────────────
+function startWarmTimer(mid) {
+  stopTimer(mid);
+  timers[mid] = setInterval(() => { if (localState[mid]) { localState[mid].warmSec++; renderTimers(); } }, 1000);
+}
+function startMatchTimer(mid) {
+  stopTimer(mid);
+  timers[mid] = setInterval(() => { if (localState[mid]) { localState[mid].matchSec++; renderTimers(); } }, 1000);
+}
+function stopTimer(mid) { if (timers[mid]) { clearInterval(timers[mid]); delete timers[mid]; } }
+function fmt(s) { return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function nowStr() { return new Date().toTimeString().slice(0,5); }
+
+// ── ACTIONS ───────────────────────────────────────────────────
+async function doAction(mid, action, extra = {}) {
+  const s = localState[mid];
+  if (!s) return;
+  const now = new Date().toISOString();
+  const nowT = nowStr();
+  let patch = {};
+
+  if (action === 'startWarm') {
+    if (s.timestamps.warmStart) return;
+    s.timestamps.warmStart = now; s.status = 'warmup';
+    patch = { status: 'warmup', ts_warm_start: now };
+    s.log.push({ t: nowT, msg: 'Début échauffement' });
+    startWarmTimer(mid);
+  } else if (action === 'endWarm') {
+    if (s.timestamps.warmEnd || !s.timestamps.warmStart) return;
+    s.timestamps.warmEnd = now; stopTimer(mid);
+    const dur = Math.round((new Date(now) - new Date(s.timestamps.warmStart)) / 1000);
+    patch = { ts_warm_end: now, warm_duration_sec: dur };
+    s.log.push({ t: nowT, msg: 'Fin échauffement — ' + fmt(dur) });
+    s.status = 'serve-select';
+  } else if (action === 'selectServer') {
+    s.server = extra.team; s.serverCurrent = extra.team;
+  } else if (action === 'startMatch') {
+    if (s.timestamps.matchStart || s.server === null) return;
+    s.timestamps.matchStart = now; s.status = 'in_progress';
+    patch = { status: 'in_progress', ts_match_start: now, server_team: s.server + 1 };
+    s.log.push({ t: nowT, msg: 'Début du match' });
+    startMatchTimer(mid);
+    // Créer set 1 en BDD
+    await sb.post('set', { match_id: mid, set_number: 1, score_t1: 0, score_t2: 0, ts_start: now }).catch(() => {});
+  } else if (action === 'endSet') {
+    const cs = s.currentSet;
+    s.lockedSets.push(cs);
+    const sc = s.scores[cs];
+    const winner = sc[0] > sc[1] ? 1 : 2;
+    patch = {};
+    // Update set in DB
+    await sb.patch('set', `match_id=eq.${mid}&set_number=eq.${cs+1}`,
+      { score_t1: sc[0], score_t2: sc[1], ts_end: now, duration_sec: 0 }).catch(() => {});
+    s.log.push({ t: nowT, msg: `Fin Set ${cs+1} (${sc[0]}-${sc[1]})` });
+    s.serverCurrent = s.serverCurrent === 0 ? 1 : 0;
+    s.currentSet = cs + 1;
+    if (s.currentSet < 3) {
+      await sb.post('set', { match_id: mid, set_number: s.currentSet + 1, score_t1: 0, score_t2: 0, ts_start: now }).catch(() => {});
+    }
+  } else if (action === 'endMatch') {
+    if (s.timestamps.matchEnd) return;
+    s.timestamps.matchEnd = now; s.status = 'finished'; stopTimer(mid);
+    const dur = Math.round((new Date(now) - new Date(s.timestamps.matchStart)) / 1000);
+    // Determine winner
+    const s1 = s.scores[0], s2 = s.scores[1];
+    const w1 = (s1[0]>s1[1]?1:0)+(s2[0]>s2[1]?1:0); const w2 = (s1[1]>s1[0]?1:0)+(s2[1]>s2[0]?1:0);
+    patch = { status: 'finished', ts_match_end: now, match_duration_sec: dur };
+    s.log.push({ t: nowT, msg: 'Fin du match — ' + fmt(dur) });
+  } else if (action === 'retire') {
+    if (s.timestamps.matchEnd) return;
+    s.timestamps.matchEnd = now; s.status = 'retired'; stopTimer(mid);
+    const dur = s.timestamps.matchStart ? Math.round((new Date(now) - new Date(s.timestamps.matchStart)) / 1000) : 0;
+    patch = { status: 'retired', ts_match_end: now, match_duration_sec: dur, retirement_team: extra.team, retirement_reason: extra.reason || '' };
+    s.log.push({ t: nowT, msg: `Abandon équipe ${extra.team}` });
+  } else if (action === 'score') {
+    const { team, set, delta } = extra;
+    if (s.lockedSets.includes(set)) return;
+    s.scores[set][team] = Math.max(0, s.scores[set][team] + delta);
+    if (delta === 1) s.serverCurrent = s.serverCurrent === 0 ? 1 : 0;
+    // Patch score in DB (debounced)
+    clearTimeout(s._scoreTimer);
+    s._scoreTimer = setTimeout(() => {
+      const sc = s.scores[set];
+      sb.patch('set', `match_id=eq.${mid}&set_number=eq.${set+1}`, { score_t1: sc[0], score_t2: sc[1] }).catch(() => {});
+    }, 800);
+  } else if (action === 'toggleSet3') {
+    s.set3 = !s.set3;
+  }
+
+  if (Object.keys(patch).length) {
+    await sb.patch('match', `id=eq.${mid}`, patch).then(() => showSync(true)).catch(() => showSync(false));
+  }
+  render();
+}
+
+function showSync(ok) {
+  const el = document.getElementById('sync-badge');
+  el.textContent = ok ? '✓ Synchronisé' : '✗ Erreur sync';
+  el.className = `sync-badge show${ok ? '' : ' error'}`;
+  clearTimeout(el._t); el._t = setTimeout(() => el.className = 'sync-badge', 2500);
+}
+
+// ── RETIRE MODAL ──────────────────────────────────────────────
+function openRetireModal(mid, m) {
+  const reason = prompt(`Abandon — Raison ?\n(laisser vide si aucune)`);
+  if (reason === null) return;
+  const team = confirm(`Quelle équipe abandonne ?\nOK = ${m.team1?.name}\nAnnuler = ${m.team2?.name}`) ? 1 : 2;
+  doAction(mid, 'retire', { team, reason });
+}
+
+// ── TERRAIN NAV ───────────────────────────────────────────────
+function changeTerrain(d) {
+  terrainIdx = Math.max(0, Math.min(courts.length - 1, terrainIdx + d));
+  matchIdx = 0; dayIdx = 0;
+  loadMatchesForTerrain();
+}
+function changeDay(d) { dayIdx = Math.max(0, Math.min(days.length - 1, dayIdx + d)); matchIdx = 0; render(); }
+function navigateMatch(d) {
+  const ms = days[dayIdx]?.matches || [];
+  matchIdx = Math.max(0, Math.min(ms.length - 1, matchIdx + d));
+  render();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderTimers() {
+  const ms = days[dayIdx]?.matches || [];
+  if (!ms.length) return;
+  const m = ms[matchIdx];
+  const s = m && localState[m.id];
+  if (!s) return;
+  if (s.status === 'warmup' || s.status === 'serve-select') {
+    const el = document.getElementById('chrono-warm');
+    if (el) { el.textContent = fmt(s.warmSec); el.className = 'chrono-val warm' + (s.warmSec > 300 ? ' over' : ''); }
+  }
+  if (s.status === 'in_progress') {
+    const el = document.getElementById('chrono-play');
+    if (el) el.textContent = fmt(s.matchSec);
+  }
+}
+
+function mkBtn(label, cls, handler, locked, tag) {
+  const th = tag ? `<span class="tag-time">${tag}</span>` : '';
+  if (locked) return `<div class="action-btn btn-done"><span>${label}${th}</span><span>✓</span></div>`;
+  return `<div class="action-btn ${cls}" onclick="${handler}">${label}${th}</div>`;
+}
+
+function render() {
+  const court = courts[terrainIdx];
+  document.getElementById('terrain-name-display').textContent = court?.name || '—';
+  document.getElementById('btn-terrain-prev').disabled = terrainIdx === 0;
+  document.getElementById('btn-terrain-next').disabled = terrainIdx === courts.length - 1;
+  document.getElementById('terrain-dots').innerHTML = courts.map((_,i) => `<div class="terrain-dot${i===terrainIdx?' active':''}"></div>`).join('');
+
+  const day = days[dayIdx] || {};
+  document.getElementById('day-label').textContent = day.label || '—';
+  document.getElementById('btn-day-prev').disabled = dayIdx === 0;
+  document.getElementById('btn-day-next').disabled = dayIdx >= days.length - 1;
+
+  const matches = day.matches || [];
+  if (!matches.length) {
+    document.getElementById('btn-prev').disabled = true;
+    document.getElementById('btn-next').disabled = true;
+    document.getElementById('match-counter').textContent = 'Aucun match';
+    document.getElementById('main-content').innerHTML = `<div style="padding:48px 20px;text-align:center;color:var(--text3)"><div style="font-size:36px;margin-bottom:12px">🏖</div><div>Aucun match ce jour</div></div>`;
+    return;
+  }
+  if (matchIdx >= matches.length) matchIdx = 0;
+
+  document.getElementById('btn-prev').disabled = matchIdx === 0;
+  document.getElementById('btn-next').disabled = matchIdx === matches.length - 1;
+  document.getElementById('match-counter').textContent = `Match ${matchIdx+1} / ${matches.length}`;
+
+  const m = matches[matchIdx];
+  const mid = m.id;
+  const s = localState[mid];
+  if (!s) return;
+
+  const statusMap = { scheduled:'#AAA', warmup:'var(--cw)', 'serve-select':'var(--cw)', in_progress:'var(--cp)', finished:'#888', retired:'var(--ca)' };
+  const statusLabel = { scheduled:'En attente', warmup:'Échauffement', 'serve-select':'Choix du serveur', in_progress:'En cours', finished:'Terminé', retired:'Abandon' };
+  const sc = statusMap[s.status] || '#AAA';
+
+  let html = `<div class="match-card"><div class="match-header">`;
+  html += `<div style="display:flex;justify-content:space-between;align-items:flex-start">`;
+  html += `<div class="match-time">${m.scheduled_at ? new Date(m.scheduled_at).toTimeString().slice(0,5) : '—'}</div>`;
+  html += `<span class="status-chip" style="color:${sc}"><span style="width:8px;height:8px;border-radius:50%;background:${sc};display:inline-block"></span>${statusLabel[s.status]||''}</span></div>`;
+  html += `<div style="display:flex;gap:6px;margin-top:8px"><span class="badge badge-cat">${m.competition?.category||''}</span><span class="badge badge-tour">${m.competition?.name||''}</span></div>`;
+  html += `<div style="margin-top:10px">`;
+  html += `<div style="font-size:13px;font-weight:600;color:var(--text)">${m.team1?.name||'?'}<span style="font-size:11px;color:var(--text3);margin-left:5px">${m.team1?.nationality||''}</span></div>`;
+  html += `<div style="font-size:11px;color:var(--text3);margin:3px 0">vs</div>`;
+  html += `<div style="font-size:13px;font-weight:600;color:var(--text)">${m.team2?.name||'?'}<span style="font-size:11px;color:var(--text3);margin-left:5px">${m.team2?.nationality||''}</span></div>`;
+  html += `</div></div>`;
+
+  // Competition rules hint
+  if (m.competition?.match_format) html += `<div style="font-size:11px;color:var(--text3);padding:6px 0 2px;border-top:1px solid var(--border);margin-top:2px">${m.competition.match_format}</div>`;
+
+  if (s.status !== 'scheduled') {
+    html += `<div class="chrono-box">`;
+    html += `<div class="chrono-pill"><div class="chrono-label">Échauffement</div><div class="chrono-val warm${s.warmSec>300?' over':''}" id="chrono-warm">${fmt(s.warmSec)}</div>${s.warmSec>300?'<div style="font-size:10px;color:var(--ca)">Dépassé</div>':''}</div>`;
+    html += `<div class="chrono-pill"><div class="chrono-label">Temps de jeu</div><div class="chrono-val play" id="chrono-play">${fmt(s.matchSec)}</div></div>`;
+    html += `</div>`;
+  }
+
+  const tWS = s.timestamps.warmStart ? new Date(s.timestamps.warmStart).toTimeString().slice(0,5) : '';
+  const tWE = s.timestamps.warmEnd ? new Date(s.timestamps.warmEnd).toTimeString().slice(0,5) : '';
+  const tMS = s.timestamps.matchStart ? new Date(s.timestamps.matchStart).toTimeString().slice(0,5) : '';
+  const tME = s.timestamps.matchEnd ? new Date(s.timestamps.matchEnd).toTimeString().slice(0,5) : '';
+
+  html += mkBtn('▶  Début échauffement','btn-warm',`doAction('${mid}','startWarm')`,!!s.timestamps.warmStart,tWS);
+  html += mkBtn('◼  Fin échauffement','btn-endwarm',`doAction('${mid}','endWarm')`,!!s.timestamps.warmEnd,tWE);
+
+  if (s.status === 'serve-select') {
+    html += `<div class="serve-select"><div class="serve-select-label">Équipe qui engage</div>`;
+    html += `<button class="serve-btn${s.server===0?' selected':''}" onclick="doAction('${mid}','selectServer',{team:0})">${m.team1?.name||'Équipe 1'}</button>`;
+    html += `<button class="serve-btn${s.server===1?' selected':''}" onclick="doAction('${mid}','selectServer',{team:1})">${m.team2?.name||'Équipe 2'}</button>`;
+    html += `</div>`;
+  }
+
+  html += mkBtn('▶  Début du match','btn-play',`doAction('${mid}','startMatch')`,!!s.timestamps.matchStart,tMS);
+
+  if (['in_progress','finished','retired'].includes(s.status)) {
+    const sets = s.set3 ? 3 : 2;
+    const cs = s.currentSet;
+    const endSetLocked = s.lockedSets.includes(cs) || s.status !== 'in_progress';
+    html += mkBtn(`◼  Fin set ${cs+1}`,'btn-endset',`doAction('${mid}','endSet')`,endSetLocked,'');
+
+    html += `<div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:8px">`;
+    for (let i=0;i<sets;i++) html += `<div style="width:36px;text-align:center;font-size:10px;color:var(--text3);font-weight:600">Set ${i+1}</div>`;
+    html += `</div>`;
+    [0,1].forEach(team => {
+      const isServing = s.serverCurrent === team && s.status === 'in_progress';
+      const tname = team === 0 ? m.team1 : m.team2;
+      html += `<div class="team-row"><span class="serve-ball${isServing?'':' hidden'}"></span>`;
+      html += `<span class="team-name">${tname?.name||'?'}<span class="team-nat">${tname?.nationality||''}</span></span>`;
+      html += `<div class="set-scores">`;
+      for (let i=0;i<sets;i++) {
+        const lk = s.lockedSets.includes(i);
+        const v = s.scores[i][team];
+        html += `<div class="score-ctrl"><button class="score-btn minus${lk?' locked':''}" onclick="doAction('${mid}','score',{team:${team},set:${i},delta:-1})">−</button>`;
+        html += `<div class="score-display${lk?' locked':''}">${v}</div>`;
+        html += `<button class="score-btn plus${lk?' locked':''}" onclick="doAction('${mid}','score',{team:${team},set:${i},delta:1})">+</button></div>`;
+      }
+      html += `</div></div>`;
+    });
+    if (s.status === 'in_progress') {
+      html += `<div class="toggle-row" onclick="doAction('${mid}','toggleSet3')"><span class="toggle-label">3ème set (super tie-break)</span><div class="toggle-sw${s.set3?' on':''}"><div class="toggle-knob"></div></div></div>`;
+    }
+  }
+
+  html += mkBtn('◼  Fin du match','btn-end',`doAction('${mid}','endMatch')`,!!s.timestamps.matchEnd,tME);
+
+  if (s.status === 'in_progress') {
+    html += `<div class="action-btn btn-retire" onclick="openRetireModal('${mid}',${JSON.stringify({team1:{name:m.team1?.name},team2:{name:m.team2?.name}})})">⚠ Signaler un abandon</div>`;
+  }
+
+  if (s.log.length) {
+    html += `<div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-weight:600">Horodatage</div>`;
+    s.log.forEach(l => { html += `<div class="log-item"><span class="log-time">${l.t}</span><span>${l.msg}</span></div>`; });
+    html += `</div>`;
+  }
+
+  // Match list
+  html += `</div><div class="divider"></div><div class="match-list-section"><div class="section-label">Programme — ${court?.name}</div>`;
+  matches.forEach((mm, i) => {
+    const mst = localState[mm.id];
+    const st = mst?.status || 'scheduled';
+    const dotC = st==='finished'?'#888':st==='in_progress'?'var(--cp)':st==='warmup'||st==='serve-select'?'var(--cw)':st==='retired'?'var(--ca)':'#CCC';
+    const sc3 = mst && mst.status !== 'scheduled' ? mst.scores.slice(0,mst.set3?3:2).filter(s=>s[0]+s[1]>0).map(s=>s[0]+'-'+s[1]).join(' ') : '';
+    html += `<div class="mini-match${i===matchIdx?' active':st==='finished'?' done':''}" onclick="matchIdx=${i};render()">`;
+    html += `<span class="mini-time">${mm.scheduled_at?new Date(mm.scheduled_at).toTimeString().slice(0,5):'—'}</span>`;
+    html += `<span class="mini-dot" style="background:${dotC}"></span>`;
+    html += `<div class="mini-teams">${mm.team1?.name?.split('/')[0]?.trim()||'?'} / ${mm.team2?.name?.split('/')[0]?.trim()||'?'}<br><span style="font-size:11px;color:var(--text3)">${mm.competition?.category||''} · ${mm.competition?.name||''}</span></div>`;
+    html += (sc3 ? `<span class="mini-score">${sc3}</span>` : '');
+    html += `</div>`;
+  });
+  html += `</div>`;
+  document.getElementById('main-content').innerHTML = html;
+}
+
+init();
+</script>
+</body>
+</html>

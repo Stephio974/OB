@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Arbitre — Open des Brisants</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.courts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.court-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
+.court-header { background: var(--cp); color: #fff; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+.court-header-name { font-size: 15px; font-weight: 700; }
+.court-header-count { font-size: 12px; opacity: .8; }
+.match-row { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.match-row:last-child { border-bottom: none; }
+.match-row.live { background: #F0FBF6; border-left: 3px solid var(--cp); }
+.match-row.warm { background: var(--cwl); border-left: 3px solid var(--cw); }
+.match-row.done { opacity: .55; }
+.match-row.retired { background: var(--cal); border-left: 3px solid var(--ca); }
+.match-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.match-time-badge { font-size: 12px; font-weight: 700; color: var(--text2); }
+.match-duration { font-size: 11px; color: var(--text3); font-variant-numeric: tabular-nums; }
+.team-line { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.team-line-name { font-size: 13px; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.team-line-score { display: flex; gap: 5px; }
+.set-score { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border-radius: 5px; background: var(--bg2); color: var(--text); }
+.set-score.active { background: var(--cp); color: #fff; }
+.set-score.winner { background: var(--cpl); color: var(--cpd); }
+.serve-dot { width: 8px; height: 8px; border-radius: 50%; background: #F5C800; border: 1.5px solid #A89000; margin-right: 5px; flex-shrink: 0; }
+.serve-dot.hidden { opacity: 0; }
+.empty-court { padding: 20px; text-align: center; color: var(--text3); font-size: 12px; }
+.global-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.last-update { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 5px; }
+.alert-panel { background: var(--cal); border: 1px solid #F7C1C1; border-radius: var(--r); padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #8B1C1C; display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div>
+        <div class="topbar-logo">ITF Sand Series — Juge-Arbitre</div>
+        <div class="topbar-name" id="topbar-name">Open des Brisants</div>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <a href="portal.html">Portail</a>
+      <a href="admin.html">Admin</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="stats.html">Stats</a>
+      <a href="rest.html">Repos</a>
+    </div>
+    <div class="last-update">
+      <span class="live-dot"></span>
+      <span id="last-update">Connexion…</span>
+    </div>
+  </div>
+
+  <div class="page-body full">
+    <div id="alert-panel" class="alert-panel"></div>
+
+    <div class="global-metrics" id="global-metrics">
+      <div class="metric"><div class="metric-label">Matchs prévus</div><div class="metric-value" id="m-total">—</div></div>
+      <div class="metric green"><div class="metric-label">En cours</div><div class="metric-value" id="m-live">—</div></div>
+      <div class="metric amber"><div class="metric-label">Échauffement</div><div class="metric-value" id="m-warm">—</div></div>
+      <div class="metric"><div class="metric-label">Terminés</div><div class="metric-value" id="m-done">—</div></div>
+      <div class="metric"><div class="metric-label">En attente</div><div class="metric-value" id="m-wait">—</div></div>
+      <div class="metric red"><div class="metric-label">Abandons</div><div class="metric-value" id="m-retired">—</div></div>
+    </div>
+
+    <div class="courts-grid" id="courts-grid">
+      <div class="loading-overlay" style="grid-column:1/-1"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+const activeTournamentId = getActiveTournament();
+let courts = [], allMatches = [], allSets = [];
+let liveTimers = {};
+let refreshInterval;
+
+async function init() {
+  courts = await sb.get('court', `tournament_id=eq.${activeTournamentId}&is_active=eq.true&order=sort_order`).catch(() => []);
+  await refresh();
+  // Realtime
+  sb.realtime('match', () => refresh());
+  sb.realtime('set', () => refresh());
+  // Fallback poll toutes les 15s
+  refreshInterval = setInterval(refresh, 15000);
+}
+
+async function refresh() {
+  try {
+    allMatches = await sb.get('match',
+      `competition_id=in.(select id from competition where tournament_id=${activeTournamentId})` +
+      `&select=*,competition(*),team1:team1_id(name,nationality),team2:team2_id(name,nationality)` +
+      `&order=scheduled_at`
+    ).catch(async () => {
+      // Fallback si la requête imbriquée n'est pas supportée
+      const comps = await sb.get('competition', `tournament_id=eq.${activeTournamentId}`);
+      const cids = comps.map(c => c.id);
+      if (!cids.length) return [];
+      return sb.get('match', `competition_id=in.(${cids.join(',')})&select=*,competition(*),team1:team1_id(name,nationality),team2:team2_id(name,nationality)&order=scheduled_at`);
+    });
+
+    allSets = allMatches.length ?
+      await sb.get('set', `match_id=in.(${allMatches.map(m=>m.id).join(',') || 'null'})&order=set_number`) : [];
+
+    updateMetrics();
+    renderCourts();
+    checkAlerts();
+    document.getElementById('last-update').textContent = 'Mis à jour ' + sb.fmt.ago(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('last-update').textContent = 'Erreur: ' + e.message;
+  }
+}
+
+function updateMetrics() {
+  document.getElementById('m-total').textContent   = allMatches.length;
+  document.getElementById('m-live').textContent    = allMatches.filter(m => m.status === 'in_progress').length;
+  document.getElementById('m-warm').textContent    = allMatches.filter(m => m.status === 'warmup').length;
+  document.getElementById('m-done').textContent    = allMatches.filter(m => m.status === 'finished').length;
+  document.getElementById('m-wait').textContent    = allMatches.filter(m => m.status === 'scheduled').length;
+  document.getElementById('m-retired').textContent = allMatches.filter(m => m.status === 'retired').length;
+}
+
+function checkAlerts() {
+  const alerts = [];
+  allMatches.filter(m => m.status === 'warmup').forEach(m => {
+    if (!m.ts_warm_start) return;
+    const min = Math.round((Date.now() - new Date(m.ts_warm_start)) / 60000);
+    if (min > 6) alerts.push(`⚠ Échauffement dépassé (${min} min) : ${m.team1?.name} vs ${m.team2?.name}`);
+  });
+  const panel = document.getElementById('alert-panel');
+  if (alerts.length) { panel.style.display = 'block'; panel.innerHTML = alerts.join('<br>'); }
+  else { panel.style.display = 'none'; }
+}
+
+function renderCourts() {
+  const grid = document.getElementById('courts-grid');
+  grid.innerHTML = courts.map(court => {
+    const ms = allMatches.filter(m => m.court_id === court.id);
+    const live = ms.filter(m => ['warmup','in_progress'].includes(m.status));
+    return `<div class="court-card">
+      <div class="court-header">
+        <span class="court-header-name">Terrain ${court.name}</span>
+        <span class="court-header-count">${ms.length} match${ms.length !== 1 ? 's' : ''} · ${live.length} en cours</span>
+      </div>
+      ${ms.length ? ms.map(m => renderMatch(m)).join('') : '<div class="empty-court">Aucun match assigné</div>'}
+    </div>`;
+  }).join('');
+}
+
+function renderMatch(m) {
+  const sets = allSets.filter(s => s.match_id === m.id);
+  const statusClass = { warmup: 'warm', in_progress: 'live', finished: 'done', retired: 'retired', scheduled: '' }[m.status] || '';
+  const serving = m.server_team; // 1 or 2 or null
+
+  // compute live duration
+  let dur = '';
+  if (m.status === 'in_progress' && m.ts_match_start) {
+    const sec = Math.round((Date.now() - new Date(m.ts_match_start)) / 1000);
+    dur = sb.fmt.dur(sec);
+  } else if (m.match_duration_sec) {
+    dur = sb.fmt.dur(m.match_duration_sec);
+  }
+
+  const maxSets = 3;
+  const renderTeam = (team, tname, tnat, tNum) => {
+    const isServing = m.status === 'in_progress' && serving === tNum;
+    const score = sets.map(s => {
+      const v = tNum === 1 ? s.score_t1 : s.score_t2;
+      const opp = tNum === 1 ? s.score_t2 : s.score_t1;
+      const won = m.status !== 'scheduled' && v > opp;
+      const active = !['finished','retired'].includes(m.status) && s.set_number === sets.length;
+      return `<div class="set-score ${active ? 'active' : won ? 'winner' : ''}">${v}</div>`;
+    }).join('');
+    return `<div class="team-line">
+      <span class="serve-dot ${isServing ? '' : 'hidden'}"></span>
+      <span class="team-line-name">${tname || '?'} <span style="font-size:11px;color:var(--text3)">${tnat || ''}</span></span>
+      <div class="team-line-score">${score}</div>
+    </div>`;
+  };
+
+  return `<div class="match-row ${statusClass}">
+    <div class="match-top">
+      <span class="match-time-badge">
+        <span class="status-dot dot-${statusClass || 'wait'}"></span>
+        ${m.scheduled_at ? sb.fmt.time(m.scheduled_at) : '—'}
+        <span style="font-size:10px;color:var(--text3);margin-left:4px">${m.competition?.name || ''} · ${m.competition?.category || ''} · ${m.round || ''}</span>
+      </span>
+      <span class="match-duration">${dur}</span>
+    </div>
+    ${renderTeam(1, m.team1?.name, m.team1?.nationality, 1)}
+    ${renderTeam(2, m.team2?.name, m.team2?.nationality, 2)}
+    ${m.status === 'retired' ? `<div style="font-size:11px;color:var(--ca);margin-top:4px">Abandon équipe ${m.retirement_team} — ${m.retirement_reason || ''}</div>` : ''}
+  </div>`;
+}
+
+if (activeTournamentId) init();
+else document.getElementById('courts-grid').innerHTML = '<div class="alert alert-warning" style="grid-column:1/-1">Aucun tournoi actif sélectionné. <a href="portal.html">Aller au portail</a></div>';
+</script>
+</body>
+</html>

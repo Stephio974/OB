@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistiques — Open des Brisants</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+.stats-filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 20px; padding: 14px 16px; background: var(--bg); border-radius: var(--rl); border: 1px solid var(--border); }
+.stats-filters .form-group { margin: 0; flex: 1; min-width: 140px; }
+.chart-wrap { position: relative; height: 220px; }
+.stat-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.stat-row:last-child { border-bottom: none; }
+.stat-label { flex: 1; font-size: 13px; font-weight: 500; }
+.stat-bar-wrap { width: 160px; height: 8px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
+.stat-bar { height: 100%; background: var(--cp); border-radius: 4px; }
+.stat-val { font-size: 13px; font-weight: 700; min-width: 56px; text-align: right; color: var(--cp); }
+.export-bar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div>
+        <div class="topbar-logo">ITF Sand Series</div>
+        <div class="topbar-name">Statistiques</div>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <a href="portal.html">Portail</a><a href="admin.html">Admin</a>
+      <a href="dashboard.html">Dashboard</a><a href="stats.html" class="active">Stats</a><a href="rest.html">Repos</a>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="stats-filters">
+      <div class="form-group"><label class="form-label">Compétition</label>
+        <select class="form-select" id="filter-comp" onchange="applyFilters()"><option value="">Toutes</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Catégorie</label>
+        <select class="form-select" id="filter-cat" onchange="applyFilters()">
+          <option value="">Toutes</option>
+          <option>DH</option><option>DF</option><option>Mix</option>
+          <option>U18</option><option>U16</option><option>U14</option><option>U12</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Round</label>
+        <select class="form-select" id="filter-round" onchange="applyFilters()">
+          <option value="">Tous</option>
+          <option>pool</option><option>R32</option><option>R16</option>
+          <option>QF</option><option>SF</option><option>F</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Statut</label>
+        <select class="form-select" id="filter-status" onchange="applyFilters()">
+          <option value="">Tous</option><option value="finished">Terminés</option><option value="retired">Abandons</option>
+        </select>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="applyFilters()">Actualiser</button>
+    </div>
+
+    <div class="export-bar">
+      <button class="btn btn-outline btn-sm" onclick="exportCSV()">↓ Export CSV (ITF)</button>
+    </div>
+
+    <div class="global-metrics card-grid cols4" style="margin-bottom:16px" id="stat-metrics">
+      <div class="metric green"><div class="metric-label">Matchs terminés</div><div class="metric-value" id="s-finished">—</div></div>
+      <div class="metric"><div class="metric-label">Durée moy. match</div><div class="metric-value" id="s-avg-match">—</div></div>
+      <div class="metric amber"><div class="metric-label">Durée moy. éch.</div><div class="metric-value" id="s-avg-warm">—</div></div>
+      <div class="metric red"><div class="metric-label">Abandons</div><div class="metric-value" id="s-retired">—</div></div>
+    </div>
+
+    <div class="card-grid cols2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Durée moyenne par catégorie</div>
+        <div id="by-category"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Durée moyenne par round</div>
+        <div id="by-round"></div>
+      </div>
+    </div>
+
+    <div class="card-grid cols2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Durée des matchs (distribution)</div>
+        <div class="chart-wrap"><canvas id="chart-dist"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Durée des sets (moy. par numéro de set)</div>
+        <div class="chart-wrap"><canvas id="chart-sets"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Détail des matchs terminés</div>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="match-detail-table">
+          <thead><tr><th>Heure</th><th>Terrain</th><th>Compétition</th><th>Round</th><th>Équipe 1</th><th>Équipe 2</th><th>Score</th><th>Durée match</th><th>Durée éch.</th><th>Statut</th></tr></thead>
+          <tbody id="match-detail-body"><tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text3)">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+const activeTournamentId = getActiveTournament();
+let rawMatches = [], rawSets = [], rawCompetitions = [], rawCourts = [];
+let chartDist, chartSets;
+
+async function init() {
+  rawCompetitions = await sb.get('competition', `tournament_id=eq.${activeTournamentId}`).catch(() => []);
+  rawCourts = await sb.get('court', `tournament_id=eq.${activeTournamentId}`).catch(() => []);
+  const sel = document.getElementById('filter-comp');
+  sel.innerHTML = '<option value="">Toutes</option>' + rawCompetitions.map(c => `<option value="${c.id}">${c.name} — ${c.category}</option>`).join('');
+  await applyFilters();
+}
+
+async function applyFilters() {
+  const compId  = document.getElementById('filter-comp').value;
+  const cat     = document.getElementById('filter-cat').value;
+  const round   = document.getElementById('filter-round').value;
+  const status  = document.getElementById('filter-status').value;
+
+  let cids = rawCompetitions.map(c => c.id);
+  if (compId) cids = [compId];
+  else if (cat) cids = rawCompetitions.filter(c => c.category === cat).map(c => c.id);
+  if (!cids.length) { rawMatches = []; render([]); return; }
+
+  let params = `competition_id=in.(${cids.join(',')})&select=*,competition(*),court(*),team1:team1_id(name),team2:team2_id(name)&order=scheduled_at`;
+  if (round) params += `&round=eq.${round}`;
+  if (status) params += `&status=eq.${status}`;
+
+  rawMatches = await sb.get('match', params).catch(() => []);
+  const mids = rawMatches.map(m => m.id);
+  rawSets = mids.length ? await sb.get('set', `match_id=in.(${mids.join(',')})&retirement=eq.false&order=set_number`).catch(() => []) : [];
+  render(rawMatches);
+}
+
+function avg(arr) { return arr.length ? Math.round(arr.reduce((a,b) => a+b, 0) / arr.length) : 0; }
+
+function render(matches) {
+  const finished = matches.filter(m => m.status === 'finished');
+  const retired  = matches.filter(m => m.status === 'retired');
+  const withDur  = finished.filter(m => m.match_duration_sec);
+  const withWarm = finished.filter(m => m.warm_duration_sec);
+
+  document.getElementById('s-finished').textContent = finished.length;
+  document.getElementById('s-avg-match').textContent = sb.fmt.dur(avg(withDur.map(m => m.match_duration_sec)));
+  document.getElementById('s-avg-warm').textContent  = sb.fmt.dur(avg(withWarm.map(m => m.warm_duration_sec)));
+  document.getElementById('s-retired').textContent   = retired.length;
+
+  // By category
+  const cats = [...new Set(finished.map(m => m.competition?.category).filter(Boolean))];
+  document.getElementById('by-category').innerHTML = renderBars(
+    cats.map(cat => {
+      const ms = finished.filter(m => m.competition?.category === cat && m.match_duration_sec);
+      return { label: cat, val: avg(ms.map(m => m.match_duration_sec)), n: ms.length };
+    })
+  );
+
+  // By round
+  const rounds = ['pool','R32','R16','QF','SF','F'];
+  document.getElementById('by-round').innerHTML = renderBars(
+    rounds.map(r => {
+      const ms = finished.filter(m => m.round === r && m.match_duration_sec);
+      return { label: r, val: avg(ms.map(m => m.match_duration_sec)), n: ms.length };
+    }).filter(x => x.n > 0)
+  );
+
+  // Distribution chart
+  const buckets = [0,20,30,40,50,60,70,80,999];
+  const labels = ['<20min','20-30','30-40','40-50','50-60','60-70','70-80','>80min'];
+  const counts = labels.map((_, i) => finished.filter(m => {
+    const min = (m.match_duration_sec || 0) / 60;
+    return min >= buckets[i] && min < buckets[i+1];
+  }).length);
+
+  const isDark = matchMedia('(prefers-color-scheme:dark)').matches;
+  const textColor = isDark ? '#AEAEB2' : '#666';
+  const gridColor = isDark ? '#3A3A3C' : '#E0E0D8';
+
+  if (chartDist) chartDist.destroy();
+  chartDist = new Chart(document.getElementById('chart-dist'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Matchs', data: counts, backgroundColor: '#1D9E75', borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } } }
+    }
+  });
+
+  // Sets chart
+  const setNums = [1,2,3];
+  const avgSets = setNums.map(n => {
+    const ss = rawSets.filter(s => s.set_number === n && s.duration_sec);
+    return avg(ss.map(s => Math.round(s.duration_sec / 60)));
+  });
+
+  if (chartSets) chartSets.destroy();
+  chartSets = new Chart(document.getElementById('chart-sets'), {
+    type: 'bar',
+    data: { labels: ['Set 1','Set 2','Set 3'], datasets: [{ label: 'Durée moy. (min)', data: avgSets, backgroundColor: ['#1D9E75','#378ADD','#EF9F27'], borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor }, title: { display: true, text: 'minutes', color: textColor } } }
+    }
+  });
+
+  // Detail table
+  document.getElementById('match-detail-body').innerHTML = matches.length ? matches.map(m => {
+    const sets = rawSets.filter(s => s.match_id === m.id);
+    const scoreStr = sets.length ? sets.map(s => `${s.score_t1}-${s.score_t2}`).join(' | ') : '—';
+    return `<tr>
+      <td>${sb.fmt.time(m.scheduled_at)}</td>
+      <td>${m.court?.name || '—'}</td>
+      <td><span class="badge badge-blue">${m.competition?.category || ''}</span> ${m.competition?.name || ''}</td>
+      <td><span class="badge badge-gray">${m.round || '—'}</span></td>
+      <td>${m.team1?.name || '?'}</td>
+      <td>${m.team2?.name || '?'}</td>
+      <td style="font-family:monospace;font-weight:600">${scoreStr}</td>
+      <td>${sb.fmt.dur(m.match_duration_sec)}</td>
+      <td>${sb.fmt.dur(m.warm_duration_sec)}</td>
+      <td>${m.status === 'finished' ? '<span class="badge badge-green">Terminé</span>' : m.status === 'retired' ? '<span class="badge badge-red">Abandon</span>' : `<span class="badge badge-gray">${m.status}</span>`}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text3)">Aucun match</td></tr>';
+}
+
+function renderBars(data) {
+  const max = Math.max(...data.map(d => d.val), 1);
+  return data.map(d => `
+    <div class="stat-row">
+      <span class="stat-label">${d.label} <small style="color:var(--text3)">(${d.n})</small></span>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${Math.round(d.val/max*100)}%"></div></div>
+      <span class="stat-val">${sb.fmt.dur(d.val)}</span>
+    </div>`).join('') || '<div style="color:var(--text3);font-size:13px;padding:12px 0">Aucune donnée</div>';
+}
+
+function exportCSV() {
+  const finished = rawMatches.filter(m => ['finished','retired'].includes(m.status));
+  const header = 'match_id,scheduled_at,court,competition,category,round,team1,team2,score,match_duration_sec,warm_duration_sec,status,retirement_team,retirement_reason\n';
+  const rows = finished.map(m => {
+    const sets = rawSets.filter(s => s.match_id === m.id);
+    const score = sets.map(s => `${s.score_t1}-${s.score_t2}`).join(' ');
+    return [m.id, m.scheduled_at, m.court?.name, m.competition?.name, m.competition?.category,
+      m.round, m.team1?.name, m.team2?.name, score, m.match_duration_sec, m.warm_duration_sec,
+      m.status, m.retirement_team, m.retirement_reason
+    ].map(v => `"${v ?? ''}"`).join(',');
+  });
+  const blob = new Blob([header + rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'open_brisants_stats.csv';
+  a.click();
+}
+
+if (activeTournamentId) init();
+</script>
+</body>
+</html>

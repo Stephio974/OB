@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temps de repos — Open des Brisants</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.rest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.team-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rl); padding: 14px 16px; }
+.team-card.alert-low  { border-color: var(--ca); background: var(--cal); }
+.team-card.alert-mid  { border-color: var(--cw); background: var(--cwl); }
+.team-card.alert-ok   { border-color: var(--cp); }
+.team-card.playing    { border-color: var(--cp); background: var(--cpl); }
+.tc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.tc-name { font-size: 14px; font-weight: 700; flex: 1; }
+.tc-comp { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.tc-timer { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.01em; text-align: right; }
+.tc-timer.red   { color: var(--ca); }
+.tc-timer.amber { color: var(--cw); }
+.tc-timer.green { color: var(--cp); }
+.tc-timer.playing { color: var(--cp); font-size: 13px; padding-top: 6px; }
+.tc-last { font-size: 12px; color: var(--text2); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.tc-next { font-size: 12px; color: var(--text2); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+.rest-rules { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.rule-chip { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 500; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.rule-dot { width: 8px; height: 8px; border-radius: 50%; }
+.filters-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; }
+.progress-bar { height: 4px; border-radius: 2px; background: var(--bg3); margin-top: 8px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width .5s; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div>
+        <div class="topbar-logo">ITF Sand Series</div>
+        <div class="topbar-name">Temps de repos</div>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <a href="portal.html">Portail</a><a href="admin.html">Admin</a>
+      <a href="dashboard.html">Dashboard</a><a href="stats.html">Stats</a><a href="rest.html" class="active">Repos</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.8)">
+      <span class="live-dot"></span>
+      Mise à jour toutes les 30s
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="rest-rules">
+      <div class="rule-chip"><div class="rule-dot" style="background:var(--ca)"></div>Repos insuffisant (&lt; 30 min)</div>
+      <div class="rule-chip"><div class="rule-dot" style="background:var(--cw)"></div>Repos court (30–60 min)</div>
+      <div class="rule-chip"><div class="rule-dot" style="background:var(--cp)"></div>Repos suffisant (&gt; 60 min)</div>
+      <div class="rule-chip"><div class="rule-dot" style="background:var(--cp)"></div>Match en cours</div>
+    </div>
+
+    <div class="filters-row">
+      <div class="form-group" style="margin:0;min-width:160px">
+        <label class="form-label">Compétition</label>
+        <select class="form-select" id="filter-comp" onchange="applyFilter()"><option value="">Toutes</option></select>
+      </div>
+      <div class="form-group" style="margin:0;min-width:120px">
+        <label class="form-label">Repos min. (min)</label>
+        <input type="number" class="form-input" id="min-rest" value="30" min="0" max="240" onchange="applyFilter()">
+      </div>
+      <div style="display:flex;gap:6px;align-items:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="applyFilter()">Actualiser</button>
+        <button class="btn btn-primary btn-sm" onclick="sortBy('rest')">Trier par repos ↑</button>
+        <button class="btn btn-outline btn-sm" onclick="sortBy('name')">Trier par nom</button>
+        <button class="btn btn-outline btn-sm" onclick="sortBy('next')">Trier par prochain match</button>
+      </div>
+    </div>
+
+    <div id="alert-zone" style="margin-bottom:12px"></div>
+
+    <div class="rest-grid" id="rest-grid">
+      <div class="loading-overlay" style="grid-column:1/-1"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+const activeTournamentId = getActiveTournament();
+let allTeams = [], allMatches = [], allSets = [], competitions = [];
+let teamData = [];
+let sortMode = 'rest';
+let refreshTimer;
+
+async function init() {
+  competitions = await sb.get('competition', `tournament_id=eq.${activeTournamentId}`).catch(() => []);
+  const sel = document.getElementById('filter-comp');
+  sel.innerHTML = '<option value="">Toutes</option>' + competitions.map(c => `<option value="${c.id}">${c.name} — ${c.category}</option>`).join('');
+  await loadData();
+  startLiveTick();
+  setInterval(loadData, 30000);
+}
+
+async function loadData() {
+  const cids = competitions.map(c => c.id);
+  if (!cids.length) return;
+  allTeams = await sb.get('team', `competition_id=in.(${cids.join(',')})&withdrawn=eq.false`).catch(() => []);
+  allMatches = await sb.get('match',
+    `competition_id=in.(${cids.join(',')})&select=*,competition(*),court(*),team1:team1_id(name),team2:team2_id(name)&order=scheduled_at`
+  ).catch(() => []);
+  const mids = allMatches.map(m => m.id);
+  allSets = mids.length ? await sb.get('set', `match_id=in.(${mids.join(',')})&order=set_number`).catch(() => []) : [];
+  buildTeamData();
+  applyFilter();
+}
+
+function buildTeamData() {
+  const minRest = parseInt(document.getElementById('min-rest').value) * 60;
+  const now = Date.now();
+
+  teamData = allTeams.map(team => {
+    // Tous les matchs joués par cette équipe (terminés ou abandonnés)
+    const played = allMatches.filter(m =>
+      ['finished','retired'].includes(m.status) &&
+      (m.team1_id === team.id || m.team2_id === team.id)
+    ).sort((a,b) => new Date(b.ts_match_end || b.scheduled_at) - new Date(a.ts_match_end || a.scheduled_at));
+
+    const lastMatch = played[0];
+    const lastEndTime = lastMatch ? new Date(lastMatch.ts_match_end || lastMatch.scheduled_at).getTime() : null;
+    const restSec = lastEndTime ? Math.round((now - lastEndTime) / 1000) : null;
+
+    // Prochain match planifié
+    const upcoming = allMatches.filter(m =>
+      ['scheduled','warmup'].includes(m.status) &&
+      (m.team1_id === team.id || m.team2_id === team.id) &&
+      m.scheduled_at
+    ).sort((a,b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+    const nextMatch = upcoming[0];
+
+    // Match en cours ?
+    const current = allMatches.find(m =>
+      m.status === 'in_progress' &&
+      (m.team1_id === team.id || m.team2_id === team.id)
+    );
+
+    const comp = competitions.find(c => c.id === team.competition_id);
+
+    return { team, comp, lastMatch, restSec, nextMatch, current, minRest };
+  });
+}
+
+function applyFilter() {
+  buildTeamData();
+  const compFilter = document.getElementById('filter-comp').value;
+  let data = compFilter ? teamData.filter(d => d.team.competition_id === compFilter) : teamData;
+  data = sortData(data);
+  renderGrid(data);
+  renderAlerts(data);
+}
+
+function sortBy(mode) { sortMode = mode; applyFilter(); }
+
+function sortData(data) {
+  if (sortMode === 'rest') return [...data].sort((a,b) => (a.restSec ?? 9999999) - (b.restSec ?? 9999999));
+  if (sortMode === 'name') return [...data].sort((a,b) => a.team.name.localeCompare(b.team.name));
+  if (sortMode === 'next') return [...data].sort((a,b) => {
+    const ta = a.nextMatch ? new Date(a.nextMatch.scheduled_at) : new Date('9999');
+    const tb = b.nextMatch ? new Date(b.nextMatch.scheduled_at) : new Date('9999');
+    return ta - tb;
+  });
+  return data;
+}
+
+function renderAlerts(data) {
+  const minSec = parseInt(document.getElementById('min-rest').value) * 60;
+  const critical = data.filter(d => !d.current && d.restSec !== null && d.restSec < minSec);
+  const zone = document.getElementById('alert-zone');
+  if (critical.length) {
+    zone.innerHTML = `<div class="alert alert-danger">⚠ ${critical.length} équipe${critical.length>1?'s':''} avec un repos insuffisant (&lt; ${Math.round(minSec/60)} min) : ${critical.map(d => `<strong>${d.team.name}</strong> (${fmtRest(d.restSec)})`).join(', ')}</div>`;
+  } else {
+    zone.innerHTML = '';
+  }
+}
+
+function fmtRest(sec) {
+  if (sec === null) return '—';
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+  return h > 0 ? `${h}h${m.toString().padStart(2,'0')}` : `${m}mn`;
+}
+
+function restClass(sec, minSec) {
+  if (sec === null) return '';
+  if (sec < minSec) return 'alert-low';
+  if (sec < minSec * 2) return 'alert-mid';
+  return 'alert-ok';
+}
+
+function timerColor(sec, minSec) {
+  if (sec < minSec) return 'red';
+  if (sec < minSec * 2) return 'amber';
+  return 'green';
+}
+
+function renderGrid(data) {
+  const minSec = parseInt(document.getElementById('min-rest').value) * 60;
+  const grid = document.getElementById('rest-grid');
+
+  if (!data.length) {
+    grid.innerHTML = '<div class="loading-overlay" style="grid-column:1/-1">Aucune équipe trouvée</div>';
+    return;
+  }
+
+  grid.innerHTML = data.map(d => {
+    const { team, comp, lastMatch, restSec, nextMatch, current } = d;
+    const cardClass = current ? 'playing' : restClass(restSec, minSec);
+    const sets = lastMatch ? allSets.filter(s => s.match_id === lastMatch.id) : [];
+    const scoreStr = sets.length ? sets.map(s => `${s.score_t1}-${s.score_t2}`).join(' ') : '—';
+    const progressPct = restSec !== null ? Math.min(100, Math.round(restSec / (minSec * 3) * 100)) : 0;
+    const progColor = timerColor(restSec ?? 9999, minSec);
+
+    return `<div class="team-card ${cardClass}" id="card-${team.id}">
+      <div class="tc-top">
+        <div>
+          <div class="tc-name">${team.name}</div>
+          <div class="tc-comp">${comp?.name || ''} — ${comp?.category || ''} ${team.seed ? `· #${team.seed}` : ''}</div>
+        </div>
+        <div class="tc-timer ${current ? 'playing' : timerColor(restSec ?? 9999, minSec)}" id="timer-${team.id}">
+          ${current ? '▶ En cours' : (restSec !== null ? fmtRest(restSec) : 'Pas encore joué')}
+        </div>
+      </div>
+      ${restSec !== null && !current ? `<div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%;background:${progColor==='red'?'var(--ca)':progColor==='amber'?'var(--cw)':'var(--cp)'}"></div></div>` : ''}
+      ${lastMatch ? `<div class="tc-last">
+        <span>⏮</span>
+        <span>${sb.fmt.time(lastMatch.scheduled_at)} · ${lastMatch.court?.name || '?'} · <strong>${scoreStr}</strong></span>
+      </div>` : '<div class="tc-last" style="color:var(--text3)">Aucun match joué</div>'}
+      ${nextMatch ? `<div class="tc-next">
+        <span>⏭</span>
+        <span>${sb.fmt.time(nextMatch.scheduled_at)} · ${nextMatch.court?.name || '?'} · vs ${nextMatch.team1_id === team.id ? nextMatch.team2?.name : nextMatch.team1?.name}</span>
+      </div>` : '<div class="tc-next" style="color:var(--text3)">Aucun prochain match planifié</div>'}
+    </div>`;
+  }).join('');
+}
+
+function startLiveTick() {
+  // Met à jour les timers chaque seconde côté client sans refaire de requête
+  setInterval(() => {
+    const minSec = parseInt(document.getElementById('min-rest').value) * 60;
+    teamData.forEach(d => {
+      if (d.current || d.restSec === null) return;
+      d.restSec++;
+      const el = document.getElementById(`timer-${d.team.id}`);
+      if (el) {
+        el.textContent = fmtRest(d.restSec);
+        el.className = `tc-timer ${timerColor(d.restSec, minSec)}`;
+      }
+    });
+  }, 1000);
+}
+
+if (activeTournamentId) init();
+else document.getElementById('rest-grid').innerHTML = '<div class="alert alert-warning" style="grid-column:1/-1">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
+</script>
+</body>
+</html>
