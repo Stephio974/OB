@@ -6,58 +6,25 @@
 <meta name="theme-color" content="#1D9E75">
 <title>Connexion — Open des Brisants</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 50%, #2BC48A 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 36px 32px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.2);
-}
-.logo { text-align: center; margin-bottom: 28px; }
-.logo-icon { font-size: 36px; margin-bottom: 8px; }
-.logo-badge { font-size: 11px; font-weight: 600; color: #1D9E75; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
-.logo-title { font-size: 24px; font-weight: 800; color: #1A1A1A; letter-spacing: -.02em; }
-.logo-sub { font-size: 13px; color: #999; margin-top: 3px; }
-.form-group { margin-bottom: 14px; }
-.form-label { display: block; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
-.form-input {
-  width: 100%; padding: 12px 14px; border-radius: 10px;
-  border: 1.5px solid #E0E0D8; background: #fff; color: #1A1A1A;
-  font-size: 15px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s;
-}
-.form-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
-.btn {
-  width: 100%; padding: 13px; border-radius: 10px; border: none;
-  font-size: 15px; font-weight: 700; cursor: pointer;
-  background: #1D9E75; color: #fff; transition: opacity .15s, transform .1s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn:hover { opacity: .9; }
-.btn:active { transform: scale(.98); }
-.btn:disabled { opacity: .6; cursor: wait; }
-.error {
-  background: #FEECEC; border: 1px solid #F7C1C1;
-  border-radius: 10px; padding: 11px 14px; font-size: 13px; color: #8B1C1C;
-  margin-bottom: 16px; display: none; line-height: 1.5;
-}
-.info {
-  background: #E6F1FB; border: 1px solid #B5D4F4;
-  border-radius: 10px; padding: 11px 14px; font-size: 12px; color: #185FA5;
-  margin-top: 20px; line-height: 1.6;
-}
-.info strong { font-weight: 600; }
-.divider { height: 1px; background: #F0F0EC; margin: 20px 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0F6E56;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.logo{text-align:center;margin-bottom:28px}
+.logo-icon{font-size:40px;margin-bottom:8px}
+.logo-badge{font-size:11px;font-weight:600;color:#1D9E75;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.logo-title{font-size:24px;font-weight:800;color:#1A1A1A;letter-spacing:-.02em}
+.logo-sub{font-size:13px;color:#999;margin-top:3px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.form-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #E0E0D8;background:#fff;color:#1A1A1A;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.form-input:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.12)}
+.btn{width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;cursor:pointer;background:#1D9E75;color:#fff;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.btn:hover{opacity:.9}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.5;cursor:wait}
+.error{background:#FEECEC;border:1px solid #F7C1C1;border-radius:10px;padding:11px 14px;font-size:13px;color:#8B1C1C;margin-bottom:14px;display:none;line-height:1.5}
+.hint{margin-top:20px;padding-top:16px;border-top:1px solid #F0F0EC;font-size:12px;color:#999;text-align:center;line-height:1.7}
+.hint strong{color:#666}
 </style>
 </head>
 <body>
@@ -73,61 +40,48 @@ body {
 
   <div class="form-group">
     <label class="form-label">Adresse email</label>
-    <input class="form-input" id="email" type="email"
-           placeholder="admin@brisants.re"
-           autocomplete="email" autofocus>
+    <input class="form-input" id="email" type="email" placeholder="admin@brisants.re" autocomplete="email" autofocus>
   </div>
   <div class="form-group" style="margin-bottom:18px">
     <label class="form-label">Mot de passe</label>
-    <input class="form-input" id="password" type="password"
-           placeholder="••••••••"
-           autocomplete="current-password">
+    <input class="form-input" id="password" type="password" placeholder="••••••••" autocomplete="current-password">
   </div>
 
   <button class="btn" id="login-btn" onclick="doLogin()">
     <span id="btn-text">Se connecter</span>
   </button>
 
-  <div class="divider"></div>
-
-  <div class="info">
-    <strong>Comptes disponibles :</strong><br>
-    Les comptes sont créés dans Supabase Auth.<br>
-    Voir le guide de configuration ci-dessous si vous n'avez pas encore de compte.
+  <div class="hint">
+    <strong>Comptes</strong><br>
+    admin@brisants.re · arbitre@brisants.re · terrain@brisants.re
   </div>
 
-  <div id="err-403" style="display:none" class="error">
-    ⚠️ Votre compte n'a pas les droits pour accéder à cette page.
+  <div id="err-403" style="display:none;margin-top:14px" class="error">
+    ⚠️ Votre compte n'a pas les droits pour cette page.
   </div>
 </div>
 
 <script src="supabase.js"></script>
 <script>
-// Afficher erreur 403 si redirigé depuis une page protégée
+// Afficher erreur 403
 if (location.search.includes('err=403')) {
   document.getElementById('err-403').style.display = 'block';
 }
 
-// Si déjà connecté → rediriger
-(async () => {
-  const session = await auth.getSession();
-  if (session) redirectByRole(session.role);
-})();
+// Déjà connecté → rediriger immédiatement (synchrone)
+const existing = auth.getSession();
+if (existing) redirectByRole(existing.role);
 
-// Navigation au clavier
-document.getElementById('email').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('password').focus();
-});
-document.getElementById('password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
+// Clavier
+document.getElementById('email').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('password').focus(); });
+document.getElementById('password').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
 
 async function doLogin() {
-  const email = document.getElementById('email').value.trim();
+  const email    = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
-  const errEl = document.getElementById('err-msg');
-  const btn = document.getElementById('login-btn');
-  const btnText = document.getElementById('btn-text');
+  const errEl    = document.getElementById('err-msg');
+  const btn      = document.getElementById('login-btn');
+  const btnText  = document.getElementById('btn-text');
 
   errEl.style.display = 'none';
 
@@ -138,23 +92,24 @@ async function doLogin() {
   }
 
   btn.disabled = true;
-  btnText.textContent = 'Connexion…';
+  btnText.textContent = 'Connexion en cours…';
 
   try {
     const session = await auth.login(email, password);
     redirectByRole(session.role);
   } catch(e) {
     errEl.style.display = 'block';
-    errEl.innerHTML = '❌ ' + (e.message || 'Identifiants incorrects. Vérifiez votre email et mot de passe.');
+    errEl.innerHTML = '❌ ' + (e.message || 'Identifiants incorrects.');
     document.getElementById('password').value = '';
     document.getElementById('password').focus();
+  } finally {
     btn.disabled = false;
     btnText.textContent = 'Se connecter';
   }
 }
 
 function redirectByRole(role) {
-  const dest = { admin: 'portal.html', arbitre: 'dashboard.html', terrain: 'terrain.html' };
+  const dest = { admin: 'portal.html', arbitre: 'portal.html', terrain: 'terrain.html' };
   location.href = dest[role] || 'portal.html';
 }
 </script>

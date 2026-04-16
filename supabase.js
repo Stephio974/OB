@@ -5,152 +5,143 @@ const SUPABASE_URL  = 'https://sslmdxnpbapsqrcjpbwv.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbG1keG5wYmFwc3FyY2pwYnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNjkxNjIsImV4cCI6MjA5MTc0NTE2Mn0.zW13ZhE0GwUxm42tEIwjA3XWOA6HRNqJ2AebzSFFvYA';
 
 // ═══════════════════════════════════════════════════════════════
-// AUTHENTIFICATION — Supabase Auth
-//
-// Les comptes sont créés dans Supabase > Authentication > Users
-// avec des métadonnées : { "role": "admin" } ou "arbitre" ou "terrain"
-//
-// Pour créer les comptes manuellement, aller dans :
-// Supabase > Authentication > Users > "Invite user"
-// puis éditer le user et ajouter dans "Raw User Meta Data" :
-//   { "role": "admin" }
+// AUTH — session stockée en localStorage, lecture synchrone
+// Le token JWT Supabase contient le rôle dans user_metadata
 // ═══════════════════════════════════════════════════════════════
 const auth = {
-  _session: null,
 
-  // Récupérer la session depuis Supabase
-  async getSession() {
-    // D'abord vérifier le cache mémoire
-    if (this._session) return this._session;
-
-    // Ensuite vérifier le localStorage (token Supabase)
-    const stored = localStorage.getItem('sb-session');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        // Vérifier expiration
-        if (parsed.expires_at && Date.now() / 1000 > parsed.expires_at) {
-          localStorage.removeItem('sb-session');
-          return null;
-        }
-        this._session = parsed;
-        return parsed;
-      } catch { localStorage.removeItem('sb-session'); }
+  // Lecture synchrone — utilisable partout sans await
+  getSession() {
+    try {
+      const raw = localStorage.getItem('sb_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      // Expiration : expires_at est en secondes Unix
+      if (s.expires_at && Math.floor(Date.now() / 1000) > s.expires_at) {
+        localStorage.removeItem('sb_session');
+        return null;
+      }
+      return s;
+    } catch {
+      localStorage.removeItem('sb_session');
+      return null;
     }
-    return null;
   },
 
-  // Connexion avec email + mot de passe via Supabase Auth
+  // Connexion via Supabase Auth (email + password)
   async login(email, password) {
     const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
       method: 'POST',
       headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    if (!r.ok) {
-      const err = await r.json();
-      throw new Error(err.error_description || err.msg || 'Identifiants incorrects');
-    }
     const data = await r.json();
-    // data contient access_token, user, expires_at
+    if (!r.ok) throw new Error(data.error_description || data.msg || data.error || 'Identifiants incorrects');
+
+    const role = data.user?.user_metadata?.role || 'terrain';
+    const name = data.user?.user_metadata?.name || data.user?.email || 'Utilisateur';
+
     const session = {
-      access_token: data.access_token,
+      access_token:  data.access_token,
       refresh_token: data.refresh_token,
-      expires_at: data.expires_at,
-      user: data.user,
-      role: data.user?.user_metadata?.role || 'terrain',
-      name: data.user?.user_metadata?.name || data.user?.email,
+      expires_at:    data.expires_at,   // secondes Unix
+      role,
+      name,
       email: data.user?.email,
+      user_id: data.user?.id,
     };
-    this._session = session;
-    localStorage.setItem('sb-session', JSON.stringify(session));
+
+    localStorage.setItem('sb_session', JSON.stringify(session));
     return session;
   },
 
-  async logout() {
-    const session = await this.getSession();
-    if (session?.access_token) {
-      await fetch(SUPABASE_URL + '/auth/v1/logout', {
+  // Déconnexion
+  logout() {
+    const s = this.getSession();
+    if (s?.access_token) {
+      fetch(SUPABASE_URL + '/auth/v1/logout', {
         method: 'POST',
-        headers: { 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + session.access_token },
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + s.access_token },
       }).catch(() => {});
     }
-    this._session = null;
-    localStorage.removeItem('sb-session');
+    localStorage.removeItem('sb_session');
     location.href = 'login.html';
   },
 
-  // Appeler en haut de chaque page protégée
-  // Usage: const session = await auth.require(['admin','arbitre']);
-  async require(allowedRoles) {
-    const session = await this.getSession();
-    if (!session) { location.href = 'login.html'; return null; }
-    if (allowedRoles && !allowedRoles.includes(session.role)) {
+  // Appeler en haut de chaque page protégée — SYNCHRONE
+  // Retourne la session ou redirige vers login
+  require(allowedRoles) {
+    const s = this.getSession();
+    if (!s) { location.href = 'login.html'; return null; }
+    if (allowedRoles && allowedRoles.length && !allowedRoles.includes(s.role)) {
       location.href = 'login.html?err=403';
       return null;
     }
-    return session;
+    return s;
   },
-
-  async isAdmin()   { const s = await this.getSession(); return s?.role === 'admin'; },
-  async isArbitre() { const s = await this.getSession(); return s?.role === 'admin' || s?.role === 'arbitre'; },
 };
 
 // ═══════════════════════════════════════════════════════════════
-// CLIENT API SUPABASE (REST)
+// CLIENT REST SUPABASE
 // ═══════════════════════════════════════════════════════════════
 const sb = {
-  async _headers() {
-    const session = await auth.getSession();
+  _h() {
+    const s = auth.getSession();
     return {
-      'apikey': SUPABASE_ANON,
-      'Authorization': 'Bearer ' + (session?.access_token || SUPABASE_ANON),
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation',
+      'apikey':        SUPABASE_ANON,
+      'Authorization': 'Bearer ' + (s?.access_token || SUPABASE_ANON),
+      'Content-Type':  'application/json',
+      'Prefer':        'return=representation',
     };
   },
 
-  url(table, params) {
+  _url(table, params) {
     return SUPABASE_URL + '/rest/v1/' + table + (params ? '?' + params : '');
   },
 
   async get(table, params) {
-    const r = await fetch(this.url(table, params || ''), { headers: await this._headers() });
+    const r = await fetch(this._url(table, params || ''), { headers: this._h() });
     if (!r.ok) { const t = await r.text(); throw new Error(t); }
     return r.json();
   },
 
   async post(table, body) {
-    const r = await fetch(this.url(table), {
-      method: 'POST', headers: await this._headers(), body: JSON.stringify(body),
+    const r = await fetch(this._url(table), {
+      method: 'POST', headers: this._h(), body: JSON.stringify(body),
     });
     if (!r.ok) { const t = await r.text(); throw new Error(t); }
     return r.json();
   },
 
   async patch(table, filter, body) {
-    const r = await fetch(this.url(table, filter), {
-      method: 'PATCH', headers: await this._headers(), body: JSON.stringify(body),
+    const r = await fetch(this._url(table, filter), {
+      method: 'PATCH', headers: this._h(), body: JSON.stringify(body),
     });
     if (!r.ok) { const t = await r.text(); throw new Error(t); }
     return r.json();
   },
 
   async delete(table, filter) {
-    const headers = await this._headers();
-    headers['Prefer'] = 'return=minimal';
-    const r = await fetch(this.url(table, filter), { method: 'DELETE', headers });
+    const h = { ...this._h(), 'Prefer': 'return=minimal' };
+    const r = await fetch(this._url(table, filter), { method: 'DELETE', headers: h });
     if (!r.ok) { const t = await r.text(); throw new Error(t); }
     return true;
   },
 
   realtime(table, callback) {
     try {
-      const ws = new WebSocket(SUPABASE_URL.replace('https', 'wss') + '/realtime/v1/websocket?apikey=' + SUPABASE_ANON + '&vsn=1.0.0');
-      ws.onopen = () => ws.send(JSON.stringify({ topic: 'realtime:public:' + table, event: 'phx_join', payload: {}, ref: '1' }));
+      const ws = new WebSocket(
+        SUPABASE_URL.replace('https', 'wss') +
+        '/realtime/v1/websocket?apikey=' + SUPABASE_ANON + '&vsn=1.0.0'
+      );
+      ws.onopen = () => ws.send(JSON.stringify({
+        topic: 'realtime:public:' + table, event: 'phx_join', payload: {}, ref: '1',
+      }));
       ws.onmessage = e => {
-        try { const m = JSON.parse(e.data); if (['INSERT','UPDATE','DELETE'].includes(m.event)) callback(m.event, m.payload?.record); }
-        catch {}
+        try {
+          const m = JSON.parse(e.data);
+          if (['INSERT','UPDATE','DELETE'].includes(m.event)) callback(m.event, m.payload?.record);
+        } catch {}
       };
       ws.onerror = () => {};
       return ws;
@@ -208,7 +199,6 @@ function toast(msg, type) {
   el._t = setTimeout(() => { el.style.opacity = '0'; }, 4000);
 }
 
-// Remplir un <select> depuis un tableau
 function fillSelect(id, items, valueFn, labelFn, placeholder) {
   const el = document.getElementById(id);
   if (!el) return;
