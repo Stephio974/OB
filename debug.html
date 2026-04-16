@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic Auth</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:monospace;background:#1a1a1a;color:#f0f0f0;padding:20px;font-size:13px;line-height:1.7}
+h2{color:#1D9E75;margin:16px 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+pre{background:#000;border:1px solid #333;border-radius:8px;padding:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.ok{color:#1D9E75;font-weight:bold}
+.err{color:#E24B4A;font-weight:bold}
+.warn{color:#EF9F27;font-weight:bold}
+.btn{display:inline-block;background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;cursor:pointer;font-family:monospace;margin:4px;text-decoration:none}
+.btn.red{background:#E24B4A}
+.btn.blue{background:#378ADD}
+input{background:#000;border:1px solid #555;color:#fff;padding:8px 10px;border-radius:6px;font-family:monospace;font-size:13px;width:280px;margin:4px}
+</style>
+</head>
+<body>
+
+<h2>🔍 Diagnostic Auth — Open des Brisants</h2>
+
+<h2>1. Contenu de localStorage</h2>
+<pre id="ls-content">Lecture…</pre>
+
+<h2>2. Session décodée</h2>
+<pre id="session-content">Analyse…</pre>
+
+<h2>3. Test login direct (Supabase Auth API)</h2>
+<div style="margin:8px 0">
+  <input id="test-email" type="email" placeholder="admin@brisants.re" value="admin@brisants.re">
+  <input id="test-pwd" type="password" placeholder="mot de passe">
+  <button class="btn" onclick="testLogin()">Tester la connexion</button>
+</div>
+<pre id="login-result">En attente…</pre>
+
+<h2>4. Actions</h2>
+<button class="btn red" onclick="clearAll()">🗑️ Vider tout le localStorage</button>
+<button class="btn blue" onclick="readAll()">↻ Rafraîchir</button>
+<a class="btn" href="login.html">→ Page login</a>
+<a class="btn" href="portal.html">→ Portal</a>
+
+<script>
+const SUPABASE_URL  = 'https://sslmdxnpbapsqrcjpbwv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbG1keG5wYmFwc3FyY2pwYnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNjkxNjIsImV4cCI6MjA5MTc0NTE2Mn0.zW13ZhE0GwUxm42tEIwjA3XWOA6HRNqJ2AebzSFFvYA';
+
+function readAll() {
+  // Afficher TOUT le localStorage
+  const all = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    all[key] = localStorage.getItem(key);
+  }
+  document.getElementById('ls-content').innerHTML =
+    '<span class="warn">Nombre de clés : ' + localStorage.length + '</span>\n\n' +
+    JSON.stringify(all, null, 2);
+
+  // Analyser la session
+  const sessionRaw = localStorage.getItem('sb_session');
+  if (!sessionRaw) {
+    document.getElementById('session-content').innerHTML =
+      '<span class="err">❌ Clé "sb_session" ABSENTE du localStorage</span>\n\n' +
+      'Clés présentes : ' + Array.from({length:localStorage.length}, (_,i)=>localStorage.key(i)).join(', ');
+    return;
+  }
+
+  try {
+    const s = JSON.parse(sessionRaw);
+    const now = Math.floor(Date.now() / 1000);
+    const expired = s.expires_at && now > s.expires_at;
+    document.getElementById('session-content').innerHTML =
+      '<span class="' + (expired ? 'err' : 'ok') + '">' +
+      (expired ? '❌ Session EXPIRÉE' : '✅ Session valide') + '</span>\n\n' +
+      'role        : <span class="' + (s.role ? 'ok' : 'err') + '">' + (s.role || 'ABSENT ← PROBLÈME') + '</span>\n' +
+      'name        : ' + (s.name || 'absent') + '\n' +
+      'email       : ' + (s.email || 'absent') + '\n' +
+      'expires_at  : ' + (s.expires_at ? new Date(s.expires_at * 1000).toLocaleString('fr-FR') : 'absent') + '\n' +
+      'access_token: ' + (s.access_token ? s.access_token.slice(0,40) + '…' : 'ABSENT') + '\n\n' +
+      'JSON complet :\n' + JSON.stringify(s, null, 2);
+  } catch(e) {
+    document.getElementById('session-content').innerHTML =
+      '<span class="err">❌ JSON invalide : ' + e.message + '</span>\n\n' + sessionRaw;
+  }
+}
+
+async function testLogin() {
+  const email = document.getElementById('test-email').value.trim();
+  const pwd   = document.getElementById('test-pwd').value;
+  const el    = document.getElementById('login-result');
+  if (!email || !pwd) { el.textContent = 'Saisir email et mot de passe'; return; }
+
+  el.innerHTML = '<span class="warn">Connexion en cours…</span>';
+
+  try {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pwd }),
+    });
+    const data = await r.json();
+
+    if (!r.ok) {
+      el.innerHTML = '<span class="err">❌ Erreur Supabase (' + r.status + ') :</span>\n' + JSON.stringify(data, null, 2);
+      return;
+    }
+
+    const meta = data.user?.user_metadata || {};
+    const role = meta.role;
+
+    el.innerHTML =
+      '<span class="ok">✅ Connexion réussie !</span>\n\n' +
+      'user_id          : ' + data.user?.id + '\n' +
+      'email            : ' + data.user?.email + '\n' +
+      '<span class="' + (role ? 'ok' : 'err') + '">user_metadata.role : ' + (role || 'ABSENT ← il faut ajouter le rôle dans Supabase Auth') + '</span>\n' +
+      'user_metadata    : ' + JSON.stringify(meta, null, 2) + '\n\n' +
+      'access_token     : ' + data.access_token?.slice(0,60) + '…\n' +
+      'expires_at       : ' + new Date(data.expires_at * 1000).toLocaleString('fr-FR') + '\n\n' +
+      '--- Réponse complète ---\n' + JSON.stringify({
+        user: { id: data.user?.id, email: data.user?.email, user_metadata: data.user?.user_metadata },
+        expires_at: data.expires_at,
+        token_type: data.token_type,
+      }, null, 2);
+
+    // Simuler ce que auth.login() ferait
+    const session = {
+      access_token:  data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at:    data.expires_at,
+      role:          role || 'terrain',
+      name:          meta.name || data.user?.email,
+      email:         data.user?.email,
+      user_id:       data.user?.id,
+    };
+    localStorage.setItem('sb_session', JSON.stringify(session));
+    el.innerHTML += '\n\n<span class="ok">✅ Session sauvegardée dans localStorage["sb_session"]</span>\n' +
+      'role sauvegardé : <span class="' + (role ? 'ok' : 'err') + '">' + session.role + '</span>';
+
+    readAll(); // Rafraîchir l'affichage
+
+  } catch(e) {
+    el.innerHTML = '<span class="err">❌ Erreur réseau : ' + e.message + '</span>';
+  }
+}
+
+function clearAll() {
+  localStorage.clear();
+  document.getElementById('ls-content').innerHTML = '<span class="ok">localStorage vidé</span>';
+  document.getElementById('session-content').innerHTML = '<span class="warn">Session effacée</span>';
+}
+
+readAll();
+</script>
+</body>
+</html>
