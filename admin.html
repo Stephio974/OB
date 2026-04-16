@@ -3,44 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Administration — Open International des Brisants 2026</title>
+<title>Administration — Open des Brisants 2026</title>
 <link rel="stylesheet" href="style.css">
 <style>
 .layout{display:flex;height:calc(100vh - 56px);overflow:hidden}
-.sidebar{width:210px;flex-shrink:0;background:var(--bg);border-right:1px solid var(--border);padding:12px 10px;overflow-y:auto}
-.sidebar-item{padding:9px 12px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:9px;border:none;background:none;width:100%;text-align:left}
+.sidebar{width:200px;flex-shrink:0;background:#0f0f2e;border-right:1px solid var(--border);padding:12px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.sidebar-item{padding:9px 12px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);display:flex;align-items:center;gap:9px;border:none;background:none;width:100%;text-align:left;font-family:inherit}
 .sidebar-item:hover{background:var(--bg2);color:var(--text)}
-.sidebar-item.active{background:var(--cpl);color:var(--cpd);font-weight:600}
-.sidebar-sep{height:1px;background:var(--border);margin:6px 0}
-.main-area{flex:1;overflow-y:auto;padding:22px}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
-.section-head h2{font-size:20px;font-weight:700}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--bg);border-radius:var(--rxl);padding:24px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto}
-.modal-title{font-size:18px;font-weight:700;margin-bottom:18px}
+.sidebar-item.active{background:var(--cpl);color:var(--cp);font-weight:600}
+.sidebar-sep{height:1px;background:var(--border);margin:5px 0}
+.main-area{flex:1;overflow-y:auto;padding:20px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.section-head h2{font-size:18px;font-weight:700;color:var(--text)}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rxl);padding:24px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:18px;color:var(--text)}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-.drop-zone{border:2px dashed var(--border2);border-radius:var(--rl);padding:28px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+/* FILTERS BAR */
+.filters-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;padding:10px 12px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border)}
+.filters-bar .form-group{margin:0;flex:1;min-width:120px}
+.filters-bar .form-select,.filters-bar .form-input{font-size:12px;padding:6px 10px}
+/* INLINE EDIT */
+.inline-input{background:var(--bg3);border:1px solid var(--cp);color:var(--text);border-radius:5px;padding:3px 7px;font-size:12px;width:100%;font-family:inherit}
+.inline-select{background:var(--bg3);border:1px solid var(--cp);color:var(--text);border-radius:5px;padding:3px 5px;font-size:12px;font-family:inherit}
+.row-editing td{background:#1a1a50!important}
+/* CSV */
+.csv-pre{background:var(--bg3);border-radius:var(--r);padding:10px;font-family:monospace;font-size:11px;color:var(--text3);margin-top:8px;max-height:90px;overflow:auto;white-space:pre}
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--rl);padding:24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
 .drop-zone:hover,.drop-zone.over{border-color:var(--cp);background:var(--cpl)}
-.csv-preview{background:var(--bg2);border-radius:var(--r);padding:10px;font-family:monospace;font-size:11px;color:var(--text2);margin-top:10px;max-height:100px;overflow:auto;white-space:pre}
-.edit-icon{cursor:pointer;color:var(--text3);font-size:14px;padding:2px 6px;border-radius:4px}
-.edit-icon:hover{background:var(--bg2);color:var(--text)}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="topbar">
     <div class="topbar-brand">
-      <div><div class="topbar-logo">ITF Beach Tennis - WORLD TOUR SANS SERIES - Réunion Classic '26</div><div class="topbar-name">Open International des Brisants 2026 — Admin</div></div>
+      <div>
+        <div class="topbar-logo" id="brand-sub">ITF Beach Tennis</div>
+        <div class="topbar-name" id="brand-title">Open des Brisants 2026 — Admin</div>
+      </div>
     </div>
     <div class="topbar-nav">
       <a href="portal.html">Portail</a><a href="admin.html" class="active">Admin</a>
       <a href="dashboard.html">Dashboard</a><a href="stats.html">Stats</a><a href="rest.html">Repos</a>
       <a href="qrcodes.html">QR Codes</a>
     </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <select id="tournament-select" class="form-select" style="width:auto;font-size:13px;padding:5px 10px" onchange="onTournamentChange(this.value)"></select>
-      <button class="btn btn-outline btn-sm" onclick="openModal('modal-tournament')">+ Tournoi</button>
-      <button class="btn btn-ghost btn-sm" onclick="auth.logout()" title="Déconnexion">⎋</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <select id="tournament-select" class="form-select" style="width:auto;font-size:12px;padding:5px 9px" onchange="onTournamentChange(this.value)"></select>
+      <button class="btn btn-outline btn-sm" onclick="openTournamentModal()">+ Tournoi</button>
+      <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.6)" onclick="auth.logout()">⎋</button>
     </div>
   </div>
 
@@ -51,7 +62,7 @@
       <button class="sidebar-item" onclick="showSection('teams',this)">👥 Équipes</button>
       <button class="sidebar-item" onclick="showSection('players',this)">👤 Joueurs</button>
       <div class="sidebar-sep"></div>
-      <button class="sidebar-item" onclick="showSection('matches',this)">📋 Matchs & tableau</button>
+      <button class="sidebar-item" onclick="showSection('matches',this)">📋 Matchs</button>
       <div class="sidebar-sep"></div>
       <button class="sidebar-item" onclick="showSection('import',this)">📥 Import CSV</button>
     </div>
@@ -62,15 +73,15 @@
 <!-- MODAL TOURNAMENT -->
 <div id="modal-tournament" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-tournament')">
 <div class="modal">
-  <div class="modal-title" id="modal-tournament-title">Nouveau tournoi</div>
+  <div class="modal-title" id="modal-tournament-title">Tournoi</div>
   <input type="hidden" id="t-id">
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="t-name" placeholder="Open International des Brisants 202"></div>
-    <div class="form-group"><label class="form-label">Lieu</label><input class="form-input" id="t-location" placeholder="Saint-Gilles-Les-Bains, La Réunion"></div>
+    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="t-name" placeholder="Open International des Brisants 2026"></div>
+    <div class="form-group"><label class="form-label">Lieu</label><input class="form-input" id="t-location" placeholder="Saint-Paul, La Réunion"></div>
   </div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Date début *</label><input class="form-input" type="date" id="t-start"></div>
-    <div class="form-group"><label class="form-label">Date fin *</label><input class="form-input" type="date" id="t-end"></div>
+    <div class="form-group"><label class="form-label">Début *</label><input class="form-input" type="date" id="t-start"></div>
+    <div class="form-group"><label class="form-label">Fin *</label><input class="form-input" type="date" id="t-end"></div>
   </div>
   <div class="form-group"><label class="form-label">Statut</label>
     <select class="form-select" id="t-status"><option value="draft">Brouillon</option><option value="active">Actif</option><option value="finished">Terminé</option></select>
@@ -88,7 +99,7 @@
   <input type="hidden" id="c-id">
   <div class="form-row cols2">
     <div class="form-group"><label class="form-label">Nom sponsor *</label><input class="form-input" id="c-name" placeholder="Orangina"></div>
-    <div class="form-group"><label class="form-label">Ordre d'affichage</label><input class="form-input" type="number" id="c-order" value="1" min="1"></div>
+    <div class="form-group"><label class="form-label">Ordre affichage</label><input class="form-input" type="number" id="c-order" value="1" min="1"></div>
   </div>
   <div class="form-group"><label class="form-label">Actif</label>
     <select class="form-select" id="c-active"><option value="true">Oui</option><option value="false">Non</option></select>
@@ -102,37 +113,39 @@
 <!-- MODAL COMPETITION -->
 <div id="modal-competition" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-competition')">
 <div class="modal">
-  <div class="modal-title" id="modal-competition-title">Compétition</div>
+  <div class="modal-title" id="modal-comp-title">Compétition</div>
   <input type="hidden" id="co-id">
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="co-name" placeholder="100K$"></div>
+    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="co-name" placeholder="100K$ Hommes"></div>
     <div class="form-group"><label class="form-label">Catégorie *</label>
       <select class="form-select" id="co-cat">
         <option value="DH">Double Hommes</option><option value="DF">Double Femmes</option>
         <option value="Mix">Mixte</option><option value="Simple">Simple (1P Challenge)</option>
-        <option value="U18">U18</option><option value="U16">U16</option><option value="U14">U14</option><option value="U12">U12</option>
+        <option value="U18">U18</option><option value="U16">U16</option>
+        <option value="U14">U14</option><option value="U12">U12</option>
       </select>
     </div>
   </div>
   <div class="form-row cols3">
-    <div class="form-group"><label class="form-label">Taille tableau</label>
+    <div class="form-group"><label class="form-label">Tableau</label>
       <select class="form-select" id="co-draw"><option value="4">4</option><option value="8">8</option><option value="16" selected>16</option><option value="32">32</option></select>
     </div>
     <div class="form-group"><label class="form-label">Format</label>
-      <select class="form-select" id="co-format"><option value="direct">Élimination directe</option><option value="pool">Poules</option><option value="pool_direct">Poules + Direct</option><option value="onepoint">1 Point Challenge</option></select>
+      <select class="form-select" id="co-format">
+        <option value="direct">Élimination directe</option><option value="pool">Poules</option>
+        <option value="pool_direct">Poules + Direct</option><option value="onepoint">1 Point Challenge</option>
+      </select>
     </div>
     <div class="form-group"><label class="form-label">Sets pour gagner</label><input class="form-input" type="number" id="co-sets" value="2" min="1" max="3"></div>
   </div>
   <div class="form-row cols3">
-    <div class="form-group"><label class="form-label">Hauteur filet (cm)</label><input class="form-input" type="number" id="co-net" placeholder="88"></div>
+    <div class="form-group"><label class="form-label">Filet (cm)</label><input class="form-input" type="number" id="co-net" placeholder="88"></div>
     <div class="form-group"><label class="form-label">Balles / match</label><input class="form-input" type="number" id="co-balls" placeholder="4"></div>
     <div class="form-group"><label class="form-label">Dotation (USD)</label><input class="form-input" type="number" id="co-prize" value="0"></div>
   </div>
-  <div class="form-group"><label class="form-label">Remplacement des balles</label><input class="form-input" id="co-ballrule" placeholder="Fin du 1er set"></div>
-  <div class="form-group"><label class="form-label">Format du match (description)</label>
-    <input class="form-input" id="co-matchfmt" placeholder="2 sets de 6 jeux, jeu décisif à 6/6, 3ème set super tie-break 10 pts">
-  </div>
-  <div class="form-group"><label class="form-label">Niveau</label><input class="form-input" id="co-level" placeholder="ITF100K, 4K$, BT50, Jeunes, Amateurs…"></div>
+  <div class="form-group"><label class="form-label">Remplacement balles</label><input class="form-input" id="co-ballrule" placeholder="Fin du 1er set"></div>
+  <div class="form-group"><label class="form-label">Format du match</label><input class="form-input" id="co-matchfmt" placeholder="2 sets de 6 jeux, jeu décisif à 6/6, 3ème set super tie-break 10 pts"></div>
+  <div class="form-group"><label class="form-label">Niveau</label><input class="form-input" id="co-level" placeholder="ITF100K, Amateur, Jeunes…"></div>
   <div class="modal-actions">
     <button class="btn btn-outline" onclick="closeModal('modal-competition')">Annuler</button>
     <button class="btn btn-primary" id="co-save-btn" onclick="saveCompetition()">Enregistrer</button>
@@ -142,24 +155,26 @@
 <!-- MODAL TEAM -->
 <div id="modal-team" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-team')">
 <div class="modal">
-  <div class="modal-title" id="modal-team-title">Équipe</div>
+  <div class="modal-title" id="modal-team-title">Équipe / Joueur</div>
   <input type="hidden" id="te-id">
-  <div class="form-group"><label class="form-label">Compétition *</label><select class="form-select" id="te-comp"></select></div>
+  <div class="form-group"><label class="form-label">Compétition *</label><select class="form-select" id="te-comp" onchange="onTeamCompChange(this.value)"></select></div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Nom de l'équipe *</label><input class="form-input" id="te-name" placeholder="Martin / Durand"></div>
+    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="te-name" placeholder="Martin / Durand"></div>
     <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="te-nat" placeholder="FRA" maxlength="3" style="text-transform:uppercase"></div>
   </div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Tête de série</label><input class="form-input" type="number" id="te-seed" placeholder="— (optionnel)"></div>
-    <div class="form-group"><label class="form-label">Classement ITF</label><input class="form-input" type="number" id="te-rank" placeholder="— (optionnel)"></div>
+    <div class="form-group"><label class="form-label">Tête de série</label><input class="form-input" type="number" id="te-seed" placeholder="(optionnel)"></div>
+    <div class="form-group"><label class="form-label">Classement ITF</label><input class="form-input" type="number" id="te-rank" placeholder="(optionnel)"></div>
   </div>
-  <div id="players-section">
-    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 8px">Joueur 1</div>
+  <div id="players-form-section">
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 7px" id="p1-label">Joueur 1</div>
     <div class="form-row cols2"><input class="form-input" id="p1-first" placeholder="Prénom"><input class="form-input" id="p1-last" placeholder="Nom"></div>
-    <div class="form-row cols2" style="margin-top:6px"><input class="form-input" id="p1-nat" placeholder="Nationalité (FRA)"><input class="form-input" type="date" id="p1-birth"></div>
-    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 8px" id="p2-label">Joueur 2</div>
-    <div class="form-row cols2" id="p2-row"><input class="form-input" id="p2-first" placeholder="Prénom"><input class="form-input" id="p2-last" placeholder="Nom"></div>
-    <div class="form-row cols2" style="margin-top:6px" id="p2-row2"><input class="form-input" id="p2-nat" placeholder="Nationalité (FRA)"><input class="form-input" type="date" id="p2-birth"></div>
+    <div class="form-row cols2" style="margin-top:6px"><input class="form-input" id="p1-nat" placeholder="Nationalité"><input class="form-input" type="date" id="p1-birth"></div>
+    <div id="p2-section">
+      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 7px">Joueur 2</div>
+      <div class="form-row cols2"><input class="form-input" id="p2-first" placeholder="Prénom"><input class="form-input" id="p2-last" placeholder="Nom"></div>
+      <div class="form-row cols2" style="margin-top:6px"><input class="form-input" id="p2-nat" placeholder="Nationalité"><input class="form-input" type="date" id="p2-birth"></div>
+    </div>
   </div>
   <div class="modal-actions">
     <button class="btn btn-outline" onclick="closeModal('modal-team')">Annuler</button>
@@ -170,20 +185,23 @@
 <!-- MODAL MATCH -->
 <div id="modal-match" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('modal-match')">
 <div class="modal">
-  <div class="modal-title">Match manuel</div>
+  <div class="modal-title">Match</div>
   <input type="hidden" id="ma-id">
   <div class="form-row cols2">
     <div class="form-group"><label class="form-label">Compétition *</label><select class="form-select" id="ma-comp" onchange="loadTeamsForComp(this.value)"></select></div>
     <div class="form-group"><label class="form-label">Round</label>
-      <select class="form-select" id="ma-round"><option value="pool">Poule</option><option value="R32">1/32</option><option value="R16">1/16</option><option value="QF">Quart de finale</option><option value="SF">Demi-finale</option><option value="F">Finale</option></select>
+      <select class="form-select" id="ma-round">
+        <option value="pool">Poule</option><option value="R32">1/16</option><option value="R16">1/8</option>
+        <option value="QF">Quart</option><option value="SF">Demi</option><option value="F">Finale</option>
+      </select>
     </div>
   </div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Équipe 1</label><select class="form-select" id="ma-t1"><option value="">TBD</option></select></div>
-    <div class="form-group"><label class="form-label">Équipe 2</label><select class="form-select" id="ma-t2"><option value="">TBD</option></select></div>
+    <div class="form-group"><label class="form-label">Équipe 1</label><select class="form-select" id="ma-t1"></select></div>
+    <div class="form-group"><label class="form-label">Équipe 2</label><select class="form-select" id="ma-t2"></select></div>
   </div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Terrain</label><select class="form-select" id="ma-court"><option value="">Non assigné</option></select></div>
+    <div class="form-group"><label class="form-label">Terrain</label><select class="form-select" id="ma-court"></select></div>
     <div class="form-group"><label class="form-label">Date &amp; heure</label><input class="form-input" type="datetime-local" id="ma-time"></div>
   </div>
   <div class="modal-actions">
@@ -194,13 +212,11 @@
 
 <script src="supabase.js"></script>
 <script>
-// ── AUTH ───────────────────────────────────────────────────────
 auth.require(['admin']);
 
 let activeTournamentId = getActiveTournament();
-let allCourts = [], allCompetitions = [], allTeams = [], currentSection = 'courts';
+let allCourts=[], allCompetitions=[], allTeams=[], currentSection='courts';
 
-// ── INIT ──────────────────────────────────────────────────────
 async function init() {
   await loadTournaments();
   if (activeTournamentId) await loadAll();
@@ -208,218 +224,388 @@ async function init() {
 }
 
 async function loadTournaments() {
-  try {
-    const ts = await sb.get('tournament', 'order=start_date.desc');
-    const sel = document.getElementById('tournament-select');
-    if (!ts.length) { sel.innerHTML = '<option value="">Aucun tournoi</option>'; return; }
-    sel.innerHTML = ts.map(t => '<option value="'+t.id+'"'+(t.id===activeTournamentId?' selected':'')+'>'+t.name+'</option>').join('');
-    if (!activeTournamentId) { activeTournamentId = ts[0].id; setActiveTournament(ts[0].id); }
-  } catch(e) { toast('Erreur chargement tournois : '+e.message,'error'); }
+  const ts = await sb.get('tournament','order=start_date.desc').catch(()=>[]);
+  const sel = document.getElementById('tournament-select');
+  if (!ts.length) { sel.innerHTML='<option>Aucun tournoi</option>'; return; }
+  sel.innerHTML = ts.map(t=>'<option value="'+t.id+'"'+(t.id===activeTournamentId?' selected':'')+'>'+t.name+'</option>').join('');
+  if (!activeTournamentId && ts.length) { activeTournamentId=ts[0].id; setActiveTournament(ts[0].id); }
 }
 
 async function loadAll() {
-  try {
-    allCourts = await sb.get('court', 'tournament_id=eq.'+activeTournamentId+'&order=sort_order');
-    allCompetitions = await sb.get('competition', 'tournament_id=eq.'+activeTournamentId);
-    const cids = allCompetitions.map(c=>c.id);
-    allTeams = cids.length ? await sb.get('team', 'competition_id=in.('+cids.join(',')+')') : [];
-  } catch(e) { toast('Erreur : '+e.message,'error'); }
+  allCourts = await sb.get('court','tournament_id=eq.'+activeTournamentId+'&order=sort_order').catch(()=>[]);
+  allCompetitions = await sb.get('competition','tournament_id=eq.'+activeTournamentId+'&order=name').catch(()=>[]);
+  const cids = allCompetitions.map(c=>c.id);
+  allTeams = cids.length ? await sb.get('team','competition_id=in.('+cids.join(',')+')'+'&order=seed,name').catch(()=>[]) : [];
   renderSection();
 }
 
-function onTournamentChange(id) { activeTournamentId = id; setActiveTournament(id); loadAll(); }
+function onTournamentChange(id) { activeTournamentId=id; setActiveTournament(id); loadAll(); }
 
-// ── SECTIONS ──────────────────────────────────────────────────
 function showSection(name, btn) {
-  currentSection = name;
-  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  currentSection=name;
+  document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
+  if(btn) btn.classList.add('active');
   renderSection();
 }
 
 function renderSection() {
-  const renders = { courts, competitions, teams, players, matches, import: importSection };
-  const html = renders[currentSection] ? renders[currentSection]() : '';
-  document.getElementById('main-area').innerHTML = html;
-  if (currentSection === 'players') loadPlayersTable();
-  if (currentSection === 'matches') loadMatchesTable();
-  if (currentSection === 'import') setupDrop();
+  const renders={courts,competitions,teams,players,matches,import:importSection};
+  document.getElementById('main-area').innerHTML = renders[currentSection]?renders[currentSection]():'';
+  if(currentSection==='players') loadPlayersTable();
+  if(currentSection==='matches') loadMatchesTable();
+  if(currentSection==='import') setupDrop();
 }
 
-// COURTS
+// ── COURTS ────────────────────────────────────────────────────
 function courts() {
-  return '<div class="section-head"><h2>Terrains ('+allCourts.length+')</h2><button class="btn btn-primary" onclick="openCourtModal()">+ Ajouter</button></div>'+
+  return '<div class="section-head"><h2>Terrains</h2><button class="btn btn-primary" onclick="openCourtModal()">+ Ajouter</button></div>'+
   '<div class="card"><table class="data-table"><thead><tr><th>Ordre</th><th>Nom</th><th>Actif</th><th>Actions</th></tr></thead><tbody>'+
-  (allCourts.length ? allCourts.map(c =>
+  (allCourts.length?allCourts.map(c=>
     '<tr><td>'+c.sort_order+'</td><td><strong>'+c.name+'</strong></td>'+
     '<td>'+(c.is_active?'<span class="badge badge-green">Actif</span>':'<span class="badge badge-gray">Inactif</span>')+'</td>'+
-    '<td class="actions">'+
-    '<button class="btn btn-outline btn-sm" onclick="editCourt(\''+c.id+'\')">✏️ Modifier</button>'+
+    '<td class="actions"><button class="btn btn-outline btn-sm" onclick="editCourt(\''+c.id+'\')">✏️</button>'+
     '<button class="btn btn-danger btn-sm" onclick="deleteCourt(\''+c.id+'\')">✕</button></td></tr>'
   ).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:24px">Aucun terrain</td></tr>')+
   '</tbody></table></div>';
 }
 
-// COMPETITIONS
+// ── COMPETITIONS (triées alphabétiquement) ────────────────────
 function competitions() {
-  return '<div class="section-head"><h2>Compétitions ('+allCompetitions.length+')</h2><button class="btn btn-primary" onclick="openCompModal()">+ Ajouter</button></div>'+
-  '<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Nom</th><th>Catégorie</th><th>Format</th><th>Tableau</th><th>Filet</th><th>Balles</th><th>Actions</th></tr></thead><tbody>'+
-  (allCompetitions.length ? allCompetitions.map(c =>
-    '<tr><td><strong>'+c.name+'</strong>'+(c.match_format?'<br><small style="color:var(--text3)">'+c.match_format+'</small>':'')+'</td>'+
+  const sorted=[...allCompetitions].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+  return '<div class="section-head"><h2>Compétitions</h2><button class="btn btn-primary" onclick="openCompModal()">+ Ajouter</button></div>'+
+  '<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Nom ▲</th><th>Catégorie</th><th>Format</th><th>Filet</th><th>Balles</th><th>Format match</th><th>Actions</th></tr></thead><tbody>'+
+  (sorted.length?sorted.map(c=>
+    '<tr><td><strong>'+c.name+'</strong></td>'+
     '<td><span class="badge badge-blue">'+c.category+'</span></td>'+
-    '<td>'+( c.format||'—')+'</td>'+
-    '<td>'+(c.draw_size||'—')+' équipes</td>'+
+    '<td><span class="badge badge-gray">'+(c.format||'—')+'</span> '+(c.draw_size||'')+'éq.</td>'+
     '<td>'+(c.net_height_cm?c.net_height_cm+' cm':'—')+'</td>'+
     '<td>'+(c.balls_per_match||'—')+(c.ball_change_rule?'<br><small style="color:var(--text3)">'+c.ball_change_rule+'</small>':'')+'</td>'+
-    '<td class="actions">'+
-    '<button class="btn btn-outline btn-sm" onclick="editComp(\''+c.id+'\')">✏️</button>'+
+    '<td style="font-size:11px;color:var(--text3);max-width:200px">'+(c.match_format||'—')+'</td>'+
+    '<td class="actions"><button class="btn btn-outline btn-sm" onclick="editComp(\''+c.id+'\')">✏️</button>'+
     '<button class="btn btn-danger btn-sm" onclick="deleteComp(\''+c.id+'\')">✕</button></td></tr>'
   ).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">Aucune compétition</td></tr>')+
   '</tbody></table></div></div>';
 }
 
-// TEAMS
+// ── TEAMS — inline editing + filters ─────────────────────────
 function teams() {
-  const byComp = {};
-  allCompetitions.forEach(c => { byComp[c.id] = { comp:c, teams:[] }; });
-  allTeams.forEach(t => { if (byComp[t.competition_id]) byComp[t.competition_id].teams.push(t); });
+  // Filtres genre
+  const genderMap={'DH':'Hommes','DF':'Femmes','Mix':'Mixte','Simple':'Simple','U18H':'U18 Garçons','U18F':'U18 Filles','U16H':'U16 Garçons','U16F':'U16 Filles','U14H':'U14 Garçons','U14F':'U14 Filles','U12H':'U12 Garçons','U12F':'U12 Filles'};
+  const genders=['','DH','DF','Mix','Simple','U18','U16','U14','U12'];
+
   return '<div class="section-head"><h2>Équipes ('+allTeams.length+')</h2><button class="btn btn-primary" onclick="openTeamModal()">+ Ajouter</button></div>'+
-  Object.values(byComp).map(({comp,teams:ts}) =>
+  '<div class="filters-bar">'+
+  '<div class="form-group"><label class="form-label">Compétition</label>'+
+  '<select class="form-select" id="tf-comp" onchange="renderTeams()"><option value="">Toutes</option>'+allCompetitions.sort((a,b)=>a.name.localeCompare(b.name,'fr')).map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></div>'+
+  '<div class="form-group"><label class="form-label">Catégorie</label>'+
+  '<select class="form-select" id="tf-cat" onchange="renderTeams()"><option value="">Toutes</option>'+['DH','DF','Mix','Simple','U18','U16','U14','U12'].map(g=>'<option>'+g+'</option>').join('')+'</select></div>'+
+  '<div class="form-group"><label class="form-label">Genre</label>'+
+  '<select class="form-select" id="tf-genre" onchange="renderTeams()"><option value="">Tous</option>'+
+  '<option value="Hommes">Hommes (DH)</option><option value="Femmes">Femmes (DF)</option>'+
+  '<option value="Jeunes">Jeunes (U18/U16/U14/U12)</option><option value="Mixte">Mixte</option><option value="Simple">Simple</option>'+
+  '</select></div>'+
+  '<div class="form-group"><label class="form-label">Équipe / Joueur</label><input class="form-input" id="tf-search" placeholder="Rechercher…" oninput="renderTeams()"></div>'+
+  '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'tf-comp\').value=\'\';document.getElementById(\'tf-cat\').value=\'\';document.getElementById(\'tf-genre\').value=\'\';document.getElementById(\'tf-search\').value=\'\';renderTeams()">✕ Reset</button>'+
+  '</div>'+
+  '<div id="teams-table"></div>';
+}
+
+function renderTeams() {
+  const compFilter  = document.getElementById('tf-comp')?.value||'';
+  const catFilter   = document.getElementById('tf-cat')?.value||'';
+  const genreFilter = document.getElementById('tf-genre')?.value||'';
+  const search      = (document.getElementById('tf-search')?.value||'').toLowerCase();
+
+  let filtered = allTeams;
+  if (compFilter)  filtered=filtered.filter(t=>t.competition_id===compFilter);
+  if (catFilter) {
+    const comp=allCompetitions.find(c=>c.id===filtered[0]?.competition_id);
+    filtered=filtered.filter(t=>{ const c=allCompetitions.find(cc=>cc.id===t.competition_id); return c?.category===catFilter; });
+  }
+  if (genreFilter) {
+    filtered=filtered.filter(t=>{
+      const c=allCompetitions.find(cc=>cc.id===t.competition_id);
+      if(!c) return false;
+      if (genreFilter==='Hommes') return c.category==='DH';
+      if (genreFilter==='Femmes') return c.category==='DF';
+      if (genreFilter==='Mixte') return c.category==='Mix';
+      if (genreFilter==='Simple') return c.category==='Simple';
+      if (genreFilter==='Jeunes') return ['U18','U16','U14','U12'].includes(c.category);
+      return true;
+    });
+  }
+  if (search) filtered=filtered.filter(t=>t.name.toLowerCase().includes(search)||(t.nationality||'').toLowerCase().includes(search));
+
+  const byComp={};
+  allCompetitions.sort((a,b)=>a.name.localeCompare(b.name,'fr')).forEach(c=>{ byComp[c.id]={comp:c,teams:[]}; });
+  filtered.forEach(t=>{ if(byComp[t.competition_id]) byComp[t.competition_id].teams.push(t); });
+
+  const entries=Object.values(byComp).filter(x=>x.teams.length>0);
+  if(!entries.length){ document.getElementById('teams-table').innerHTML='<div style="color:var(--text3);text-align:center;padding:24px">Aucune équipe pour ce filtre</div>'; return; }
+
+  document.getElementById('teams-table').innerHTML=entries.map(({comp,teams:ts})=>
     '<div class="card" style="margin-bottom:12px">'+
     '<div class="card-title">'+comp.name+' — '+comp.category+' ('+ts.length+' équipes)</div>'+
-    '<table class="data-table"><thead><tr><th>#</th><th>Équipe</th><th>Nat.</th><th>ITF</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
-    (ts.length ? ts.sort((a,b)=>(a.seed||999)-(b.seed||999)).map(t =>
-      '<tr><td>'+(t.seed?'<strong>#'+t.seed+'</strong>':'—')+'</td>'+
-      '<td><strong>'+t.name+'</strong></td><td>'+( t.nationality||'—')+'</td><td>'+(t.itf_ranking||'—')+'</td>'+
-      '<td>'+(t.withdrawn?'<span class="badge badge-red">Forfait</span>':'<span class="badge badge-green">Inscrite</span>')+'</td>'+
-      '<td class="actions">'+
-      '<button class="btn btn-outline btn-sm" onclick="editTeam(\''+t.id+'\')">✏️</button>'+
-      '<button class="btn btn-outline btn-sm" onclick="toggleWithdrawn(\''+t.id+'\','+(!t.withdrawn)+')">'+(t.withdrawn?'Réinscrire':'Forfait')+'</button>'+
-      '<button class="btn btn-danger btn-sm" onclick="deleteTeam(\''+t.id+'\')">✕</button></td></tr>'
-    ).join('') : '<tr><td colspan="6" style="color:var(--text3);padding:12px">Aucune équipe</td></tr>')+
-    '</tbody></table></div>'
+    '<div style="overflow-x:auto"><table class="data-table" id="tbl-'+comp.id+'">'+
+    '<thead><tr><th>#</th><th>Nom équipe</th><th>Nat.</th><th>Classement ITF</th><th>Statut</th><th>Actions</th></tr></thead>'+
+    '<tbody>'+ts.map(t=>teamRow(t)).join('')+'</tbody></table></div></div>'
   ).join('');
 }
 
-// PLAYERS
+function teamRow(t, editing) {
+  if (editing) {
+    return '<tr class="row-editing" id="trow-'+t.id+'">'
+      +'<td><input class="inline-input" id="ei-seed-'+t.id+'" value="'+(t.seed||'')+'" type="number" style="width:50px" placeholder="#"></td>'
+      +'<td><input class="inline-input" id="ei-name-'+t.id+'" value="'+t.name+'" style="width:160px"></td>'
+      +'<td><input class="inline-input" id="ei-nat-'+t.id+'" value="'+(t.nationality||'')+'" style="width:50px" maxlength="3"></td>'
+      +'<td><input class="inline-input" id="ei-rank-'+t.id+'" value="'+(t.itf_ranking||'')+'" type="number" style="width:70px"></td>'
+      +'<td><select class="inline-select" id="ei-wd-'+t.id+'"><option value="false"'+(t.withdrawn?'':' selected')+'>Inscrite</option><option value="true"'+(t.withdrawn?' selected':'')+'>Forfait</option></select></td>'
+      +'<td class="actions">'
+      +'<button class="btn btn-primary btn-sm" onclick="saveInlineTeam(\''+t.id+'\')">✓ Sauver</button>'
+      +'<button class="btn btn-outline btn-sm" onclick="renderTeams()">✕</button>'
+      +'</td></tr>';
+  }
+  return '<tr id="trow-'+t.id+'">'
+    +'<td>'+(t.seed?'<strong>#'+t.seed+'</strong>':'—')+'</td>'
+    +'<td><strong>'+t.name+'</strong></td>'
+    +'<td>'+(t.nationality||'—')+'</td>'
+    +'<td>'+(t.itf_ranking||'—')+'</td>'
+    +'<td>'+(t.withdrawn?'<span class="badge badge-red">Forfait</span>':'<span class="badge badge-green">Inscrite</span>')+'</td>'
+    +'<td class="actions">'
+    +'<button class="btn btn-outline btn-sm" onclick="editTeamInline(\''+t.id+'\')">✏️</button>'
+    +'<button class="btn btn-outline btn-sm" onclick="openTeamModal(\''+t.id+'\')">+Joueur</button>'
+    +'<button class="btn btn-danger btn-sm" onclick="deleteTeam(\''+t.id+'\')">✕</button>'
+    +'</td></tr>';
+}
+
+function editTeamInline(id) {
+  const t=allTeams.find(t=>t.id===id); if(!t) return;
+  const row=document.getElementById('trow-'+id); if(!row) return;
+  row.outerHTML=teamRow(t,true);
+}
+async function saveInlineTeam(id) {
+  const body={
+    name:document.getElementById('ei-name-'+id).value.trim(),
+    seed:parseInt(document.getElementById('ei-seed-'+id).value)||null,
+    nationality:document.getElementById('ei-nat-'+id).value.trim().toUpperCase()||null,
+    itf_ranking:parseInt(document.getElementById('ei-rank-'+id).value)||null,
+    withdrawn:document.getElementById('ei-wd-'+id).value==='true',
+  };
+  try {
+    await sb.patch('team','id=eq.'+id,body);
+    toast('Équipe mise à jour');
+    await loadAll();
+  } catch(e) { toast(e.message,'error'); }
+}
+
+// ── PLAYERS ───────────────────────────────────────────────────
 function players() {
   return '<div class="section-head"><h2>Joueurs</h2></div>'+
   '<div class="card"><div id="players-table"><div class="loading-overlay"><div class="spinner"></div></div></div></div>';
 }
 async function loadPlayersTable() {
   try {
-    const ps = await sb.get('player', 'order=last_name,first_name');
-    document.getElementById('players-table').innerHTML =
-      '<table class="data-table"><thead><tr><th>Nom</th><th>Prénom</th><th>Nat.</th><th>Naissance</th><th>ITF ID</th><th>Classement</th><th>Actions</th></tr></thead><tbody>'+
-      (ps.length ? ps.map(p =>
-        '<tr><td><strong>'+p.last_name+'</strong></td><td>'+p.first_name+'</td>'+
-        '<td>'+(p.nationality||'—')+'</td>'+
-        '<td>'+(p.birth_date ? p.birth_date.slice(0,10)+' <small style="color:var(--text3)">('+calcAge(p.birth_date)+' ans)</small>' : '—')+'</td>'+
-        '<td>'+(p.itf_id||'—')+'</td><td>'+(p.itf_ranking||'—')+'</td>'+
-        '<td><button class="btn btn-outline btn-sm" onclick="editPlayer(\''+p.id+'\',\''+escHtml(p.first_name)+'\',\''+escHtml(p.last_name)+'\',\''+( p.nationality||'')+'\',\''+( p.birth_date||'')+'\',\''+( p.itf_id||'')+'\',\''+( p.itf_ranking||'')+'\')">✏️</button></td></tr>'
-      ).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">Aucun joueur</td></tr>')+
-      '</tbody></table>';
-  } catch(e) { document.getElementById('players-table').innerHTML = '<div class="alert alert-warning">'+e.message+'</div>'; }
-}
-function calcAge(birth) { if (!birth) return '?'; const d = new Date(birth); const n = new Date(); return n.getFullYear()-d.getFullYear() - (n < new Date(n.getFullYear(),d.getMonth(),d.getDate())?1:0); }
-function escHtml(s) { return (s||'').replace(/'/g,'\\\''); }
+    const ps = await sb.get('player','order=last_name,first_name');
+    const tps = await sb.get('team_player','select=*,team(name,competition(name,category))');
+    const now = new Date();
+    function age(d){if(!d)return'—';const b=new Date(d);let a=now.getFullYear()-b.getFullYear();if(now<new Date(now.getFullYear(),b.getMonth(),b.getDate()))a--;return a+' ans';}
 
-// MATCHES
+    document.getElementById('players-table').innerHTML=
+      '<table class="data-table"><thead><tr><th>Nom</th><th>Prénom</th><th>Nat.</th><th>Âge</th><th>Compétitions</th><th>ITF ID</th><th>Clt. ITF</th><th>Actions</th></tr></thead><tbody>'+
+      (ps.length?ps.map(p=>{
+        // Trouver les compétitions uniques de ce joueur
+        const myTps = tps.filter(tp=>tp.player_id===p.id);
+        const comps = [...new Map(myTps.map(tp=>[tp.team?.competition?.name, tp.team?.competition])).entries()]
+          .filter(([k])=>k).map(([,v])=>'<span class="badge badge-gray" style="margin:1px">'+( v?.name||'?')+' <span style="font-size:9px;opacity:.7">'+( v?.category||'')+'</span></span>').join(' ');
+        return '<tr><td><strong>'+p.last_name+'</strong></td><td>'+p.first_name+'</td>'+
+          '<td>'+(p.nationality||'—')+'</td><td>'+age(p.birth_date)+'</td>'+
+          '<td>'+(comps||'<span style="color:var(--text3)">—</span>')+'</td>'+
+          '<td style="font-size:11px;color:var(--text3)">'+(p.itf_id||'—')+'</td>'+
+          '<td>'+(p.itf_ranking||'—')+'</td>'+
+          '<td><button class="btn btn-outline btn-sm" onclick="editPlayerModal('+JSON.stringify(p).replace(/"/g,"'").replace(/'/g,"\\'")+')">✏️</button></td></tr>';
+      }).join('') : '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">Aucun joueur</td></tr>')+
+      '</tbody></table>';
+  } catch(e){ document.getElementById('players-table').innerHTML='<div class="alert alert-danger">'+e.message+'</div>'; }
+}
+function editPlayerModal(p) {
+  const html='<div class="modal-overlay" id="mp-overlay" style="display:flex" onclick="if(event.target===this)this.remove()">'+
+  '<div class="modal"><div class="modal-title">Modifier le joueur</div>'+
+  '<div class="form-row cols2"><div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="ep-fn" value="'+p.first_name+'"></div>'+
+  '<div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="ep-ln" value="'+p.last_name+'"></div></div>'+
+  '<div class="form-row cols3"><div class="form-group"><label class="form-label">Nat.</label><input class="form-input" id="ep-nat" value="'+(p.nationality||'')+'"></div>'+
+  '<div class="form-group"><label class="form-label">Naissance</label><input class="form-input" type="date" id="ep-birth" value="'+(p.birth_date||'')+'"></div>'+
+  '<div class="form-group"><label class="form-label">ITF ID</label><input class="form-input" id="ep-itfid" value="'+(p.itf_id||'')+'"></div></div>'+
+  '<div class="form-group"><label class="form-label">Classement ITF</label><input class="form-input" type="number" id="ep-rank" value="'+(p.itf_ranking||'')+'"></div>'+
+  '<div class="modal-actions"><button class="btn btn-outline" onclick="document.getElementById(\'mp-overlay\').remove()">Annuler</button>'+
+  '<button class="btn btn-primary" onclick="savePlayer(\''+p.id+'\')">Enregistrer</button></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+async function savePlayer(id){
+  try{
+    await sb.patch('player','id=eq.'+id,{first_name:document.getElementById('ep-fn').value,last_name:document.getElementById('ep-ln').value,nationality:document.getElementById('ep-nat').value||null,birth_date:document.getElementById('ep-birth').value||null,itf_id:document.getElementById('ep-itfid').value||null,itf_ranking:parseInt(document.getElementById('ep-rank').value)||null});
+    document.getElementById('mp-overlay').remove(); toast('Joueur mis à jour'); loadPlayersTable();
+  }catch(e){toast(e.message,'error');}
+}
+
+// ── MATCHES — with filters + scheduled date column ─────────────
 function matches() {
-  return '<div class="section-head"><h2>Matchs & tableau</h2>'+
-  '<div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="openMatchModal()">+ Match manuel</button></div></div>'+
-  '<div class="form-group" style="margin-bottom:14px"><select class="form-select" id="match-comp-filter" onchange="loadMatchesTable()" style="max-width:300px">'+
-  '<option value="">Toutes les compétitions</option>'+allCompetitions.map(c=>'<option value="'+c.id+'">'+c.name+' — '+c.category+'</option>').join('')+
-  '</select></div>'+
+  return '<div class="section-head"><h2>Matchs & Tableau</h2><button class="btn btn-primary" onclick="openMatchModal()">+ Match manuel</button></div>'+
+  '<div class="filters-bar">'+
+  '<div class="form-group"><label class="form-label">Compétition</label><select class="form-select" id="mf-comp" onchange="loadMatchesTable()"><option value="">Toutes</option>'+allCompetitions.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></div>'+
+  '<div class="form-group"><label class="form-label">Terrain</label><select class="form-select" id="mf-court" onchange="loadMatchesTable()"><option value="">Tous</option>'+allCourts.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></div>'+
+  '<div class="form-group"><label class="form-label">Statut</label><select class="form-select" id="mf-status" onchange="loadMatchesTable()"><option value="">Tous</option>'+['scheduled','warmup','in_progress','finished','retired','walkover'].map(s=>'<option>'+s+'</option>').join('')+'</select></div>'+
+  '<div class="form-group"><label class="form-label">Équipe (nom)</label><input class="form-input" id="mf-team" placeholder="Nom d\'équipe…" oninput="loadMatchesTable()"></div>'+
+  '<button class="btn btn-outline btn-sm" onclick="[\'mf-comp\',\'mf-court\',\'mf-status\'].forEach(id=>document.getElementById(id).value=\'\');document.getElementById(\'mf-team\').value=\'\';loadMatchesTable()">✕ Reset</button>'+
+  '</div>'+
   '<div id="matches-table"><div class="loading-overlay"><div class="spinner"></div></div></div>';
 }
+
 async function loadMatchesTable() {
-  const el = document.getElementById('matches-table'); if (!el) return;
-  const cids = allCompetitions.map(c=>c.id);
-  if (!cids.length) { el.innerHTML = '<div class="alert alert-info">Créez d\'abord des compétitions.</div>'; return; }
-  const filter = document.getElementById('match-comp-filter')?.value;
-  const ids = filter ? [filter] : cids;
+  const el=document.getElementById('matches-table'); if(!el) return;
+  const cids=allCompetitions.map(c=>c.id);
+  if(!cids.length){el.innerHTML='<div class="alert alert-info">Créez d\'abord des compétitions.</div>';return;}
+  const compFilter  = document.getElementById('mf-comp')?.value||'';
+  const courtFilter = document.getElementById('mf-court')?.value||'';
+  const statusFilter= document.getElementById('mf-status')?.value||'';
+  const teamFilter  = (document.getElementById('mf-team')?.value||'').toLowerCase();
+
+  let params='competition_id=in.('+cids.join(',')+')'+'&select=*,competition(name,category),court(name),team1:team1_id(name),team2:team2_id(name)&order=scheduled_at';
+  if(compFilter)  params+='&competition_id=eq.'+compFilter;
+  if(courtFilter) params+='&court_id=eq.'+courtFilter;
+  if(statusFilter)params+='&status=eq.'+statusFilter;
+
   try {
-    const ms = await sb.get('match',
-      'competition_id=in.('+ids.join(',')+')'+'&select=*,competition(name,category),court(name),team1:team1_id(name),team2:team2_id(name)'+'&order=scheduled_at');
-    if (!ms.length) { el.innerHTML = '<div class="card"><div style="text-align:center;color:var(--text3);padding:32px">Aucun match — utilisez "+ Match manuel" ou l\'import CSV</div></div>'; return; }
-    el.innerHTML = '<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Heure</th><th>Terrain</th><th>Compétition</th><th>Round</th><th>Équipe 1</th><th>Équipe 2</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
-    ms.map(m =>
-      '<tr><td>'+(m.scheduled_at?sb.fmt.time(m.scheduled_at):'—')+'</td>'+
-      '<td>'+(m.court?.name||'<span style="color:var(--text3)">Non assigné</span>')+'</td>'+
-      '<td><span class="badge badge-blue">'+(m.competition?.category||'')+'</span> '+(m.competition?.name||'')+'</td>'+
-      '<td><span class="badge badge-gray">'+(m.round||'—')+'</span></td>'+
-      '<td>'+(m.team1?.name||'<em style="color:var(--text3)">TBD</em>')+'</td>'+
-      '<td>'+(m.team2?.name||'<em style="color:var(--text3)">TBD</em>')+'</td>'+
-      '<td><span class="badge '+(m.status==='finished'?'badge-green':m.status==='in_progress'?'badge-amber':m.status==='retired'?'badge-red':'badge-gray')+'">'+m.status+'</span></td>'+
-      '<td class="actions">'+
-      '<button class="btn btn-outline btn-sm" onclick="editMatch(\''+m.id+'\')">✏️</button>'+
-      '<button class="btn btn-danger btn-sm" onclick="deleteMatch(\''+m.id+'\')">✕</button></td></tr>'
-    ).join('')+
-    '</tbody></table></div></div>';
-  } catch(e) { el.innerHTML = '<div class="alert alert-danger">'+e.message+'</div>'; }
+    let ms=await sb.get('match',params);
+    if(teamFilter) ms=ms.filter(m=>(m.team1?.name||'').toLowerCase().includes(teamFilter)||(m.team2?.name||'').toLowerCase().includes(teamFilter));
+
+    if(!ms.length){el.innerHTML='<div class="card"><div style="text-align:center;color:var(--text3);padding:32px">Aucun match pour ce filtre</div></div>';return;}
+
+    el.innerHTML='<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr>'+
+      '<th>Date planifiée</th><th>Terrain</th><th>Compétition</th><th>Round</th>'+
+      '<th>Équipe 1</th><th>Équipe 2</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
+      ms.map(m=>
+        '<tr><td style="white-space:nowrap">'+(m.scheduled_at?sb.fmt.datetime(m.scheduled_at):'<span style="color:var(--text3)">Non planifié</span>')+'</td>'+
+        '<td>'+(m.court?.name||'<span style="color:var(--text3)">—</span>')+'</td>'+
+        '<td><span class="badge badge-blue">'+(m.competition?.category||'')+'</span> '+(m.competition?.name||'')+'</td>'+
+        '<td><span class="badge badge-gray">'+(m.round||'—')+'</span></td>'+
+        '<td>'+(m.team1?.name||'<em style="color:var(--text3)">TBD</em>')+'</td>'+
+        '<td>'+(m.team2?.name||'<em style="color:var(--text3)">TBD</em>')+'</td>'+
+        '<td><span class="badge '+({finished:'badge-green',in_progress:'badge-amber',retired:'badge-red',warmup:'badge-amber'}[m.status]||'badge-gray')+'">'+m.status+'</span></td>'+
+        '<td class="actions"><button class="btn btn-outline btn-sm" onclick="editMatch(\''+m.id+'\')">✏️</button>'+
+        '<button class="btn btn-danger btn-sm" onclick="deleteMatch(\''+m.id+'\')">✕</button></td></tr>'
+      ).join('')+'</tbody></table></div></div>';
+  }catch(e){el.innerHTML='<div class="alert alert-danger">'+e.message+'</div>';}
 }
 
-// IMPORT
-function importSection() {
+// ── IMPORT ────────────────────────────────────────────────────
+function importSection(){
   return '<div class="section-head"><h2>Import CSV</h2></div>'+
   '<div class="card-grid cols2" style="gap:14px">'+
   '<div class="card"><div class="card-title">Format CSV équipes</div>'+
-  '<div class="csv-preview">competition_name,category,team_name,nationality,seed,itf_ranking,p1_first,p1_last,p1_nat,p1_birth,p2_first,p2_last,p2_nat,p2_birth\n100K$,DH,Martin / Durand,FRA,1,120,Julien,Martin,FRA,1990-03-15,Pierre,Durand,FRA,1988-07-22</div>'+
-  '<div id="drop-teams" class="drop-zone" style="margin-top:12px"><div style="font-size:28px">📥</div><div style="color:var(--text2)">CSV équipes</div><input type="file" accept=".csv" id="file-teams" style="display:none"></div>'+
-  '<div id="preview-teams"></div><div id="btn-import-teams" style="display:none;margin-top:10px"><button class="btn btn-primary" onclick="importTeams()">Importer les équipes</button></div></div>'+
+  '<div class="csv-pre">competition_name,category,team_name,nationality,seed,itf_ranking,p1_first,p1_last,p1_nat,p1_birth,p2_first,p2_last,p2_nat,p2_birth\n100K$ Hommes,DH,Martin / Durand,FRA,1,120,Julien,Martin,FRA,1990-03-15,Pierre,Durand,FRA,1988-07-22</div>'+
+  '<div id="drop-teams" class="drop-zone" style="margin-top:10px"><div style="font-size:28px">📥</div><div style="color:var(--text2);margin-top:4px">CSV équipes</div><input type="file" accept=".csv" id="file-teams" style="display:none"></div>'+
+  '<div id="preview-teams"></div><div id="btn-import-teams" style="display:none;margin-top:8px"><button class="btn btn-primary" onclick="importTeams()">Importer</button></div></div>'+
   '<div class="card"><div class="card-title">Format CSV matchs</div>'+
-  '<div class="csv-preview">competition_name,round,team1_name,team2_name,court_name,scheduled_date,scheduled_time\n100K$,QF,Martin / Durand,Garcia / Lopez,Orangina,2025-05-21,09:00</div>'+
-  '<div id="drop-matches" class="drop-zone" style="margin-top:12px"><div style="font-size:28px">📥</div><div style="color:var(--text2)">CSV matchs</div><input type="file" accept=".csv" id="file-matches" style="display:none"></div>'+
-  '<div id="preview-matches"></div><div id="btn-import-matches" style="display:none;margin-top:10px"><button class="btn btn-primary" onclick="importMatches()">Importer les matchs</button></div></div></div>';
+  '<div class="csv-pre">competition_name,round,team1_name,team2_name,court_name,scheduled_date,scheduled_time\n100K$ Hommes,QF,Martin / Durand,Garcia / Lopez,Orangina,2026-05-21,09:00</div>'+
+  '<div id="drop-matches" class="drop-zone" style="margin-top:10px"><div style="font-size:28px">📥</div><div style="color:var(--text2);margin-top:4px">CSV matchs</div><input type="file" accept=".csv" id="file-matches" style="display:none"></div>'+
+  '<div id="preview-matches"></div><div id="btn-import-matches" style="display:none;margin-top:8px"><button class="btn btn-primary" onclick="importMatches()">Importer</button></div></div></div>';
+}
+let parsedTeams=[],parsedMatches=[];
+function setupDrop(){
+  ['teams','matches'].forEach(type=>{
+    const z=document.getElementById('drop-'+type),inp=document.getElementById('file-'+type); if(!z) return;
+    z.onclick=()=>inp.click();
+    z.ondragover=e=>{e.preventDefault();z.classList.add('over')};
+    z.ondragleave=()=>z.classList.remove('over');
+    z.ondrop=e=>{e.preventDefault();z.classList.remove('over');handleCsvFile(e.dataTransfer.files[0],type)};
+    inp.onchange=e=>handleCsvFile(e.target.files[0],type);
+  });
+}
+function handleCsvFile(file,type){
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.trim().split('\n');
+    const headers=lines[0].split(',').map(h=>h.trim());
+    const rows=lines.slice(1).filter(l=>l.trim()).map(l=>{const v=l.split(',');return Object.fromEntries(headers.map((h,i)=>[h,(v[i]||'').trim()]));});
+    if(type==='teams') parsedTeams=rows; else parsedMatches=rows;
+    document.getElementById('preview-'+type).innerHTML='<div class="alert alert-success" style="margin-top:8px">✓ '+rows.length+' lignes</div>';
+    document.getElementById('btn-import-'+type).style.display='block';
+  };
+  r.readAsText(file);
+}
+async function importTeams(){
+  let ok=0,errs=[];
+  for(const row of parsedTeams){
+    try{
+      let comp=allCompetitions.find(c=>c.name===row.competition_name&&c.category===row.category);
+      if(!comp){const cr=await sb.post('competition',{tournament_id:activeTournamentId,name:row.competition_name,category:row.category});comp=cr[0];allCompetitions.push(comp);}
+      const team=await sb.post('team',{competition_id:comp.id,name:row.team_name,nationality:row.nationality||null,seed:parseInt(row.seed)||null,itf_ranking:parseInt(row.itf_ranking)||null});
+      const tid=team[0].id;
+      for(const pos of[1,2]){const fn=row['p'+pos+'_first'],ln=row['p'+pos+'_last'];if(!fn&&!ln)continue;const p=await sb.post('player',{first_name:fn||'',last_name:ln||'',nationality:row['p'+pos+'_nat']||null,birth_date:row['p'+pos+'_birth']||null});await sb.post('team_player',{team_id:tid,player_id:p[0].id,position:pos});}
+      ok++;
+    }catch(e){errs.push(row.team_name+': '+e.message);}
+  }
+  toast('Import : '+ok+' équipes'+(errs.length?' ('+errs.length+' erreurs)':''),'success');
+  await loadAll();
+}
+async function importMatches(){
+  let ok=0;
+  for(const row of parsedMatches){
+    try{
+      const comp=allCompetitions.find(c=>c.name===row.competition_name);
+      const court=allCourts.find(c=>c.name===row.court_name);
+      const t1=allTeams.find(t=>t.name===row.team1_name);
+      const t2=allTeams.find(t=>t.name===row.team2_name);
+      const dt=row.scheduled_date&&row.scheduled_time?new Date(row.scheduled_date+'T'+row.scheduled_time+':00').toISOString():null;
+      await sb.post('match',{competition_id:comp?.id,court_id:court?.id||null,team1_id:t1?.id||null,team2_id:t2?.id||null,round:row.round||'pool',scheduled_at:dt,status:'scheduled'});
+      ok++;
+    }catch(e){console.warn(e);}
+  }
+  toast('Import : '+ok+' matchs','success');
 }
 
-// ── CRUD : TOURNAMENT ─────────────────────────────────────────
-function openTournamentModal(t) {
-  document.getElementById('modal-tournament-title').textContent = t ? 'Modifier le tournoi' : 'Nouveau tournoi';
-  document.getElementById('t-id').value = t?.id || '';
-  document.getElementById('t-name').value = t?.name || '';
-  document.getElementById('t-location').value = t?.location || '';
-  document.getElementById('t-start').value = t?.start_date || '';
-  document.getElementById('t-end').value = t?.end_date || '';
-  document.getElementById('t-status').value = t?.status || 'draft';
+// ── CRUD HELPERS ──────────────────────────────────────────────
+function openTournamentModal(t){
+  document.getElementById('modal-tournament-title').textContent=t?'Modifier le tournoi':'Nouveau tournoi';
+  document.getElementById('t-id').value=t?.id||'';
+  document.getElementById('t-name').value=t?.name||'';
+  document.getElementById('t-location').value=t?.location||'';
+  document.getElementById('t-start').value=t?.start_date||'';
+  document.getElementById('t-end').value=t?.end_date||'';
+  document.getElementById('t-status').value=t?.status||'draft';
   openModal('modal-tournament');
 }
-async function saveTournament() {
-  const id = document.getElementById('t-id').value;
-  const body = { name:document.getElementById('t-name').value.trim(), location:document.getElementById('t-location').value.trim(), start_date:document.getElementById('t-start').value, end_date:document.getElementById('t-end').value, status:document.getElementById('t-status').value };
-  if (!body.name||!body.start_date||!body.end_date) { toast('Nom et dates obligatoires','error'); return; }
-  try {
-    if (id) await sb.patch('tournament','id=eq.'+id,body);
-    else { const r=await sb.post('tournament',body); setActiveTournament(r[0].id); activeTournamentId=r[0].id; }
-    closeModal('modal-tournament'); toast('Tournoi enregistré'); await loadTournaments(); await loadAll();
-  } catch(e) { toast(e.message,'error'); }
+async function saveTournament(){
+  const id=document.getElementById('t-id').value;
+  const body={name:document.getElementById('t-name').value.trim(),location:document.getElementById('t-location').value.trim(),start_date:document.getElementById('t-start').value,end_date:document.getElementById('t-end').value,status:document.getElementById('t-status').value};
+  if(!body.name||!body.start_date||!body.end_date){toast('Nom et dates obligatoires','error');return;}
+  try{
+    if(id) await sb.patch('tournament','id=eq.'+id,body);
+    else{const r=await sb.post('tournament',body);setActiveTournament(r[0].id);activeTournamentId=r[0].id;}
+    closeModal('modal-tournament');toast('Tournoi enregistré');await loadTournaments();await loadAll();
+  }catch(e){toast(e.message,'error');}
 }
 
-// ── CRUD : COURT ──────────────────────────────────────────────
-function openCourtModal(c) {
-  document.getElementById('modal-court-title').textContent = c?'Modifier le terrain':'Nouveau terrain';
+function openCourtModal(c){
+  document.getElementById('modal-court-title').textContent=c?'Modifier le terrain':'Nouveau terrain';
   document.getElementById('c-id').value=c?.id||'';
   document.getElementById('c-name').value=c?.name||'';
   document.getElementById('c-order').value=c?.sort_order||allCourts.length+1;
   document.getElementById('c-active').value=c?.is_active===false?'false':'true';
   openModal('modal-court');
 }
-async function editCourt(id) { openCourtModal(allCourts.find(c=>c.id===id)); }
-async function saveCourt() {
+async function editCourt(id){openCourtModal(allCourts.find(c=>c.id===id));}
+async function saveCourt(){
   const id=document.getElementById('c-id').value;
   const body={tournament_id:activeTournamentId,name:document.getElementById('c-name').value.trim(),sort_order:parseInt(document.getElementById('c-order').value)||1,is_active:document.getElementById('c-active').value==='true'};
-  if (!body.name) { toast('Nom obligatoire','error'); return; }
-  try {
-    if (id) await sb.patch('court','id=eq.'+id,body); else await sb.post('court',body);
-    closeModal('modal-court'); toast('Terrain enregistré'); await loadAll();
-  } catch(e) { toast(e.message,'error'); }
+  if(!body.name){toast('Nom obligatoire','error');return;}
+  try{if(id)await sb.patch('court','id=eq.'+id,body);else await sb.post('court',body);closeModal('modal-court');toast('Terrain enregistré');await loadAll();}catch(e){toast(e.message,'error');}
 }
-async function deleteCourt(id) { if (!confirm('Supprimer ce terrain ?')) return; try { await sb.delete('court','id=eq.'+id); toast('Supprimé'); await loadAll(); } catch(e) { toast(e.message,'error'); } }
+async function deleteCourt(id){if(!confirm('Supprimer ce terrain ?'))return;try{await sb.delete('court','id=eq.'+id);toast('Supprimé');await loadAll();}catch(e){toast(e.message,'error');}}
 
-// ── CRUD : COMPETITION (FIXED) ────────────────────────────────
-function openCompModal(c) {
-  document.getElementById('modal-competition-title').textContent = c?'Modifier la compétition':'Nouvelle compétition';
+function openCompModal(c){
+  document.getElementById('modal-comp-title').textContent=c?'Modifier':'Nouvelle compétition';
   document.getElementById('co-id').value=c?.id||'';
   document.getElementById('co-name').value=c?.name||'';
   document.getElementById('co-cat').value=c?.category||'DH';
@@ -434,217 +620,102 @@ function openCompModal(c) {
   document.getElementById('co-level').value=c?.level||'';
   openModal('modal-competition');
 }
-async function editComp(id) { openCompModal(allCompetitions.find(c=>c.id===id)); }
-
-async function saveCompetition() {
-  const btn = document.getElementById('co-save-btn');
-  btn.disabled = true; btn.textContent = 'Enregistrement…';
-  const id = document.getElementById('co-id').value;
-  const body = {
-    tournament_id: activeTournamentId,
-    name: document.getElementById('co-name').value.trim(),
-    category: document.getElementById('co-cat').value,
-    draw_size: parseInt(document.getElementById('co-draw').value) || null,
-    format: document.getElementById('co-format').value || null,
-    sets_to_win: parseInt(document.getElementById('co-sets').value) || 2,
-    net_height_cm: parseInt(document.getElementById('co-net').value) || null,
-    balls_per_match: parseInt(document.getElementById('co-balls').value) || null,
-    prize_money: parseInt(document.getElementById('co-prize').value) || 0,
-    ball_change_rule: document.getElementById('co-ballrule').value.trim() || null,
-    match_format: document.getElementById('co-matchfmt').value.trim() || null,
-    level: document.getElementById('co-level').value.trim() || null,
-  };
-  if (!body.name) { toast('Le nom est obligatoire','error'); btn.disabled=false; btn.textContent='Enregistrer'; return; }
-  if (!activeTournamentId) { toast('Aucun tournoi sélectionné','error'); btn.disabled=false; btn.textContent='Enregistrer'; return; }
-  try {
-    if (id) {
-      await sb.patch('competition', 'id=eq.'+id, body);
-    } else {
-      await sb.post('competition', body);
-    }
-    closeModal('modal-competition');
-    toast('Compétition enregistrée');
-    await loadAll();
-  } catch(e) {
-    toast('Erreur : '+e.message, 'error');
-  } finally {
-    btn.disabled=false; btn.textContent='Enregistrer';
-  }
+async function editComp(id){openCompModal(allCompetitions.find(c=>c.id===id));}
+async function saveCompetition(){
+  const btn=document.getElementById('co-save-btn'); btn.disabled=true; btn.textContent='…';
+  const id=document.getElementById('co-id').value;
+  const body={tournament_id:activeTournamentId,name:document.getElementById('co-name').value.trim(),category:document.getElementById('co-cat').value,draw_size:parseInt(document.getElementById('co-draw').value)||null,format:document.getElementById('co-format').value||null,sets_to_win:parseInt(document.getElementById('co-sets').value)||2,net_height_cm:parseInt(document.getElementById('co-net').value)||null,balls_per_match:parseInt(document.getElementById('co-balls').value)||null,prize_money:parseInt(document.getElementById('co-prize').value)||0,ball_change_rule:document.getElementById('co-ballrule').value.trim()||null,match_format:document.getElementById('co-matchfmt').value.trim()||null,level:document.getElementById('co-level').value.trim()||null};
+  if(!body.name){toast('Nom obligatoire','error');btn.disabled=false;btn.textContent='Enregistrer';return;}
+  if(!activeTournamentId){toast('Aucun tournoi sélectionné','error');btn.disabled=false;btn.textContent='Enregistrer';return;}
+  try{
+    if(id)await sb.patch('competition','id=eq.'+id,body);else await sb.post('competition',body);
+    closeModal('modal-competition');toast('Compétition enregistrée');await loadAll();
+  }catch(e){toast(e.message,'error');}finally{btn.disabled=false;btn.textContent='Enregistrer';}
 }
-async function deleteComp(id) { if (!confirm('Supprimer cette compétition et ses équipes ?')) return; try { await sb.delete('competition','id=eq.'+id); toast('Supprimé'); await loadAll(); } catch(e) { toast(e.message,'error'); } }
+async function deleteComp(id){if(!confirm('Supprimer cette compétition et ses équipes ?'))return;try{await sb.delete('competition','id=eq.'+id);toast('Supprimé');await loadAll();}catch(e){toast(e.message,'error');}}
 
-// ── CRUD : TEAM ───────────────────────────────────────────────
-function openTeamModal(t) {
-  document.getElementById('modal-team-title').textContent=t?'Modifier l\'équipe':'Nouvelle équipe';
-  document.getElementById('te-id').value=t?.id||'';
+function onTeamCompChange(compId){
+  const comp=allCompetitions.find(c=>c.id===compId);
+  const isSimple=comp?.category==='Simple';
+  const p1=document.getElementById('p1-label');
+  const p2=document.getElementById('p2-section');
+  if(p1) p1.textContent=isSimple?'Joueur':'Joueur 1';
+  if(p2) p2.style.display=isSimple?'none':'block';
+}
+function openTeamModal(editId){
+  document.getElementById('modal-team-title').textContent=editId?'Modifier l\'équipe':'Nouvelle équipe';
+  document.getElementById('te-id').value=editId||'';
+  const t=editId?allTeams.find(t=>t.id===editId):null;
   document.getElementById('te-name').value=t?.name||'';
   document.getElementById('te-nat').value=t?.nationality||'';
   document.getElementById('te-seed').value=t?.seed||'';
   document.getElementById('te-rank').value=t?.itf_ranking||'';
-  fillSelect('te-comp', allCompetitions, c=>c.id, c=>c.name+' — '+c.category);
-  if (t) document.getElementById('te-comp').value=t.competition_id;
-  // Show/hide player 2 for Single format
-  document.getElementById('te-comp').onchange = function() {
-    const comp = allCompetitions.find(c=>c.id===this.value);
-    const isSimple = comp?.category==='Simple';
-    document.getElementById('p2-label').style.display = isSimple?'none':'block';
-    document.getElementById('p2-row').style.display = isSimple?'none':'grid';
-    document.getElementById('p2-row2').style.display = isSimple?'none':'grid';
-  };
+  // Clear player fields
+  ['p1-first','p1-last','p1-nat','p1-birth','p2-first','p2-last','p2-nat','p2-birth'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  fillSelect('te-comp',allCompetitions.sort((a,b)=>a.name.localeCompare(b.name,'fr')),c=>c.id,c=>c.name+' — '+c.category);
+  if(t) document.getElementById('te-comp').value=t.competition_id;
+  onTeamCompChange(document.getElementById('te-comp').value);
+  document.getElementById('te-comp').onchange=function(){onTeamCompChange(this.value);};
   openModal('modal-team');
 }
-async function editTeam(id) {
-  const t = allTeams.find(t=>t.id===id);
-  openTeamModal(t);
-}
-async function saveTeam() {
+async function saveTeam(){
   const id=document.getElementById('te-id').value;
   const compId=document.getElementById('te-comp').value;
   const name=document.getElementById('te-name').value.trim();
-  if (!name||!compId) { toast('Nom et compétition obligatoires','error'); return; }
+  if(!name||!compId){toast('Nom et compétition obligatoires','error');return;}
   const body={competition_id:compId,name,nationality:document.getElementById('te-nat').value.trim()||null,seed:parseInt(document.getElementById('te-seed').value)||null,itf_ranking:parseInt(document.getElementById('te-rank').value)||null};
-  try {
+  try{
     let teamId=id;
-    if (id) { await sb.patch('team','id=eq.'+id,body); } else { const r=await sb.post('team',body); teamId=r[0].id; }
-    if (!id) {
+    if(id)await sb.patch('team','id=eq.'+id,body);
+    else{const r=await sb.post('team',body);teamId=r[0].id;}
+    if(!id){
       const comp=allCompetitions.find(c=>c.id===compId);
       const isSimple=comp?.category==='Simple';
-      const playerCount=isSimple?1:2;
-      for (let pos=1;pos<=playerCount;pos++) {
+      for(const pos of isSimple?[1]:[1,2]){
         const fn=document.getElementById('p'+pos+'-first').value.trim();
         const ln=document.getElementById('p'+pos+'-last').value.trim();
-        if (!fn&&!ln) continue;
+        if(!fn&&!ln) continue;
         const p=await sb.post('player',{first_name:fn,last_name:ln,nationality:document.getElementById('p'+pos+'-nat').value.trim()||null,birth_date:document.getElementById('p'+pos+'-birth').value||null});
         await sb.post('team_player',{team_id:teamId,player_id:p[0].id,position:pos,is_captain:pos===1});
       }
     }
-    closeModal('modal-team'); toast('Équipe enregistrée'); await loadAll();
-  } catch(e) { toast(e.message,'error'); }
+    closeModal('modal-team');toast('Équipe enregistrée');await loadAll();
+  }catch(e){toast(e.message,'error');}
 }
-async function toggleWithdrawn(id,val) { try { await sb.patch('team','id=eq.'+id,{withdrawn:val}); await loadAll(); } catch(e) { toast(e.message,'error'); } }
-async function deleteTeam(id) { if (!confirm('Supprimer cette équipe ?')) return; try { await sb.delete('team','id=eq.'+id); toast('Supprimé'); await loadAll(); } catch(e) { toast(e.message,'error'); } }
+async function toggleWithdrawn(id,val){try{await sb.patch('team','id=eq.'+id,{withdrawn:val});await loadAll();}catch(e){toast(e.message,'error');}}
+async function deleteTeam(id){if(!confirm('Supprimer cette équipe ?'))return;try{await sb.delete('team','id=eq.'+id);toast('Supprimé');await loadAll();}catch(e){toast(e.message,'error');}}
 
-// ── EDIT PLAYER ───────────────────────────────────────────────
-function editPlayer(id,fn,ln,nat,birth,itfId,itfRank) {
-  const html='<div class="modal-overlay" id="modal-player-inline" style="display:flex" onclick="if(event.target===this)this.remove()">'+
-  '<div class="modal"><div class="modal-title">Modifier le joueur</div>'+
-  '<div class="form-row cols2"><div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="ep-fn" value="'+fn+'"></div>'+
-  '<div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="ep-ln" value="'+ln+'"></div></div>'+
-  '<div class="form-row cols3"><div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="ep-nat" value="'+nat+'"></div>'+
-  '<div class="form-group"><label class="form-label">Naissance</label><input class="form-input" type="date" id="ep-birth" value="'+birth+'"></div>'+
-  '<div class="form-group"><label class="form-label">ITF ID</label><input class="form-input" id="ep-itfid" value="'+itfId+'"></div></div>'+
-  '<div class="form-group"><label class="form-label">Classement ITF</label><input class="form-input" type="number" id="ep-rank" value="'+itfRank+'"></div>'+
-  '<div class="modal-actions"><button class="btn btn-outline" onclick="document.getElementById(\'modal-player-inline\').remove()">Annuler</button>'+
-  '<button class="btn btn-primary" onclick="savePlayer(\''+id+'\')">Enregistrer</button></div></div></div>';
-  document.body.insertAdjacentHTML('beforeend',html);
-}
-async function savePlayer(id) {
-  try {
-    await sb.patch('player','id=eq.'+id,{first_name:document.getElementById('ep-fn').value,last_name:document.getElementById('ep-ln').value,nationality:document.getElementById('ep-nat').value||null,birth_date:document.getElementById('ep-birth').value||null,itf_id:document.getElementById('ep-itfid').value||null,itf_ranking:parseInt(document.getElementById('ep-rank').value)||null});
-    document.getElementById('modal-player-inline').remove(); toast('Joueur mis à jour'); loadPlayersTable();
-  } catch(e) { toast(e.message,'error'); }
-}
-
-// ── MATCH ─────────────────────────────────────────────────────
-async function openMatchModal(m) {
-  fillSelect('ma-comp',allCompetitions,c=>c.id,c=>c.name+' — '+c.category);
+async function openMatchModal(m){
+  fillSelect('ma-comp',allCompetitions.sort((a,b)=>a.name.localeCompare(b.name,'fr')),c=>c.id,c=>c.name+' — '+c.category);
   fillSelect('ma-court',[{id:'',name:'Non assigné'},...allCourts],c=>c.id,c=>c.name);
   document.getElementById('ma-id').value=m?.id||'';
-  if (m) {
-    document.getElementById('ma-comp').value=m.competition_id||'';
-    document.getElementById('ma-round').value=m.round||'pool';
-    document.getElementById('ma-court').value=m.court_id||'';
-    document.getElementById('ma-time').value=m.scheduled_at?m.scheduled_at.slice(0,16):'';
-    await loadTeamsForComp(m.competition_id,m.team1_id,m.team2_id);
-  } else { await loadTeamsForComp(allCompetitions[0]?.id); }
+  if(m){document.getElementById('ma-comp').value=m.competition_id||'';document.getElementById('ma-round').value=m.round||'pool';document.getElementById('ma-court').value=m.court_id||'';document.getElementById('ma-time').value=m.scheduled_at?m.scheduled_at.slice(0,16):'';await loadTeamsForComp(m.competition_id,m.team1_id,m.team2_id);}
+  else await loadTeamsForComp(allCompetitions[0]?.id);
   openModal('modal-match');
 }
-async function editMatch(id) {
-  try { const ms=await sb.get('match','id=eq.'+id); if (ms[0]) openMatchModal(ms[0]); } catch(e) { toast(e.message,'error'); }
-}
-async function loadTeamsForComp(compId,t1Id,t2Id) {
+async function editMatch(id){try{const ms=await sb.get('match','id=eq.'+id);if(ms[0])openMatchModal(ms[0]);}catch(e){toast(e.message,'error');}}
+async function loadTeamsForComp(compId,t1Id,t2Id){
   const ts=allTeams.filter(t=>t.competition_id===compId);
   fillSelect('ma-t1',[{id:'',name:'TBD'},...ts],t=>t.id,t=>t.name,'TBD');
   fillSelect('ma-t2',[{id:'',name:'TBD'},...ts],t=>t.id,t=>t.name,'TBD');
-  if (t1Id) document.getElementById('ma-t1').value=t1Id;
-  if (t2Id) document.getElementById('ma-t2').value=t2Id;
+  if(t1Id)document.getElementById('ma-t1').value=t1Id;
+  if(t2Id)document.getElementById('ma-t2').value=t2Id;
 }
-async function saveMatch() {
+async function saveMatch(){
   const id=document.getElementById('ma-id').value;
   const dt=document.getElementById('ma-time').value;
   const body={competition_id:document.getElementById('ma-comp').value,round:document.getElementById('ma-round').value,court_id:document.getElementById('ma-court').value||null,team1_id:document.getElementById('ma-t1').value||null,team2_id:document.getElementById('ma-t2').value||null,scheduled_at:dt?new Date(dt).toISOString():null,status:'scheduled'};
-  if (!body.competition_id) { toast('Sélectionnez une compétition','error'); return; }
-  try {
-    if (id) await sb.patch('match','id=eq.'+id,body); else await sb.post('match',body);
-    closeModal('modal-match'); toast('Match enregistré'); loadMatchesTable();
-  } catch(e) { toast(e.message,'error'); }
+  if(!body.competition_id){toast('Sélectionnez une compétition','error');return;}
+  try{if(id)await sb.patch('match','id=eq.'+id,body);else await sb.post('match',body);closeModal('modal-match');toast('Match enregistré');loadMatchesTable();}catch(e){toast(e.message,'error');}
 }
-async function deleteMatch(id) { if (!confirm('Supprimer ce match ?')) return; try { await sb.delete('match','id=eq.'+id); toast('Supprimé'); loadMatchesTable(); } catch(e) { toast(e.message,'error'); } }
+async function deleteMatch(id){if(!confirm('Supprimer ce match ?'))return;try{await sb.delete('match','id=eq.'+id);toast('Supprimé');loadMatchesTable();}catch(e){toast(e.message,'error');}}
 
-// ── CSV IMPORT ────────────────────────────────────────────────
-let parsedTeams=[],parsedMatches=[];
-function setupDrop() {
-  ['teams','matches'].forEach(type => {
-    const zone=document.getElementById('drop-'+type); const input=document.getElementById('file-'+type); if (!zone) return;
-    zone.onclick=()=>input.click();
-    zone.ondragover=e=>{e.preventDefault();zone.classList.add('over')};
-    zone.ondragleave=()=>zone.classList.remove('over');
-    zone.ondrop=e=>{e.preventDefault();zone.classList.remove('over');handleFile(e.dataTransfer.files[0],type)};
-    input.onchange=e=>handleFile(e.target.files[0],type);
-  });
-}
-function handleFile(file,type) {
-  if (!file) return;
-  const r=new FileReader();
-  r.onload=e=>{
-    const lines=e.target.result.trim().split('\n');
-    const headers=lines[0].split(',').map(h=>h.trim());
-    const rows=lines.slice(1).filter(l=>l.trim()).map(l=>{const v=l.split(',');return Object.fromEntries(headers.map((h,i)=>[h,(v[i]||'').trim()]));});
-    if (type==='teams') parsedTeams=rows; else parsedMatches=rows;
-    document.getElementById('preview-'+type).innerHTML='<div class="alert alert-success" style="margin-top:8px">✓ '+rows.length+' ligne'+(rows.length>1?'s':'')+' détectée'+(rows.length>1?'s':'')+'</div>';
-    document.getElementById('btn-import-'+type).style.display='block';
-  };
-  r.readAsText(file);
-}
-async function importTeams() {
-  let ok=0,errs=[];
-  for (const row of parsedTeams) {
-    try {
-      let comp=allCompetitions.find(c=>c.name===row.competition_name&&c.category===row.category);
-      if (!comp) { const cr=await sb.post('competition',{tournament_id:activeTournamentId,name:row.competition_name,category:row.category}); comp=cr[0]; allCompetitions.push(comp); }
-      const team=await sb.post('team',{competition_id:comp.id,name:row.team_name,nationality:row.nationality||null,seed:parseInt(row.seed)||null,itf_ranking:parseInt(row.itf_ranking)||null});
-      const tid=team[0].id;
-      for (const pos of [1,2]) {
-        const fn=row['p'+pos+'_first'],ln=row['p'+pos+'_last']; if (!fn&&!ln) continue;
-        const p=await sb.post('player',{first_name:fn||'',last_name:ln||'',nationality:row['p'+pos+'_nat']||null,birth_date:row['p'+pos+'_birth']||null});
-        await sb.post('team_player',{team_id:tid,player_id:p[0].id,position:pos});
-      }
-      ok++;
-    } catch(e) { errs.push(row.team_name+': '+e.message); }
-  }
-  toast('Import : '+ok+' équipes'+( errs.length?' ('+errs.length+' erreurs)':''),'ok'===ok?'success':'warn');
-  await loadAll();
-}
-async function importMatches() {
-  let ok=0,errs=[];
-  for (const row of parsedMatches) {
-    try {
-      const comp=allCompetitions.find(c=>c.name===row.competition_name);
-      const court=allCourts.find(c=>c.name===row.court_name);
-      const t1=allTeams.find(t=>t.name===row.team1_name);
-      const t2=allTeams.find(t=>t.name===row.team2_name);
-      const dt=row.scheduled_date&&row.scheduled_time?new Date(row.scheduled_date+'T'+row.scheduled_time+':00').toISOString():null;
-      await sb.post('match',{competition_id:comp?.id,court_id:court?.id||null,team1_id:t1?.id||null,team2_id:t2?.id||null,round:row.round||'pool',scheduled_at:dt,status:'scheduled'});
-      ok++;
-    } catch(e) { errs.push(e.message); }
-  }
-  toast('Import : '+ok+' matchs'+( errs.length?' ('+errs.length+' erreurs)':''), 'success');
-}
-
-function openModal(id) { document.getElementById(id).style.display='flex'; }
-function closeModal(id) { document.getElementById(id).style.display='none'; }
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
 
 init();
+// Appeler renderTeams après init quand on est sur la section teams
+const _origShowSection = showSection;
 </script>
 </body>
 </html>

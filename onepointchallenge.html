@@ -1,70 +1,71 @@
 <!DOCTYPE html>
-<html lang="fr">https://github.com/Stephio974/OB/blob/main/onepointchallenge.html
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>One Point Challenge by Lavazza</title>
+<title>1 Point Challenge by Lavazza</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.bracket-wrap{overflow-x:auto;padding:16px 0}
-.bracket{display:flex;gap:0;min-width:max-content}
-.round-col{display:flex;flex-direction:column;min-width:200px;padding:0 12px}
-.round-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.match-block{display:flex;flex-direction:column;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--bg);transition:box-shadow .15s}
+.bracket-wrap{overflow-x:auto;padding:8px 0 16px}
+.bracket{display:flex;gap:0;align-items:flex-start;min-width:max-content}
+.round-col{display:flex;flex-direction:column;justify-content:space-around;min-width:190px;padding:0 8px}
+.round-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:center;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.match-block{border:1.5px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--bg)}
 .match-block.has-result{border-color:var(--cp)}
-.player-slot{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:500;min-height:40px;cursor:pointer;transition:background .15s}
-.player-slot:hover:not(.empty):not(.winner):not(.bye){background:var(--cpl)}
-.player-slot.winner{background:var(--cp);color:#fff;font-weight:700}
-.player-slot.loser{opacity:.45}
+.player-slot{padding:9px 11px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;min-height:42px;cursor:pointer;transition:background .15s;color:var(--text2)}
+.player-slot:hover:not(.empty):not(.winner):not(.bye):not(.loser){background:var(--cpl)}
+.player-slot.winner{background:var(--cp);color:#0a1a12;font-weight:700;cursor:default}
+.player-slot.loser{opacity:.4;cursor:default}
 .player-slot.empty{color:var(--text3);font-style:italic;cursor:default;font-size:12px}
 .player-slot.bye{color:var(--text3);font-style:italic;cursor:default;font-size:11px}
 .slot-divider{height:1px;background:var(--border)}
-.seed-badge{font-size:10px;font-weight:700;background:rgba(0,0,0,.1);border-radius:20px;padding:1px 6px;flex-shrink:0}
-.winner .seed-badge{background:rgba(255,255,255,.25)}
-.conn-line{display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:18px;padding:0 4px;min-width:24px}
-.bracket-pair{display:flex;align-items:center;margin-bottom:8px}
-.header-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.comp-info{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--text2);display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.confirm-card{background:var(--bg);border-radius:var(--rxl);padding:28px;max-width:380px;width:100%;text-align:center}
-.confirm-title{font-size:18px;font-weight:700;margin-bottom:8px}
-.confirm-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.seed-badge{font-size:10px;font-weight:700;background:var(--border);color:var(--text3);border-radius:20px;padding:1px 6px;flex-shrink:0}
+.winner .seed-badge{background:rgba(0,0,0,.15);color:#0a1a12}
+.comp-info{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--text2);display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.confirm-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rxl);padding:28px;max-width:360px;width:100%;text-align:center}
+.confirm-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.confirm-sub{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.5}
 .confirm-actions{display:flex;gap:10px;justify-content:center}
+.connector{display:flex;align-items:center;padding:0 4px}
+.conn-line{width:16px;height:2px;background:var(--border2)}
+.trophy{font-size:28px;text-align:center;padding:16px;color:var(--cy)}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar" style="background:#1a1a2e">
-    <div class="topbar-brand"><div>
-      <div class="topbar-logo" style="color:rgba(255,255,255,.7)">Tournoi spécial</div>
-      <div class="topbar-name">1 Point Challenge by Lavazza ☕</div>
-    </div></div>
-    <div class="topbar-nav">
-      <a href="portal.html">Portail</a><a href="dashboard.html">Dashboard</a>
+  <div class="topbar" style="background:#0f0f2e">
+    <div class="topbar-brand">
+      <div>
+        <div class="topbar-logo" id="brand-sub">Tournoi spécial</div>
+        <div class="topbar-name">☕ 1 Point Challenge by Lavazza</div>
+      </div>
     </div>
-    <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.8)" onclick="auth.logout()">⎋</button>
+    <div class="topbar-nav">
+      <a href="portal.html">Portail</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.6)" onclick="auth.logout()">⎋</button>
   </div>
 
   <div class="page-body">
-    <div class="header-bar">
-      <div>
-        <select class="form-select" id="comp-select" onchange="loadComp(this.value)" style="min-width:220px">
-          <option value="">— Sélectionner la compétition —</option>
-        </select>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <select class="form-select" id="comp-select" onchange="loadComp(this.value)" style="max-width:280px">
+        <option value="">— Sélectionner la compétition —</option>
+      </select>
       <div style="display:flex;gap:8px">
         <button class="btn btn-outline" onclick="loadComp(document.getElementById('comp-select').value)">↻ Actualiser</button>
         <button class="btn btn-primary" id="btn-init" onclick="initBracket()" style="display:none">⚡ Générer le tableau</button>
+        <button class="btn btn-danger btn-sm" id="btn-reset" onclick="resetBracket()" style="display:none">✕ Réinitialiser</button>
       </div>
     </div>
 
     <div id="comp-info" class="comp-info" style="display:none"></div>
-
     <div id="bracket-area">
       <div style="text-align:center;padding:60px;color:var(--text3)">
         <div style="font-size:48px;margin-bottom:12px">☕</div>
-        <div style="font-size:15px;font-weight:500">1 Point Challenge by Lavazza</div>
-        <div style="font-size:13px;margin-top:6px">Sélectionnez une compétition de type "Simple" pour afficher le tableau</div>
+        <div style="font-size:15px;font-weight:500;color:var(--text2)">1 Point Challenge by Lavazza</div>
+        <div style="font-size:13px;margin-top:6px">Sélectionnez une compétition pour afficher le tableau</div>
       </div>
     </div>
   </div>
@@ -73,11 +74,11 @@
 <!-- Confirm modal -->
 <div id="confirm-overlay" class="confirm-overlay" style="display:none">
   <div class="confirm-card">
-    <div class="confirm-title" id="confirm-title">Confirmer le gagnant</div>
+    <div class="confirm-title" id="confirm-title">Confirmer</div>
     <div class="confirm-sub" id="confirm-sub"></div>
     <div class="confirm-actions">
       <button class="btn btn-outline" onclick="closeConfirm()">Annuler</button>
-      <button class="btn btn-primary" id="confirm-btn" onclick="confirmWinner()">✓ Valider le point</button>
+      <button class="btn btn-primary" id="confirm-btn">Valider</button>
     </div>
   </div>
 </div>
@@ -87,150 +88,186 @@
 auth.require(['admin','arbitre','terrain']);
 
 const activeTournamentId = getActiveTournament();
-let currentComp = null, bracketMatches = [], allTeams = [], pendingWin = null;
+let currentComp = null, bracketMatches = [], allTeams = [];
 
 async function init() {
-  const comps = await sb.get('competition',
-    'tournament_id=eq.'+activeTournamentId+'&format=eq.onepoint&order=name'
-  ).catch(async ()=>{
-    // Fallback: load all and filter
-    const all = await sb.get('competition','tournament_id=eq.'+activeTournamentId).catch(()=>[]);
-    return all.filter(c=>c.format==='onepoint'||c.category==='Simple');
-  });
+  // Charger toutes les compétitions du tournoi actif
+  const comps = await sb.get('competition', 'tournament_id=eq.'+activeTournamentId+'&order=name').catch(()=>[]);
+  // Filtre : format onepoint OU category Simple
+  const onepoint = comps.filter(c => c.format==='onepoint' || c.category==='Simple');
+
   const sel = document.getElementById('comp-select');
-  if (comps.length) {
-    sel.innerHTML = '<option value="">— Sélectionner —</option>'+comps.map(c=>'<option value="'+c.id+'">'+c.name+' ('+c.category+')</option>').join('');
-    if (comps.length===1) { sel.value=comps[0].id; loadComp(comps[0].id); }
+  if (onepoint.length) {
+    sel.innerHTML = '<option value="">— Sélectionner —</option>' +
+      onepoint.map(c => '<option value="'+c.id+'">'+c.name+' ('+c.category+')</option>').join('');
+    if (onepoint.length === 1) { sel.value = onepoint[0].id; loadComp(onepoint[0].id); }
   } else {
-    sel.innerHTML = '<option value="">Aucune compétition "1 Point" trouvée (créez-en une dans Admin avec format = 1 Point Challenge)</option>';
+    // Afficher toutes si aucune correspondance
+    sel.innerHTML = '<option value="">— Aucune compétition "1 Point" (créer dans Admin avec format=onepoint) —</option>' +
+      comps.map(c => '<option value="'+c.id+'">'+c.name+'</option>').join('');
   }
 }
 
 async function loadComp(compId) {
   if (!compId) return;
+  document.getElementById('bracket-area').innerHTML = '<div class="loading-overlay"><div class="spinner"></div> Chargement…</div>';
+
   currentComp = await sb.get('competition','id=eq.'+compId).then(r=>r[0]).catch(()=>null);
   if (!currentComp) return;
+
   allTeams = await sb.get('team','competition_id=eq.'+compId+'&withdrawn=eq.false&order=seed,name').catch(()=>[]);
   bracketMatches = await sb.get('match','competition_id=eq.'+compId+'&order=round,created_at').catch(()=>[]);
 
   const info = document.getElementById('comp-info');
-  info.style.display='flex';
-  info.innerHTML = '<span>Format : <strong>1 point par match — élimination directe</strong></span>'+
-    '<span>Joueurs inscrits : <strong>'+allTeams.length+'</strong></span>'+
-    (currentComp.net_height_cm?'<span>Filet : <strong>'+currentComp.net_height_cm+' cm</strong></span>':'')+
-    (currentComp.match_format?'<span>Format : <strong>'+currentComp.match_format+'</strong></span>':'');
+  info.style.display = 'flex';
+  info.innerHTML =
+    '<span>Joueurs inscrits : <strong>'+allTeams.length+'</strong></span>' +
+    '<span>Matchs générés : <strong>'+bracketMatches.length+'</strong></span>' +
+    (currentComp.net_height_cm ? '<span>Filet : <strong>'+currentComp.net_height_cm+' cm</strong></span>' : '') +
+    (currentComp.match_format ? '<span>'+currentComp.match_format+'</span>' : '');
 
-  document.getElementById('btn-init').style.display = bracketMatches.length?'none':'inline-flex';
+  const hasMatches = bracketMatches.length > 0;
+  document.getElementById('btn-init').style.display  = hasMatches ? 'none' : 'inline-flex';
+  document.getElementById('btn-reset').style.display = hasMatches ? 'inline-flex' : 'none';
+
   renderBracket();
-
-  // Auto-refresh every 10s
-  clearInterval(window._refreshTimer);
-  window._refreshTimer = setInterval(()=>loadComp(compId), 10000);
 }
 
 async function initBracket() {
-  if (!currentComp||!allTeams.length) { toast('Inscrivez d\'abord les joueurs dans Admin → Équipes','warn'); return; }
-  if (!confirm('Générer le tableau pour '+allTeams.length+' joueurs ? Cette action est irréversible.')) return;
+  if (!currentComp || !allTeams.length) { toast('Inscrivez d\'abord des joueurs dans Admin → Équipes','warn'); return; }
+  if (!confirm('Générer le tableau pour '+allTeams.length+' joueurs ?\n\n"Irréversible" signifie que les matchs créés ne peuvent pas être effacés automatiquement — utilisez "Réinitialiser" si besoin.')) return;
 
-  // Seed les têtes de série, mélange les autres
-  const seeded = allTeams.filter(t=>t.seed).sort((a,b)=>a.seed-b.seed);
+  const seeded   = allTeams.filter(t=>t.seed).sort((a,b)=>a.seed-b.seed);
   const unseeded = allTeams.filter(t=>!t.seed).sort(()=>Math.random()-.5);
-  const players = [...seeded,...unseeded];
+  const players  = [...seeded,...unseeded];
+  const n        = players.length;
+  const nextPow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(n,2))));
+  const r1Count  = nextPow2 / 2;
 
-  // Calcul nombre de matchs du 1er tour (avec byes si pas puissance de 2)
-  const n = players.length;
-  const nextPow2 = Math.pow(2, Math.ceil(Math.log2(n)));
-  const byes = nextPow2 - n;
-  const r1Matches = nextPow2/2;
-
-  // Créer les matchs du 1er tour
   let created = 0;
-  for (let i=0;i<r1Matches;i++) {
-    const t1 = players[i*2] || null;
+  // Round 1
+  for (let i=0; i<r1Count; i++) {
+    const t1 = players[i*2]   || null;
     const t2 = players[i*2+1] || null;
-    const isBye = !t1||!t2;
-    const body = {
-      competition_id: currentComp.id,
-      round: 'R'+(r1Matches*2),
-      team1_id: t1?.id||null, team2_id: t2?.id||null,
-      status: isBye ? 'finished' : 'scheduled',
-      winner_id: isBye ? (t1?.id||null) : null,
-      notes: isBye?'BYE':null,
-    };
-    await sb.post('match',body).catch(e=>console.warn(e));
-    created++;
+    const isBye = t1 && !t2;
+    try {
+      await sb.post('match',{
+        competition_id: currentComp.id,
+        round: 'R'+(r1Count*2),
+        team1_id: t1?.id||null, team2_id: t2?.id||null,
+        status: isBye ? 'finished' : 'scheduled',
+        winner_id: isBye ? t1.id : null,
+        notes: isBye ? 'BYE' : null,
+      });
+      created++;
+    } catch(e) { console.warn(e); }
   }
 
-  // Créer les matchs des tours suivants (vides)
-  let remaining = r1Matches/2;
-  let roundLabel = r1Matches;
-  while (remaining>=1) {
-    for (let i=0;i<remaining;i++) {
-      await sb.post('match',{competition_id:currentComp.id,round:'R'+roundLabel,status:'scheduled'}).catch(()=>{});
+  // Tours suivants (vides)
+  let size = r1Count;
+  while (size > 1) {
+    size = size / 2;
+    const roundLabel = size === 1 ? 'F' : 'R'+(size*2);
+    for (let i=0; i<size; i++) {
+      try { await sb.post('match',{competition_id:currentComp.id,round:roundLabel,status:'scheduled'}); } catch{}
     }
-    roundLabel=roundLabel/2; remaining=remaining/2;
   }
 
   toast('Tableau généré : '+created+' matchs du 1er tour','success');
   await loadComp(currentComp.id);
 }
 
+async function resetBracket() {
+  if (!confirm('Supprimer tous les matchs de cette compétition et recommencer ?')) return;
+  const mids = bracketMatches.map(m=>m.id);
+  for (const mid of mids) { await sb.delete('match','id=eq.'+mid).catch(()=>{}); }
+  bracketMatches = [];
+  toast('Tableau réinitialisé','warn');
+  await loadComp(currentComp.id);
+}
+
+let pendingWin = null;
+
 function renderBracket() {
+  const area = document.getElementById('bracket-area');
   if (!bracketMatches.length) {
-    document.getElementById('bracket-area').innerHTML =
-      '<div style="text-align:center;padding:40px;color:var(--text3)">Aucun match — cliquez "Générer le tableau" pour créer le tableau</div>';
+    area.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Aucun match — cliquez "Générer le tableau"</div>';
     return;
   }
 
-  // Grouper par round
+  // Grouper par round et trier
+  const roundOrder = ['R128','R64','R32','R16','R8','R4','R2','F'];
   const rounds = {};
-  bracketMatches.forEach(m=>{ if (!rounds[m.round]) rounds[m.round]=[]; rounds[m.round].push(m); });
-  const roundOrder = Object.keys(rounds).sort((a,b)=>parseInt(b.replace('R',''))-parseInt(a.replace('R','')));
+  bracketMatches.forEach(m => {
+    if (!rounds[m.round]) rounds[m.round] = [];
+    rounds[m.round].push(m);
+  });
 
-  const roundLabels = { 'R128':'1/128','R64':'1/64','R32':'1/32','R16':'1/8','R4':'Demi-finale','R2':'Finale','F':'Finale' };
-  const getRoundLabel = r => roundLabels[r]||r;
+  // Trouver l'ordre réel des rounds présents
+  const presentRounds = [...new Set(bracketMatches.map(m=>m.round))].sort((a,b) => {
+    const getSize = r => r==='F'?1:parseInt(r.replace('R',''))||1;
+    return getSize(b) - getSize(a); // du plus grand au plus petit = 1er tour en premier
+  });
+
+  const roundLabels = {R128:'1/64',R64:'1/32',R32:'1/16',R16:'1/8 de finale',R8:'Quarts de finale',R4:'Demi-finales',R2:'Finale',F:'Finale'};
 
   let html = '<div class="bracket-wrap"><div class="bracket">';
-  roundOrder.forEach(round=>{
-    const ms = rounds[round];
-    html += '<div class="round-col"><div class="round-title">'+getRoundLabel(round)+'</div>';
-    ms.forEach(m=>{
-      const t1=allTeams.find(t=>t.id===m.team1_id), t2=allTeams.find(t=>t.id===m.team2_id);
-      const winner=m.winner_id;
-      const isBye=m.notes==='BYE';
-      html += '<div class="match-block'+(winner?' has-result':'')+'">'+
-        renderSlot(t1,winner,m.id,'team1',isBye)+
-        '<div class="slot-divider"></div>'+
-        renderSlot(t2,winner,m.id,'team2',isBye)+
-        '</div>';
-    });
+  presentRounds.forEach(round => {
+    const ms = (rounds[round]||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+    html += '<div class="round-col"><div class="round-title">'+(roundLabels[round]||round)+'</div>';
+    ms.forEach(m => { html += renderMatchBlock(m); });
     html += '</div>';
   });
+
+  // Trophée final si champion connu
+  const final = bracketMatches.find(m => m.round==='F' || m.round==='R2');
+  if (final?.winner_id) {
+    const champion = allTeams.find(t=>t.id===final.winner_id);
+    html += '<div class="round-col"><div class="round-title">Champion</div><div class="trophy">🏆</div><div style="text-align:center;font-weight:700;color:var(--cy);font-size:15px">'+(champion?.name||'?')+'</div></div>';
+  }
+
   html += '</div></div>';
-  document.getElementById('bracket-area').innerHTML = html;
+  area.innerHTML = html;
 }
 
-function renderSlot(team, winnerId, matchId, side, isBye) {
+function renderMatchBlock(m) {
+  const t1 = allTeams.find(t=>t.id===m.team1_id);
+  const t2 = allTeams.find(t=>t.id===m.team2_id);
+  const winner = m.winner_id;
+  const isBye  = m.notes==='BYE';
+
+  return '<div class="match-block'+(winner?' has-result':'')+'">'+
+    renderSlot(t1, winner, m.id, isBye)+
+    '<div class="slot-divider"></div>'+
+    renderSlot(t2, winner, m.id, isBye)+
+    '</div>';
+}
+
+function renderSlot(team, winnerId, matchId, isBye) {
   if (!team) {
     if (isBye) return '<div class="player-slot bye">BYE (exempt)</div>';
     return '<div class="player-slot empty">En attente…</div>';
   }
-  const isWinner = winnerId===team.id;
-  const isLoser = winnerId&&!isWinner;
-  const cls = isWinner?'winner':isLoser?'loser':'';
-  const seed = team.seed?'<span class="seed-badge">#'+team.seed+'</span>':'';
-  const onclick = (!winnerId&&!isBye) ? 'onclick="askWinner(\''+matchId+'\',\''+team.id+'\',\''+( team.name||'').replace(/'/g,'\\\'')+'\')"' : '';
-  return '<div class="player-slot '+cls+'" '+onclick+' title="'+(!winnerId?'Cliquer pour désigner gagnant':isWinner?'Gagnant':'Éliminé')+'">'+
-    seed+'<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(team.name||'?')+'</span>'+
-    (isWinner?'<span style="font-size:14px">🏆</span>':'')+
+  const isWinner = winnerId === team.id;
+  const isLoser  = winnerId && !isWinner;
+  const cls      = isWinner ? 'winner' : isLoser ? 'loser' : '';
+  const seed     = team.seed ? '<span class="seed-badge">#'+team.seed+'</span>' : '';
+  const canClick = !winnerId && !isBye;
+  const onclick  = canClick ? 'onclick="askWinner(\''+matchId+'\',\''+team.id+'\',\''+( team.name||'').replace(/'/g,"\\'")+'\')"' : '';
+  const title    = canClick ? 'title="Cliquer pour désigner comme gagnant"' : '';
+  return '<div class="player-slot '+cls+'" '+onclick+' '+title+'>'+
+    seed +
+    '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(team.name||'?')+'</span>'+
+    (isWinner ? '<span style="font-size:14px">🏆</span>' : '')+
     '</div>';
 }
 
 function askWinner(matchId, teamId, teamName) {
   pendingWin = { matchId, teamId };
   document.getElementById('confirm-title').textContent = 'Désigner le gagnant du point';
-  document.getElementById('confirm-sub').textContent = teamName+' remporte le point et avance dans le tableau.';
-  document.getElementById('confirm-overlay').style.display='flex';
+  document.getElementById('confirm-sub').textContent   = teamName + ' remporte le point et avance dans le tableau.';
+  document.getElementById('confirm-btn').onclick = confirmWinner;
+  document.getElementById('confirm-overlay').style.display = 'flex';
 }
 function closeConfirm() { document.getElementById('confirm-overlay').style.display='none'; pendingWin=null; }
 
@@ -239,39 +276,44 @@ async function confirmWinner() {
   const {matchId,teamId} = pendingWin;
   closeConfirm();
   try {
-    // Set winner on current match
-    await sb.patch('match','id=eq.'+matchId,{winner_id:teamId,status:'finished',ts_match_end:new Date().toISOString()});
-    // Advance winner to next round match
-    await advanceWinner(matchId,teamId);
+    await sb.patch('match','id=eq.'+matchId,{ winner_id:teamId, status:'finished', ts_match_end:new Date().toISOString() });
+    await advanceWinner(matchId, teamId);
     toast('Gagnant enregistré ✓','success');
     await loadComp(currentComp.id);
   } catch(e) { toast('Erreur : '+e.message,'error'); }
 }
 
 async function advanceWinner(finishedMatchId, winnerId) {
-  // Find the index of this match in its round, find next round match
   const finishedMatch = bracketMatches.find(m=>m.id===finishedMatchId);
   if (!finishedMatch) return;
-  const sameRound = bracketMatches.filter(m=>m.round===finishedMatch.round).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+
+  // Trouver l'index dans son round
+  const sameRound = bracketMatches
+    .filter(m=>m.round===finishedMatch.round)
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
   const matchIndex = sameRound.findIndex(m=>m.id===finishedMatchId);
-  const nextRoundMatchIndex = Math.floor(matchIndex/2);
-  const isFirstSlot = matchIndex%2===0;
+  const nextRoundMatchIndex = Math.floor(matchIndex / 2);
+  const isFirstSlot = matchIndex % 2 === 0;
 
-  // Find next round
-  const rounds = [...new Set(bracketMatches.map(m=>m.round))].sort((a,b)=>parseInt(a.replace('R',''))-parseInt(b.replace('R','')));
-  const currentRoundIdx = rounds.indexOf(finishedMatch.round);
-  if (currentRoundIdx<=0) return; // Final already
+  // Trouver le round suivant (plus petit = plus avancé)
+  const getSize = r => r==='F'?1:parseInt(r.replace('R',''))||1;
+  const presentRounds = [...new Set(bracketMatches.map(m=>m.round))].sort((a,b)=>getSize(b)-getSize(a));
+  const currentIdx = presentRounds.indexOf(finishedMatch.round);
+  if (currentIdx <= 0) return; // Finale déjà
 
-  const nextRound = rounds[currentRoundIdx-1];
-  const nextRoundMatches = bracketMatches.filter(m=>m.round===nextRound).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  const nextRound = presentRounds[currentIdx - 1];
+  const nextRoundMatches = bracketMatches
+    .filter(m=>m.round===nextRound)
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
   const nextMatch = nextRoundMatches[nextRoundMatchIndex];
   if (!nextMatch) return;
 
   const updateBody = isFirstSlot ? {team1_id:winnerId} : {team2_id:winnerId};
-  await sb.patch('match','id=eq.'+nextMatch.id,updateBody);
+  await sb.patch('match','id=eq.'+nextMatch.id, updateBody);
 }
 
 if (activeTournamentId) init();
+else document.getElementById('bracket-area').innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
 </script>
 </body>
 </html>

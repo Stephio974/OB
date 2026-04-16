@@ -3,44 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#1D9E75">
+<meta name="theme-color" content="#191970">
 <title>Connexion — Open International des Brisants 2026</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0F6E56;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#191970;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#1f1f3a;border:1px solid #2e2e5a;border-radius:20px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .logo{text-align:center;margin-bottom:28px}
 .logo-icon{font-size:40px;margin-bottom:8px}
-.logo-badge{font-size:11px;font-weight:600;color:#1D9E75;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.logo-title{font-size:24px;font-weight:800;color:#1A1A1A;letter-spacing:-.02em}
-.logo-sub{font-size:13px;color:#999;margin-top:3px}
+.logo-sub-line{font-size:10px;font-weight:600;color:#2BC48A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;line-height:1.4}
+.logo-title{font-size:20px;font-weight:800;color:#F5F5F0;letter-spacing:-.01em;line-height:1.2}
+.form-label{display:block;font-size:12px;font-weight:600;color:#8A8AA0;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .form-group{margin-bottom:14px}
-.form-label{display:block;font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.form-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #E0E0D8;background:#fff;color:#1A1A1A;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
-.form-input:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.12)}
-.btn{width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;cursor:pointer;background:#191970;color:#fff;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.form-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #3a3a6a;background:#25254a;color:#F5F5F0;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.form-input:focus{border-color:#2BC48A;box-shadow:0 0 0 3px rgba(43,196,138,.15)}
+.form-input::placeholder{color:#8A8AA0}
+.btn{width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;cursor:pointer;background:#2BC48A;color:#0a1a12;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;font-family:inherit}
 .btn:hover{opacity:.9}
 .btn:active{transform:scale(.98)}
-.btn:disabled{opacity:.5;cursor:wait}
-.error{background:#FEECEC;border:1px solid #F7C1C1;border-radius:10px;padding:11px 14px;font-size:13px;color:#8B1C1C;margin-bottom:14px;display:none;line-height:1.5}
-.hint{margin-top:20px;padding-top:16px;border-top:1px solid #F0F0EC;font-size:12px;color:#999;text-align:center;line-height:1.7}
-.hint strong{color:#666}
+.btn:disabled{opacity:.4;cursor:wait}
+.error{background:#3d1a1a;border:1px solid #5a2020;border-radius:10px;padding:11px 14px;font-size:13px;color:#FF6B6B;margin-bottom:14px;display:none;line-height:1.5}
+.hint{margin-top:20px;padding-top:16px;border-top:1px solid #2e2e5a;font-size:12px;color:#8A8AA0;text-align:center;line-height:1.7}
+.hint strong{color:#C0C0D0}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">
     <div class="logo-icon">🏖️</div>
-    <div class="logo-badge">ITF Beach Tennis - WORLD TOUR SANS SERIES - Réunion Classic '26</div>
-    <div class="logo-title">Open International des Brisants 2026</div>
-    <div class="logo-sub">Système de gestion du tournoi</div>
+    <div class="logo-sub-line" id="brand-sub">ITF Beach Tennis — WORLD TOUR SAND SERIES — Réunion Classic '26</div>
+    <div class="logo-title" id="brand-title">Open International des Brisants 2026</div>
   </div>
 
   <div class="error" id="err-msg"></div>
 
   <div class="form-group">
     <label class="form-label">Adresse email</label>
-    <input class="form-input" id="email" type="email" placeholder="admin@brisants.re" autocomplete="email" autofocus>
+    <input class="form-input" id="email" type="email" placeholder="votre@email.re" autocomplete="email" autofocus>
   </div>
   <div class="form-group" style="margin-bottom:18px">
     <label class="form-label">Mot de passe</label>
@@ -53,28 +52,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="hint">
     <strong>Comptes</strong><br>
-    admin@brisants.re · arbitre@brisants.re · terrain@brisants.re
+    admin · arbitre · terrain @odb2026.re
   </div>
 
-  <div id="err-403" style="display:none;margin-top:14px" class="error">
+  <div id="err-403" style="display:none;margin-top:12px" class="error">
     ⚠️ Votre compte n'a pas les droits pour cette page.
   </div>
 </div>
 
 <script src="supabase.js"></script>
 <script>
-// Afficher erreur 403
-if (location.search.includes('err=403')) {
-  document.getElementById('err-403').style.display = 'block';
-}
+if (location.search.includes('err=403')) document.getElementById('err-403').style.display='block';
 
-// Déjà connecté → rediriger immédiatement (synchrone)
+// Déjà connecté → rediriger
 const existing = auth.getSession();
 if (existing) redirectByRole(existing.role);
 
-// Clavier
-document.getElementById('email').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('password').focus(); });
-document.getElementById('password').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+document.getElementById('email').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('password').focus(); });
+document.getElementById('password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+// Appliquer branding
+if (BRAND.USE_LOGOS) {
+  document.getElementById('brand-title').innerHTML = '<img src="'+BRAND.LOGO1_SRC+'" style="height:48px;max-width:100%;object-fit:contain" alt="'+BRAND.TITLE_MAIN+'">';
+  document.getElementById('brand-sub').style.display = 'none';
+} else {
+  document.getElementById('brand-title').textContent = BRAND.TITLE_MAIN;
+  document.getElementById('brand-sub').textContent   = BRAND.TITLE_SUB;
+}
 
 async function doLogin() {
   const email    = document.getElementById('email').value.trim();
@@ -82,35 +86,25 @@ async function doLogin() {
   const errEl    = document.getElementById('err-msg');
   const btn      = document.getElementById('login-btn');
   const btnText  = document.getElementById('btn-text');
-
   errEl.style.display = 'none';
-
-  if (!email || !password) {
-    errEl.style.display = 'block';
-    errEl.textContent = 'Veuillez saisir votre email et votre mot de passe.';
-    return;
-  }
-
-  btn.disabled = true;
-  btnText.textContent = 'Connexion en cours…';
-
+  if (!email||!password) { errEl.style.display='block'; errEl.textContent='Veuillez saisir votre email et mot de passe.'; return; }
+  btn.disabled=true; btnText.textContent='Connexion…';
   try {
     const session = await auth.login(email, password);
     redirectByRole(session.role);
   } catch(e) {
-    errEl.style.display = 'block';
-    errEl.innerHTML = '❌ ' + (e.message || 'Identifiants incorrects.');
-    document.getElementById('password').value = '';
+    errEl.style.display='block';
+    errEl.innerHTML='❌ '+(e.message||'Identifiants incorrects.');
+    document.getElementById('password').value='';
     document.getElementById('password').focus();
   } finally {
-    btn.disabled = false;
-    btnText.textContent = 'Se connecter';
+    btn.disabled=false; btnText.textContent='Se connecter';
   }
 }
 
 function redirectByRole(role) {
-  const dest = { admin: 'portal.html', arbitre: 'portal.html', terrain: 'terrain.html' };
-  location.href = dest[role] || 'portal.html';
+  const dest = { admin:'portal.html', arbitre:'portal.html', terrain:'terrain.html' };
+  location.href = dest[role]||'portal.html';
 }
 </script>
 </body>
