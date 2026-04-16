@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR Codes Terrains — Open des Brisants</title>
+<title>QR Codes Terrains — Open International des Brisants 2026</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -124,7 +124,7 @@ function generatePDF() {
   // Add tournament info to print header
   const style = document.createElement('style');
   style.id = 'print-header-style';
-  style.textContent = `@media print { body::before { content: "Open des Brisants — ITF Sand Series\\A QR Codes Responsables Terrain"; white-space:pre; display:block; font-size:20px; font-weight:700; text-align:center; padding:20px 0 30px; border-bottom:2px solid #000; margin-bottom:20px; } }`;
+  style.textContent = `@media print { body::before { content: "Open International des Brisants 2026 — ITF Beach Tennis - WORLD TOUR SANS SERIES - Réunion Classic '26\\A QR Codes Responsables Terrain"; white-space:pre; display:block; font-size:20px; font-weight:700; text-align:center; padding:20px 0 30px; border-bottom:2px solid #000; margin-bottom:20px; } }`;
   document.head.appendChild(style);
   window.print();
   setTimeout(() => { const s = document.getElementById('print-header-style'); if(s) s.remove(); }, 1000);
