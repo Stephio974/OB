@@ -7,9 +7,9 @@
   --cw: #EF9F27; --cwl: #FFF8ED;
   --cb: #378ADD; --cbl: #E6F1FB;
   --cy: #F5C800;
-  --bg: #ffffff; --bg2: #F7F7F5; --bg3: #F0F0EC;
-  --text: #1A1A1A; --text2: #666; --text3: #999;
-  --border: #E0E0D8; --border2: #C8C8C0;
+  --bg: #1f1f3a; --bg2: #25254a; --bg3: #191970; /* MidnightBlue */
+  --text: #F5F5F0; --text2: #C0C0D0; --text3: #8A8AA0;
+  --border: #2e2e5a; --border2: #3a3a6a;
   --r: 10px; --rl: 14px; --rxl: 18px;
   --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
 }
