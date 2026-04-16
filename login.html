@@ -2,34 +2,68 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#1D9E75">
 <title>Connexion — Open des Brisants</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F0EC;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;border-radius:18px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.1)}
-.logo{text-align:center;margin-bottom:28px}
-.logo-badge{font-size:11px;font-weight:600;color:#1D9E75;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-.logo-title{font-size:24px;font-weight:800;color:#1A1A1A;letter-spacing:-.02em}
-.logo-sub{font-size:13px;color:#999;margin-top:3px}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.form-input{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #E0E0D8;background:#fff;color:#1A1A1A;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s}
-.form-input:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.12)}
-.btn{width:100%;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;cursor:pointer;background:#1D9E75;color:#fff;margin-top:4px;transition:opacity .15s}
-.btn:hover{opacity:.88}
-.btn:active{transform:scale(.98)}
-.error{background:#FEECEC;border:1px solid #F7C1C1;border-radius:10px;padding:10px 14px;font-size:13px;color:#8B1C1C;margin-bottom:16px;display:none}
-.roles{margin-top:24px;padding-top:20px;border-top:1px solid #F0F0EC}
-.roles-title{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
-.role-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;color:#666}
-.role-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 50%, #2BC48A 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.logo { text-align: center; margin-bottom: 28px; }
+.logo-icon { font-size: 36px; margin-bottom: 8px; }
+.logo-badge { font-size: 11px; font-weight: 600; color: #1D9E75; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+.logo-title { font-size: 24px; font-weight: 800; color: #1A1A1A; letter-spacing: -.02em; }
+.logo-sub { font-size: 13px; color: #999; margin-top: 3px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+.form-input {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  border: 1.5px solid #E0E0D8; background: #fff; color: #1A1A1A;
+  font-size: 15px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.form-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
+.btn {
+  width: 100%; padding: 13px; border-radius: 10px; border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  background: #1D9E75; color: #fff; transition: opacity .15s, transform .1s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn:hover { opacity: .9; }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .6; cursor: wait; }
+.error {
+  background: #FEECEC; border: 1px solid #F7C1C1;
+  border-radius: 10px; padding: 11px 14px; font-size: 13px; color: #8B1C1C;
+  margin-bottom: 16px; display: none; line-height: 1.5;
+}
+.info {
+  background: #E6F1FB; border: 1px solid #B5D4F4;
+  border-radius: 10px; padding: 11px 14px; font-size: 12px; color: #185FA5;
+  margin-top: 20px; line-height: 1.6;
+}
+.info strong { font-weight: 600; }
+.divider { height: 1px; background: #F0F0EC; margin: 20px 0; }
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">
+    <div class="logo-icon">🏖️</div>
     <div class="logo-badge">ITF Sand Series</div>
     <div class="logo-title">Open des Brisants</div>
     <div class="logo-sub">Système de gestion du tournoi</div>
@@ -38,54 +72,90 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="error" id="err-msg"></div>
 
   <div class="form-group">
-    <label class="form-label">Identifiant</label>
-    <input class="form-input" id="username" type="text" placeholder="admin / arbitre / terrain" autocomplete="username" autofocus>
+    <label class="form-label">Adresse email</label>
+    <input class="form-input" id="email" type="email"
+           placeholder="admin@brisants.re"
+           autocomplete="email" autofocus>
   </div>
-  <div class="form-group">
+  <div class="form-group" style="margin-bottom:18px">
     <label class="form-label">Mot de passe</label>
-    <input class="form-input" id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+    <input class="form-input" id="password" type="password"
+           placeholder="••••••••"
+           autocomplete="current-password">
   </div>
-  <button class="btn" onclick="doLogin()">Se connecter</button>
 
-  <div class="roles">
-    <div class="roles-title">Comptes disponibles</div>
-    <div class="role-item"><div class="role-dot" style="background:#378ADD"></div><strong style="color:#185FA5">admin</strong> — Administration complète</div>
-    <div class="role-item"><div class="role-dot" style="background:#EF9F27"></div><strong style="color:#7A4A00">arbitre</strong> — Dashboard, Stats, Temps de repos</div>
-    <div class="role-item"><div class="role-dot" style="background:#1D9E75"></div><strong style="color:#0F6E56">terrain</strong> — Application terrain</div>
+  <button class="btn" id="login-btn" onclick="doLogin()">
+    <span id="btn-text">Se connecter</span>
+  </button>
+
+  <div class="divider"></div>
+
+  <div class="info">
+    <strong>Comptes disponibles :</strong><br>
+    Les comptes sont créés dans Supabase Auth.<br>
+    Voir le guide de configuration ci-dessous si vous n'avez pas encore de compte.
+  </div>
+
+  <div id="err-403" style="display:none" class="error">
+    ⚠️ Votre compte n'a pas les droits pour accéder à cette page.
   </div>
 </div>
 
 <script src="supabase.js"></script>
 <script>
-// Si déjà connecté → rediriger
-const session = auth.getSession();
-if (session) {
-  const dest = { admin: 'portal.html', arbitre: 'dashboard.html', terrain: 'terrain.html' };
-  location.href = dest[session.role] || 'portal.html';
-}
-
-// Afficher erreur 403
+// Afficher erreur 403 si redirigé depuis une page protégée
 if (location.search.includes('err=403')) {
-  document.getElementById('err-msg').style.display = 'block';
-  document.getElementById('err-msg').textContent = 'Accès refusé : votre compte n\'a pas les droits pour cette page.';
+  document.getElementById('err-403').style.display = 'block';
 }
 
-document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-document.getElementById('username').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+// Si déjà connecté → rediriger
+(async () => {
+  const session = await auth.getSession();
+  if (session) redirectByRole(session.role);
+})();
 
-function doLogin() {
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  const err = document.getElementById('err-msg');
+// Navigation au clavier
+document.getElementById('email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('password').focus();
+});
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
 
-  if (!u || !p) { err.style.display='block'; err.textContent='Veuillez renseigner identifiant et mot de passe.'; return; }
+async function doLogin() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl = document.getElementById('err-msg');
+  const btn = document.getElementById('login-btn');
+  const btnText = document.getElementById('btn-text');
 
-  const session = auth.login(u, p);
-  if (!session) { err.style.display='block'; err.textContent='Identifiant ou mot de passe incorrect.'; document.getElementById('password').value=''; return; }
+  errEl.style.display = 'none';
 
-  err.style.display = 'none';
+  if (!email || !password) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Veuillez saisir votre email et votre mot de passe.';
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'Connexion…';
+
+  try {
+    const session = await auth.login(email, password);
+    redirectByRole(session.role);
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.innerHTML = '❌ ' + (e.message || 'Identifiants incorrects. Vérifiez votre email et mot de passe.');
+    document.getElementById('password').value = '';
+    document.getElementById('password').focus();
+    btn.disabled = false;
+    btnText.textContent = 'Se connecter';
+  }
+}
+
+function redirectByRole(role) {
   const dest = { admin: 'portal.html', arbitre: 'dashboard.html', terrain: 'terrain.html' };
-  location.href = dest[session.role] || 'portal.html';
+  location.href = dest[role] || 'portal.html';
 }
 </script>
 </body>
