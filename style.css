@@ -23,10 +23,10 @@
   --cy:  #FFD93D;   /* jaune balle */
 
   /* ── Fonds — plus clairs qu'avant ── */
-  --bg:  #2a2d4a;   /* carte / surface  (était #1e2235) */
+  --bg:  #191970;   /* carte / surface  (était #1e2235) */
   --bg2: #32365a;   /* inputs / secondaire (était #252a42) */
   --bg3: #23265e;   /* fond page (entre bg et MidnightBlue) */
-  --bg4: #1a1d42;   /* topbar (était #0f0f2e, maintenant lisible) */
+  --bg4: #191970;   /* topbar (était #0f0f2e, maintenant lisible) */
 
   /* ── Textes ── */
   --text:  #EEEEF8;
