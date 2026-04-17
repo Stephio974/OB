@@ -1,41 +1,44 @@
 /* ═══════════════════════════════════════════════════════════════
    Open International des Brisants 2026
-   Thème : Ardoise Éclairée — accents néon, fonds moins sombres
+   Thème inversé : bandeau/tuiles = bleu MidnightBlue clair,
+                   fond page = ardoise sombre
    ═══════════════════════════════════════════════════════════════ */
 :root {
   /* ── Accents néon ── */
-  --cp:  #00D98A;   /* vert menthe */
+  --cp:  #00D98A;
   --cpd: #00A86B;
   --cpl: #0d3d28;
 
-  --cv:  #9B72F0;   /* violet */
+  --cv:  #9B72F0;
   --cvl: #251545;
 
-  --co:  #FF8C42;   /* orange */
+  --co:  #FF8C42;
   --col: #3d1e00;
 
-  --cc:  #2EBDF5;   /* cyan */
+  --cc:  #2EBDF5;
   --ccl: #082538;
 
-  --ca:  #F75C5C;   /* rouge */
+  --ca:  #F75C5C;
   --cal: #3a0d0d;
 
-  --cy:  #FFD93D;   /* jaune balle */
+  --cy:  #FFD93D;
 
-  /* ── Fonds — plus clairs qu'avant ── */
-  --bg:  #191970;   /* carte / surface  (était #1e2235) */
-  --bg2: #32365a;   /* inputs / secondaire (était #252a42) */
-  --bg3: #23265e;   /* fond page (entre bg et MidnightBlue) */
-  --bg4: #191970;   /* topbar (était #0f0f2e, maintenant lisible) */
+  /* ── INVERSÉ : bandeau / cartes = bleu MidnightBlue (clair) ── */
+  --bg:  #191970;   /* tuiles / cartes  = MidnightBlue */
+  --bg2: #1f2280;   /* inputs / surfaces secondaires */
+  --bg4: #191970;   /* topbar = MidnightBlue */
+
+  /* ── Fond page = ardoise sombre (plus foncé que les cartes) ── */
+  --bg3: #0e0e3a;   /* fond page body */
 
   /* ── Textes ── */
-  --text:  #EEEEF8;
-  --text2: #B0B4D8;
-  --text3: #7278A8;
+  --text:  #EEF0FF;
+  --text2: #A8B0E0;
+  --text3: #6870B0;
 
   /* ── Bordures ── */
-  --border:  #383c6a;
-  --border2: #464b7a;
+  --border:  #2a2e7a;
+  --border2: #3540a0;
 
   /* ── Géométrie ── */
   --r:   10px;
@@ -64,22 +67,22 @@ body {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border2);
 }
-.topbar-brand  { display: flex; align-items: center; gap: 12px; }
-.topbar-logo   { font-size: 10px; font-weight: 600; opacity: .7; text-transform: uppercase; letter-spacing: .07em; line-height: 1.4; }
-.topbar-name   { font-size: 15px; font-weight: 700; line-height: 1.2; }
-.topbar-nav    { display: flex; gap: 4px; }
-.topbar-nav a  { color: rgba(255,255,255,.6); text-decoration: none; padding: 6px 11px; border-radius: 7px; font-size: 13px; font-weight: 500; transition: background .15s, color .15s; }
-.topbar-nav a:hover  { background: rgba(255,255,255,.12); color: #fff; }
-.topbar-nav a.active { background: rgba(0,217,138,.18); color: var(--cp); }
+.topbar-brand { display: flex; align-items: center; gap: 12px; }
+.topbar-logo  { font-size: 10px; font-weight: 600; opacity: .8; text-transform: uppercase; letter-spacing: .07em; line-height: 1.4; }
+.topbar-name  { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.topbar-nav   { display: flex; gap: 4px; }
+.topbar-nav a { color: rgba(255,255,255,.65); text-decoration: none; padding: 6px 11px; border-radius: 7px; font-size: 13px; font-weight: 500; transition: background .15s, color .15s; }
+.topbar-nav a:hover  { background: rgba(255,255,255,.14); color: #fff; }
+.topbar-nav a.active { background: rgba(0,217,138,.22); color: var(--cp); }
 .topbar-logo-img { height: 32px; width: auto; object-fit: contain; }
 
 .page-body      { flex: 1; padding: 20px; max-width: 1280px; margin: 0 auto; width: 100%; }
 .page-body.full { max-width: none; padding: 16px; }
 
-/* ── Cards ──────────────────────────────────────────────────── */
-.card       { background: var(--bg); border-radius: var(--rl); border: 1px solid var(--border); padding: 18px 20px; }
+/* ── Cards = MidnightBlue ────────────────────────────────────── */
+.card       { background: var(--bg); border-radius: var(--rl); border: 1px solid var(--border2); padding: 18px 20px; }
 .card-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
 .card-grid  { display: grid; gap: 14px; }
 .card-grid.cols2 { grid-template-columns: 1fr 1fr; }
@@ -108,7 +111,7 @@ body {
 .dot-wait     { background: var(--text3); }
 .dot-warm     { background: var(--co); }
 .dot-play     { background: var(--cp); }
-.dot-done     { background: #666; }
+.dot-done     { background: #555; }
 .dot-retired  { background: var(--ca); }
 
 /* ── Tables ──────────────────────────────────────────────────── */
@@ -121,13 +124,13 @@ body {
 .data-table .actions { display: flex; gap: 5px; }
 
 /* ── Spreadsheet ─────────────────────────────────────────────── */
-.ss-wrap { overflow-x: auto; max-height: 65vh; overflow-y: auto; border-radius: var(--r); border: 1px solid var(--border); }
+.ss-wrap { overflow-x: auto; max-height: 65vh; overflow-y: auto; border-radius: var(--r); border: 1px solid var(--border2); }
 .spreadsheet { border-collapse: collapse; font-size: 12px; min-width: 100%; }
 .spreadsheet th {
-  background: var(--bg4); color: var(--text3);
+  background: var(--bg3); color: var(--text3);
   padding: 6px 8px; font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .05em;
-  border: 1px solid var(--border2); white-space: nowrap;
+  border: 1px solid var(--border); white-space: nowrap;
   position: sticky; top: 0; z-index: 2;
 }
 .spreadsheet td { padding: 0; border: 1px solid var(--border); vertical-align: middle; }
@@ -137,17 +140,17 @@ body {
   text-overflow: ellipsis; font-size: 12px; color: var(--text2);
   display: block;
 }
-.spreadsheet .cell-view:hover { background: rgba(0,217,138,.06); }
+.spreadsheet .cell-view:hover { background: rgba(0,217,138,.08); cursor: text; }
 .spreadsheet td input, .spreadsheet td select {
   width: 100%; min-height: 30px; padding: 4px 7px;
-  background: #1e2250; color: var(--text);
+  background: #0e0e3a; color: var(--text);
   border: none; outline: 2px solid var(--cp); outline-offset: -2px;
   font-size: 12px; font-family: inherit;
 }
 .spreadsheet td select option { background: var(--bg2); }
-.spreadsheet tr:nth-child(even) td { background: rgba(255,255,255,.02); }
-.spreadsheet tr:hover td { background: rgba(0,217,138,.04); }
-.row-no { color: var(--text3); font-size: 10px; text-align: center; padding: 5px 6px !important; min-width: 28px; user-select: none; background: var(--bg4) !important; }
+.spreadsheet tr:nth-child(even) td { background: rgba(255,255,255,.025); }
+.spreadsheet tr:hover td { background: rgba(0,217,138,.05); }
+.row-no { color: var(--text3); font-size: 10px; text-align: center; padding: 5px 6px !important; min-width: 28px; user-select: none; background: var(--bg3) !important; }
 
 /* ── Forms ───────────────────────────────────────────────────── */
 .form-group    { margin-bottom: 14px; }
@@ -178,14 +181,12 @@ body {
 .btn-primary:hover { opacity: .88; }
 .btn-danger  { background: var(--ca); color: #fff; border-color: #c04040; }
 .btn-danger:hover  { opacity: .88; }
-.btn-violet  { background: var(--cv); color: #fff; border-color: #7a50d0; }
-.btn-outline { background: transparent; border-color: var(--border2); color: var(--text2); }
-.btn-outline:hover { background: var(--bg2); color: var(--text); }
+.btn-outline { background: rgba(255,255,255,.08); border-color: var(--border2); color: var(--text2); }
+.btn-outline:hover { background: rgba(255,255,255,.15); color: var(--text); }
 .btn-ghost   { background: transparent; color: var(--text3); border-color: transparent; padding: 6px 10px; }
-.btn-ghost:hover { background: var(--bg2); color: var(--text); }
+.btn-ghost:hover { background: rgba(255,255,255,.1); color: var(--text); }
 .btn-sm  { padding: 5px 10px; font-size: 12px; }
 .btn-xs  { padding: 3px 7px; font-size: 11px; }
-.btn-icon { padding: 7px; border-radius: 8px; }
 
 /* ── Alerts ──────────────────────────────────────────────────── */
 .alert         { padding: 12px 16px; border-radius: var(--r); font-size: 13px; margin-bottom: 14px; line-height: 1.5; }
@@ -211,7 +212,7 @@ body {
 .collapsible-body   { overflow: hidden; }
 
 /* ── Filters bar ─────────────────────────────────────────────── */
-.filters-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; padding: 10px 12px; background: var(--bg); border-radius: var(--r); border: 1px solid var(--border); }
+.filters-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; padding: 10px 12px; background: var(--bg); border-radius: var(--r); border: 1px solid var(--border2); }
 .filters-bar .form-group { margin: 0; flex: 1; min-width: 110px; }
 .filters-bar .form-select, .filters-bar .form-input { font-size: 12px; padding: 6px 9px; }
 

@@ -33,7 +33,7 @@
 .tourney-val{font-size:13px;color:var(--text);font-weight:500}
 .status-pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700}
 .pill-draft{background:var(--bg2);color:var(--text3);border:1px solid var(--border2)}
-.pill-active{background:rgba(0,217,138,.14);color:var(--cp);border:1px solid rgba(0,217,138,.35)}
+.pill-active{background:rgba(0,217,138,.15);color:var(--cp);border:1px solid rgba(0,217,138,.35)}
 .pill-finished{background:var(--bg2);color:var(--text3);border:1px solid var(--border2)}
 /* SPREADSHEET column groups */
 .ss-group-sep{border-left:2px solid var(--cv) !important}
@@ -83,15 +83,35 @@
   <div class="modal-title" id="modal-tournament-title">Tournoi</div>
   <input type="hidden" id="t-id">
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="t-name" placeholder="Open International des Brisants 2026"></div>
+    <div class="form-group"><label class="form-label">Nom du tournoi *</label><input class="form-input" id="t-name" placeholder="Open International des Brisants 2026"></div>
     <div class="form-group"><label class="form-label">Lieu</label><input class="form-input" id="t-location" placeholder="Saint-Paul, La Réunion"></div>
   </div>
   <div class="form-row cols2">
     <div class="form-group"><label class="form-label">Début *</label><input class="form-input" type="date" id="t-start"></div>
     <div class="form-group"><label class="form-label">Fin *</label><input class="form-input" type="date" id="t-end"></div>
   </div>
+  <div class="form-group"><label class="form-label">Label ITF (affiché dans le bandeau)</label>
+    <input class="form-input" id="t-itf" placeholder="ITF Beach Tennis — WORLD TOUR SAND SERIES — Réunion Classic '26">
+    <div class="form-hint">Affiché en petit au-dessus du titre sur toutes les pages</div>
+  </div>
   <div class="form-group"><label class="form-label">Statut</label>
     <select class="form-select" id="t-status"><option value="draft">Brouillon</option><option value="active">Actif</option><option value="finished">Terminé</option></select>
+  </div>
+  <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--border)">Logos (URLs)</div>
+  <div class="alert alert-info" style="font-size:12px;margin-bottom:10px">Hébergez vos logos dans votre dépôt GitHub (ex: <code>logo_odb.png</code>) ou sur un service externe, puis collez l'URL complète ci-dessous.</div>
+  <div class="form-row cols2">
+    <div class="form-group">
+      <label class="form-label">Logo gauche (URL)</label>
+      <input class="form-input" id="t-logo1" placeholder="https://… ou logo_odb.png">
+      <div class="form-hint">Positionné en haut à gauche du bandeau</div>
+      <div id="t-logo1-preview" style="margin-top:6px;display:none"><img id="t-logo1-img" style="height:36px;border-radius:4px;border:1px solid var(--border2)" alt="Logo 1"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Logo droite (URL)</label>
+      <input class="form-input" id="t-logo2" placeholder="https://… ou logo_itf.png">
+      <div class="form-hint">Positionné en haut à droite du bandeau</div>
+      <div id="t-logo2-preview" style="margin-top:6px;display:none"><img id="t-logo2-img" style="height:36px;border-radius:4px;border:1px solid var(--border2)" alt="Logo 2"></div>
+    </div>
   </div>
   <div class="modal-actions">
     <button class="btn btn-outline" onclick="closeModal('modal-tournament')">Annuler</button>
@@ -326,7 +346,14 @@ function sTournament(){
   '<button class="btn btn-outline" onclick="openTournamentModal(false)">+ Nouveau</button>'+
   (t?'<button class="btn btn-primary" onclick="openTournamentModal(true)">✏️ Modifier</button>':'')+'</div></div>'+
   (t?'<div class="tourney-card">'+
-  '<div class="tourney-field"><span class="tourney-key">Nom</span><span class="tourney-val">'+t.name+'</span></div>'+
+  (t.logo1_url||t.logo2_url?'<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">'+
+  (t.logo1_url?'<img src="'+t.logo1_url+'" style="height:40px;object-fit:contain;border-radius:4px" alt="Logo 1">':'<div style="width:40px;height:40px;background:var(--bg2);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:10px">Logo 1</div>')+
+  '<div style="flex:1">'+
+  (t.itf_label?'<div style="font-size:11px;color:var(--cv);font-weight:600;margin-bottom:2px">'+t.itf_label+'</div>':'')+
+  '<div style="font-size:14px;font-weight:700;color:var(--text)">'+t.name+'</div></div>'+
+  (t.logo2_url?'<img src="'+t.logo2_url+'" style="height:40px;object-fit:contain;border-radius:4px" alt="Logo 2">':'<div style="width:40px;height:40px;background:var(--bg2);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:10px">Logo 2</div>')+
+  '</div>':'<div class="tourney-field"><span class="tourney-key">Nom</span><span class="tourney-val">'+t.name+'</span></div>')+
+  (t.itf_label&&!(t.logo1_url||t.logo2_url)?'<div class="tourney-field"><span class="tourney-key">Label ITF</span><span class="tourney-val" style="color:var(--cv)">'+t.itf_label+'</span></div>':'')+
   '<div class="tourney-field"><span class="tourney-key">Lieu</span><span class="tourney-val">'+(t.location||'—')+'</span></div>'+
   '<div class="tourney-field"><span class="tourney-key">Début</span><span class="tourney-val">'+fmt(t.start_date)+'</span></div>'+
   '<div class="tourney-field"><span class="tourney-key">Fin</span><span class="tourney-val">'+fmt(t.end_date)+'</span></div>'+
@@ -724,17 +751,31 @@ function sImport(){
 function openTournamentModal(editCurrent){
   const t=editCurrent?allTournaments.find(x=>x.id===activeTournamentId):null;
   document.getElementById('modal-tournament-title').textContent=t?'Modifier le tournoi':'Nouveau tournoi';
-  document.getElementById('t-id').value=t?.id||'';['t-name','t-location','t-start','t-end'].forEach(id=>{document.getElementById(id).value=t?.[id.replace('t-','').replace('start','start_date').replace('end','end_date').replace('name','name').replace('location','location')]||'';});
+  document.getElementById('t-id').value=t?.id||'';
   document.getElementById('t-name').value=t?.name||'';
   document.getElementById('t-location').value=t?.location||'';
   document.getElementById('t-start').value=t?.start_date||'';
   document.getElementById('t-end').value=t?.end_date||'';
   document.getElementById('t-status').value=t?.status||'draft';
+  document.getElementById('t-itf').value=t?.itf_label||'';
+  const l1=t?.logo1_url||'', l2=t?.logo2_url||'';
+  document.getElementById('t-logo1').value=l1;
+  document.getElementById('t-logo2').value=l2;
+  previewLogo(1,l1); previewLogo(2,l2);
+  // Live preview on input
+  document.getElementById('t-logo1').oninput=e=>previewLogo(1,e.target.value);
+  document.getElementById('t-logo2').oninput=e=>previewLogo(2,e.target.value);
   openModal('modal-tournament');
+}
+function previewLogo(n,url){
+  const wrap=document.getElementById('t-logo'+n+'-preview');
+  const img=document.getElementById('t-logo'+n+'-img');
+  if(url){wrap.style.display='block';img.src=url;img.onerror=()=>{wrap.style.display='none';};}
+  else{wrap.style.display='none';}
 }
 async function saveTournament(){
   const id=document.getElementById('t-id').value;
-  const body={name:document.getElementById('t-name').value.trim(),location:document.getElementById('t-location').value.trim(),start_date:document.getElementById('t-start').value,end_date:document.getElementById('t-end').value,status:document.getElementById('t-status').value};
+  const body={name:document.getElementById('t-name').value.trim(),location:document.getElementById('t-location').value.trim(),start_date:document.getElementById('t-start').value,end_date:document.getElementById('t-end').value,status:document.getElementById('t-status').value,itf_label:document.getElementById('t-itf').value.trim()||null,logo1_url:document.getElementById('t-logo1').value.trim()||null,logo2_url:document.getElementById('t-logo2').value.trim()||null};
   if(!body.name||!body.start_date||!body.end_date){toast('Nom et dates obligatoires','error');return;}
   try{
     if(id)await sb.patch('tournament','id=eq.'+id,body);
