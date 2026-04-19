@@ -2,83 +2,82 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>1 Point Challenge by Lavazza</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.bracket-wrap{overflow-x:auto;padding:8px 0 16px}
-.bracket{display:flex;gap:0;align-items:flex-start;min-width:max-content}
-.round-col{display:flex;flex-direction:column;justify-content:space-around;min-width:190px;padding:0 8px}
-.round-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:center;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
-.match-block{border:1.5px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--bg)}
-.match-block.has-result{border-color:var(--cp)}
-.player-slot{padding:9px 11px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;min-height:42px;cursor:pointer;transition:background .15s;color:var(--text2)}
-.player-slot:hover:not(.empty):not(.winner):not(.bye):not(.loser){background:var(--cpl)}
-.player-slot.winner{background:var(--cp);color:#0a1a12;font-weight:700;cursor:default}
-.player-slot.loser{opacity:.4;cursor:default}
-.player-slot.empty{color:var(--text3);font-style:italic;cursor:default;font-size:12px}
-.player-slot.bye{color:var(--text3);font-style:italic;cursor:default;font-size:11px}
-.slot-divider{height:1px;background:var(--border)}
-.seed-badge{font-size:10px;font-weight:700;background:var(--border);color:var(--text3);border-radius:20px;padding:1px 6px;flex-shrink:0}
-.winner .seed-badge{background:rgba(0,0,0,.15);color:#0a1a12}
-.comp-info{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--text2);display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.confirm-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rxl);padding:28px;max-width:360px;width:100%;text-align:center}
-.confirm-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)}
-.confirm-sub{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.5}
-.confirm-actions{display:flex;gap:10px;justify-content:center}
-.connector{display:flex;align-items:center;padding:0 4px}
-.conn-line{width:16px;height:2px;background:var(--border2)}
-.trophy{font-size:28px;text-align:center;padding:16px;color:var(--cy)}
+/* Round block */
+.round{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+.round-head{background:var(--bg2);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.round-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.round-result{font-size:12px;color:var(--cp);font-weight:600}
+.match-face{display:flex;align-items:stretch;padding:12px 14px;gap:10px}
+/* Player buttons */
+.player-btn{flex:1;padding:14px 16px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;transition:border-color .15s,background .15s;position:relative;min-width:120px}
+.player-btn.clickable:hover{border-color:var(--cp);background:var(--cpl);color:var(--cp)}
+.player-btn.clickable:active{transform:scale(.97)}
+.player-btn.winner{background:var(--cp);color:#001a10;border-color:var(--cpd);cursor:default}
+.player-btn.loser{opacity:.32;cursor:default;text-decoration:line-through}
+.player-btn.waiting{border-style:dashed;color:var(--text3);cursor:default;font-weight:400;font-style:italic;font-size:13px}
+.vs-div{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text3);padding:0 4px;flex-shrink:0}
+.seed{font-size:10px;font-weight:700;background:rgba(255,255,255,.15);color:inherit;border-radius:20px;padding:1px 6px;margin-right:6px}
+/* Waiting pool */
+.pool{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:12px 14px;margin-bottom:10px}
+.pool-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.pool-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pool-chip{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:13px;color:var(--text2)}
+/* Champion */
+.champion{text-align:center;padding:28px;background:var(--bg);border:2px solid var(--cy);border-radius:var(--rl);margin-bottom:12px}
+.champ-trophy{font-size:52px;margin-bottom:8px}
+.champ-name{font-size:24px;font-weight:800;color:var(--cy)}
+.champ-sub{font-size:13px;color:var(--text3);margin-top:4px}
+/* Confirm overlay */
+.c-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.c-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rxl);padding:28px;max-width:340px;width:100%;text-align:center}
+.c-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px}
+.c-sub{font-size:13px;color:var(--text2);margin-bottom:22px;line-height:1.55}
+.c-actions{display:flex;gap:10px;justify-content:center}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar" style="background:#0f0f2e">
+  <div class="topbar">
     <div class="topbar-brand">
       <div>
-        <div class="topbar-logo" id="brand-sub">Tournoi spécial</div>
+        <div class="topbar-logo">Tournoi spécial</div>
         <div class="topbar-name">☕ 1 Point Challenge by Lavazza</div>
       </div>
     </div>
     <div class="topbar-nav">
-      <a href="portal.html">Portail</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="portal.html">Portail</a><a href="dashboard.html">Dashboard</a>
     </div>
-    <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.6)" onclick="auth.logout()">⎋</button>
+    <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.55)" onclick="auth.logout()">⎋</button>
   </div>
 
   <div class="page-body">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <select class="form-select" id="comp-select" onchange="loadComp(this.value)" style="max-width:280px">
-        <option value="">— Sélectionner la compétition —</option>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <select class="form-select" id="comp-sel" onchange="loadComp(this.value)" style="max-width:320px;flex:1">
+        <option value="">— Sélectionner une compétition —</option>
       </select>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-outline" onclick="loadComp(document.getElementById('comp-select').value)">↻ Actualiser</button>
-        <button class="btn btn-primary" id="btn-init" onclick="initBracket()" style="display:none">⚡ Générer le tableau</button>
-        <button class="btn btn-danger btn-sm" id="btn-reset" onclick="resetBracket()" style="display:none">✕ Réinitialiser</button>
-      </div>
+      <button class="btn btn-outline btn-sm" id="btn-refresh" onclick="loadComp(document.getElementById('comp-sel').value)" style="display:none">↻</button>
+      <button class="btn btn-primary"        id="btn-start"   onclick="startTournament()"  style="display:none">⚡ Démarrer</button>
+      <button class="btn btn-danger btn-sm"  id="btn-reset"   onclick="resetTournament()"  style="display:none">✕ Réinitialiser</button>
     </div>
-
-    <div id="comp-info" class="comp-info" style="display:none"></div>
-    <div id="bracket-area">
-      <div style="text-align:center;padding:60px;color:var(--text3)">
-        <div style="font-size:48px;margin-bottom:12px">☕</div>
-        <div style="font-size:15px;font-weight:500;color:var(--text2)">1 Point Challenge by Lavazza</div>
-        <div style="font-size:13px;margin-top:6px">Sélectionnez une compétition pour afficher le tableau</div>
-      </div>
-    </div>
+    <div id="info-bar" style="display:none;font-size:12px;color:var(--text3);margin-bottom:10px"></div>
+    <div id="bracket"></div>
   </div>
 </div>
 
 <!-- Confirm modal -->
-<div id="confirm-overlay" class="confirm-overlay" style="display:none">
-  <div class="confirm-card">
-    <div class="confirm-title" id="confirm-title">Confirmer</div>
-    <div class="confirm-sub" id="confirm-sub"></div>
-    <div class="confirm-actions">
+<div id="c-overlay" class="c-overlay" style="display:none">
+  <div class="c-card">
+    <div class="c-title" id="c-title">Désigner le vainqueur</div>
+    <div class="c-sub"   id="c-sub"></div>
+    <div class="c-actions">
       <button class="btn btn-outline" onclick="closeConfirm()">Annuler</button>
-      <button class="btn btn-primary" id="confirm-btn">Valider</button>
+      <button class="btn btn-primary" id="c-ok">✓ Valider</button>
     </div>
   </div>
 </div>
@@ -87,233 +86,235 @@
 <script>
 auth.require(['admin','arbitre','terrain']);
 
-const activeTournamentId = getActiveTournament();
-let currentComp = null, bracketMatches = [], allTeams = [];
+const tid = getActiveTournament();
+let currentComp=null, allTeams=[], dbMatches=[];
+// In-memory bracket state
+// bracket = array of rounds in order
+// round = { id(db), p1, p2, winner, done }
+// p1/p2 = team object or null
+let bracket=[], remaining=[], champion=null;
+let pendingWin=null;
 
-async function init() {
-  // Charger toutes les compétitions du tournoi actif
-  const comps = await sb.get('competition', 'tournament_id=eq.'+activeTournamentId+'&order=name').catch(()=>[]);
-  // Filtre : format onepoint OU category Simple
-  const onepoint = comps.filter(c => c.format==='onepoint' || c.category==='Simple');
+// ── INIT ──────────────────────────────────────────────────────
+async function initPage(){
+  const comps=await sb.get('competition','tournament_id=eq.'+tid+'&order=name').catch(()=>[]);
+  const onepoint=comps.filter(c=>c.format==='onepoint'||c.category==='Simple');
+  const list=onepoint.length?onepoint:comps;
+  const sel=document.getElementById('comp-sel');
+  sel.innerHTML='<option value="">— Sélectionner —</option>'+list.map(c=>'<option value="'+c.id+'">'+c.name+' ('+c.category+')</option>').join('');
+  if(list.length===1){sel.value=list[0].id;loadComp(list[0].id);}
+}
 
-  const sel = document.getElementById('comp-select');
-  if (onepoint.length) {
-    sel.innerHTML = '<option value="">— Sélectionner —</option>' +
-      onepoint.map(c => '<option value="'+c.id+'">'+c.name+' ('+c.category+')</option>').join('');
-    if (onepoint.length === 1) { sel.value = onepoint[0].id; loadComp(onepoint[0].id); }
+async function loadComp(compId){
+  if(!compId)return;
+  currentComp=await sb.get('competition','id=eq.'+compId).then(r=>r[0]).catch(()=>null);
+  allTeams=await sb.get('team','competition_id=eq.'+compId+'&withdrawn=eq.false&order=seed,name').catch(()=>[]);
+  dbMatches=await sb.get('match','competition_id=eq.'+compId+'&order=created_at').catch(()=>[]);
+
+  const info=document.getElementById('info-bar');
+  info.style.display='block';
+  info.textContent=allTeams.length+' joueur'+(allTeams.length>1?'s':'')+' inscrits — cliquez sur le bouton joueur pour le désigner vainqueur du point';
+
+  const has=dbMatches.length>0;
+  document.getElementById('btn-start').style.display=has?'none':'inline-flex';
+  document.getElementById('btn-reset').style.display=has?'inline-flex':'none';
+  document.getElementById('btn-refresh').style.display=has?'inline-flex':'none';
+
+  if(has){
+    rebuildFromDB();
   } else {
-    // Afficher toutes si aucune correspondance
-    sel.innerHTML = '<option value="">— Aucune compétition "1 Point" (créer dans Admin avec format=onepoint) —</option>' +
-      comps.map(c => '<option value="'+c.id+'">'+c.name+'</option>').join('');
+    bracket=[]; remaining=[]; champion=null;
+    renderBracket();
   }
 }
 
-async function loadComp(compId) {
-  if (!compId) return;
-  document.getElementById('bracket-area').innerHTML = '<div class="loading-overlay"><div class="spinner"></div> Chargement…</div>';
+// Rebuild bracket state from DB matches
+function rebuildFromDB(){
+  bracket=[];
+  const loserIds=new Set();
+  const playedIds=new Set();
 
-  currentComp = await sb.get('competition','id=eq.'+compId).then(r=>r[0]).catch(()=>null);
-  if (!currentComp) return;
+  dbMatches.forEach(m=>{
+    const p1=allTeams.find(t=>t.id===m.team1_id)||null;
+    const p2=allTeams.find(t=>t.id===m.team2_id)||null;
+    const winner=m.winner_id?allTeams.find(t=>t.id===m.winner_id)||null:null;
+    if(m.winner_id){
+      const loserId=m.team1_id===m.winner_id?m.team2_id:m.team1_id;
+      if(loserId)loserIds.add(loserId);
+    }
+    if(m.team1_id)playedIds.add(m.team1_id);
+    if(m.team2_id)playedIds.add(m.team2_id);
+    bracket.push({id:m.id,p1,p2,winner,done:!!m.winner_id});
+  });
 
-  allTeams = await sb.get('team','competition_id=eq.'+compId+'&withdrawn=eq.false&order=seed,name').catch(()=>[]);
-  bracketMatches = await sb.get('match','competition_id=eq.'+compId+'&order=round,created_at').catch(()=>[]);
+  // Remaining = not yet played OR brought in but not yet a loser
+  remaining=allTeams.filter(t=>!playedIds.has(t.id)&&!loserIds.has(t.id));
 
-  const info = document.getElementById('comp-info');
-  info.style.display = 'flex';
-  info.innerHTML =
-    '<span>Joueurs inscrits : <strong>'+allTeams.length+'</strong></span>' +
-    '<span>Matchs générés : <strong>'+bracketMatches.length+'</strong></span>' +
-    (currentComp.net_height_cm ? '<span>Filet : <strong>'+currentComp.net_height_cm+' cm</strong></span>' : '') +
-    (currentComp.match_format ? '<span>'+currentComp.match_format+'</span>' : '');
-
-  const hasMatches = bracketMatches.length > 0;
-  document.getElementById('btn-init').style.display  = hasMatches ? 'none' : 'inline-flex';
-  document.getElementById('btn-reset').style.display = hasMatches ? 'inline-flex' : 'none';
+  // Champion = last winner still active (no more opponents)
+  const lastRound=bracket[bracket.length-1];
+  const lastWinner=lastRound?.winner;
+  if(lastWinner&&remaining.length===0){
+    const totalActive=allTeams.filter(t=>!loserIds.has(t.id));
+    if(totalActive.length===1)champion=lastWinner;
+  }
 
   renderBracket();
 }
 
-async function initBracket() {
-  if (!currentComp || !allTeams.length) { toast('Inscrivez d\'abord des joueurs dans Admin → Équipes','warn'); return; }
-  if (!confirm('Générer le tableau pour '+allTeams.length+' joueurs ?\n\n"Irréversible" signifie que les matchs créés ne peuvent pas être effacés automatiquement — utilisez "Réinitialiser" si besoin.')) return;
+// ── START ─────────────────────────────────────────────────────
+async function startTournament(){
+  if(!currentComp||!allTeams.length){toast('Inscrivez d\'abord des joueurs (Admin → Équipes)','warn');return;}
+  if(allTeams.length<2){toast('Il faut au moins 2 joueurs','warn');return;}
+  if(!confirm('Démarrer le tournoi 1 Point Challenge avec '+allTeams.length+' joueurs ?'))return;
+  // Shuffle all players randomly
+  const shuffled=[...allTeams].sort(()=>Math.random()-.5);
+  // First match = first two players
+  const p1=shuffled[0], p2=shuffled[1];
+  remaining=shuffled.slice(2);
+  try{
+    const r=await sb.post('match',{competition_id:currentComp.id,team1_id:p1.id,team2_id:p2.id,round:'R1',status:'scheduled'});
+    bracket=[{id:r[0].id,p1,p2,winner:null,done:false}];
+    champion=null;
+    document.getElementById('btn-start').style.display='none';
+    document.getElementById('btn-reset').style.display='inline-flex';
+    document.getElementById('btn-refresh').style.display='inline-flex';
+    renderBracket();
+  }catch(e){toast('Erreur : '+e.message,'error');}
+}
 
-  const seeded   = allTeams.filter(t=>t.seed).sort((a,b)=>a.seed-b.seed);
-  const unseeded = allTeams.filter(t=>!t.seed).sort(()=>Math.random()-.5);
-  const players  = [...seeded,...unseeded];
-  const n        = players.length;
-  const nextPow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(n,2))));
-  const r1Count  = nextPow2 / 2;
+// ── RESET ─────────────────────────────────────────────────────
+async function resetTournament(){
+  if(!confirm('Supprimer tous les matchs de ce tournoi et recommencer ?'))return;
+  for(const m of dbMatches)await sb.delete('match','id=eq.'+m.id).catch(()=>{});
+  bracket=[]; remaining=[]; champion=null; dbMatches=[];
+  document.getElementById('btn-start').style.display='inline-flex';
+  document.getElementById('btn-reset').style.display='none';
+  document.getElementById('btn-refresh').style.display='none';
+  renderBracket();
+}
 
-  let created = 0;
-  // Round 1
-  for (let i=0; i<r1Count; i++) {
-    const t1 = players[i*2]   || null;
-    const t2 = players[i*2+1] || null;
-    const isBye = t1 && !t2;
-    try {
-      await sb.post('match',{
-        competition_id: currentComp.id,
-        round: 'R'+(r1Count*2),
-        team1_id: t1?.id||null, team2_id: t2?.id||null,
-        status: isBye ? 'finished' : 'scheduled',
-        winner_id: isBye ? t1.id : null,
-        notes: isBye ? 'BYE' : null,
-      });
-      created++;
-    } catch(e) { console.warn(e); }
-  }
+// ── WINNER SELECTION ──────────────────────────────────────────
+function askWinner(roundIdx, winnerTeam, loserTeam){
+  pendingWin={roundIdx, winnerTeam, loserTeam};
+  document.getElementById('c-title').textContent='Vainqueur du point — Round '+(roundIdx+1);
+  document.getElementById('c-sub').innerHTML=
+    '<strong>'+winnerTeam.name+'</strong> remporte le point<br>et continue dans le tournoi';
+  document.getElementById('c-ok').onclick=confirmWinner;
+  document.getElementById('c-overlay').style.display='flex';
+}
+function closeConfirm(){document.getElementById('c-overlay').style.display='none';pendingWin=null;}
 
-  // Tours suivants (vides)
-  let size = r1Count;
-  while (size > 1) {
-    size = size / 2;
-    const roundLabel = size === 1 ? 'F' : 'R'+(size*2);
-    for (let i=0; i<size; i++) {
-      try { await sb.post('match',{competition_id:currentComp.id,round:roundLabel,status:'scheduled'}); } catch{}
+async function confirmWinner(){
+  if(!pendingWin)return;
+  const{roundIdx,winnerTeam,loserTeam}=pendingWin;
+  closeConfirm();
+  const round=bracket[roundIdx];
+  if(!round||round.done)return;
+  try{
+    // Update DB
+    await sb.patch('match','id=eq.'+round.id,{winner_id:winnerTeam.id,status:'finished',ts_match_end:new Date().toISOString()});
+    round.winner=winnerTeam;
+    round.done=true;
+    // Is tournament over?
+    if(remaining.length===0){
+      // No more opponents → this winner is champion
+      champion=winnerTeam;
+      renderBracket();
+      toast('🏆 Champion : '+winnerTeam.name,'success');
+      return;
     }
-  }
-
-  toast('Tableau généré : '+created+' matchs du 1er tour','success');
-  await loadComp(currentComp.id);
+    // Draw next opponent randomly
+    const nextIdx=Math.floor(Math.random()*remaining.length);
+    const nextOpponent=remaining[nextIdx];
+    remaining.splice(nextIdx,1);
+    // Create next match in DB
+    const roundNum=bracket.length+1;
+    const r=await sb.post('match',{
+      competition_id:currentComp.id,
+      team1_id:winnerTeam.id,team2_id:nextOpponent.id,
+      round:'R'+roundNum,status:'scheduled'
+    });
+    bracket.push({id:r[0].id,p1:winnerTeam,p2:nextOpponent,winner:null,done:false});
+    renderBracket();
+    toast('Prochain adversaire tiré au sort : '+nextOpponent.name,'success');
+  }catch(e){toast('Erreur : '+e.message,'error');}
 }
 
-async function resetBracket() {
-  if (!confirm('Supprimer tous les matchs de cette compétition et recommencer ?')) return;
-  const mids = bracketMatches.map(m=>m.id);
-  for (const mid of mids) { await sb.delete('match','id=eq.'+mid).catch(()=>{}); }
-  bracketMatches = [];
-  toast('Tableau réinitialisé','warn');
-  await loadComp(currentComp.id);
-}
-
-let pendingWin = null;
-
-function renderBracket() {
-  const area = document.getElementById('bracket-area');
-  if (!bracketMatches.length) {
-    area.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Aucun match — cliquez "Générer le tableau"</div>';
+// ── RENDER ────────────────────────────────────────────────────
+function renderBracket(){
+  const area=document.getElementById('bracket');
+  if(!bracket.length&&!champion){
+    area.innerHTML='<div class="empty-state"><div class="empty-icon">☕</div>'+
+      '<div style="font-size:15px;font-weight:600;color:var(--text2)">1 Point Challenge by Lavazza</div>'+
+      '<div style="margin-top:6px">'+allTeams.length+' joueur'+(allTeams.length!==1?'s':'')+' inscrit'+(allTeams.length!==1?'s':'')+
+      (allTeams.length>=2?' — Cliquez "Démarrer" pour lancer le tirage aléatoire':' — Inscrivez au moins 2 joueurs')+'</div></div>';
     return;
   }
 
-  // Grouper par round et trier
-  const roundOrder = ['R128','R64','R32','R16','R8','R4','R2','F'];
-  const rounds = {};
-  bracketMatches.forEach(m => {
-    if (!rounds[m.round]) rounds[m.round] = [];
-    rounds[m.round].push(m);
-  });
+  let h='';
 
-  // Trouver l'ordre réel des rounds présents
-  const presentRounds = [...new Set(bracketMatches.map(m=>m.round))].sort((a,b) => {
-    const getSize = r => r==='F'?1:parseInt(r.replace('R',''))||1;
-    return getSize(b) - getSize(a); // du plus grand au plus petit = 1er tour en premier
-  });
-
-  const roundLabels = {R128:'1/64',R64:'1/32',R32:'1/16',R16:'1/8 de finale',R8:'Quarts de finale',R4:'Demi-finales',R2:'Finale',F:'Finale'};
-
-  let html = '<div class="bracket-wrap"><div class="bracket">';
-  presentRounds.forEach(round => {
-    const ms = (rounds[round]||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-    html += '<div class="round-col"><div class="round-title">'+(roundLabels[round]||round)+'</div>';
-    ms.forEach(m => { html += renderMatchBlock(m); });
-    html += '</div>';
-  });
-
-  // Trophée final si champion connu
-  const final = bracketMatches.find(m => m.round==='F' || m.round==='R2');
-  if (final?.winner_id) {
-    const champion = allTeams.find(t=>t.id===final.winner_id);
-    html += '<div class="round-col"><div class="round-title">Champion</div><div class="trophy">🏆</div><div style="text-align:center;font-weight:700;color:var(--cy);font-size:15px">'+(champion?.name||'?')+'</div></div>';
+  // Champion block
+  if(champion){
+    h+='<div class="champion"><div class="champ-trophy">🏆</div>'+
+      '<div class="champ-name">'+champion.name+'</div>'+
+      '<div class="champ-sub">Champion du 1 Point Challenge by Lavazza ☕<br>'+bracket.length+' rounds joués — '+allTeams.length+' joueurs</div></div>';
   }
 
-  html += '</div></div>';
-  area.innerHTML = html;
-}
+  // Rounds — most recent first
+  for(let i=bracket.length-1;i>=0;i--){
+    const round=bracket[i];
+    const isCurrent=!round.done&&i===bracket.length-1;
+    const p1=round.p1, p2=round.p2, w=round.winner;
 
-function renderMatchBlock(m) {
-  const t1 = allTeams.find(t=>t.id===m.team1_id);
-  const t2 = allTeams.find(t=>t.id===m.team2_id);
-  const winner = m.winner_id;
-  const isBye  = m.notes==='BYE';
+    h+='<div class="round">';
+    h+='<div class="round-head">';
+    h+='<span class="round-lbl">'+(isCurrent?'⚔️ En cours — ':'')+'Round '+(i+1)+(champion&&i===bracket.length-1?' — Finale':'')+'</span>';
+    if(round.done&&w)h+='<span class="round-result">🏆 '+w.name+' remporte le point</span>';
+    h+='</div>';
+    h+='<div class="match-face">';
 
-  return '<div class="match-block'+(winner?' has-result':'')+'">'+
-    renderSlot(t1, winner, m.id, isBye)+
-    '<div class="slot-divider"></div>'+
-    renderSlot(t2, winner, m.id, isBye)+
-    '</div>';
-}
+    // P1
+    let p1cls='player-btn';
+    if(round.done) p1cls+=(w&&w.id===p1?.id)?' winner':' loser';
+    else if(isCurrent) p1cls+=' clickable';
+    const p1seed=p1?.seed?'<span class="seed">#'+p1.seed+'</span>':'';
+    if(isCurrent&&!round.done){
+      h+='<button class="'+p1cls+'" onclick="askWinner('+i+',brackets['+i+'].p1,brackets['+i+'].p2)">'+p1seed+(p1?.name||'?')+'</button>';
+    } else {
+      h+='<div class="'+p1cls+'">'+p1seed+(p1?.name||'?')+'</div>';
+    }
 
-function renderSlot(team, winnerId, matchId, isBye) {
-  if (!team) {
-    if (isBye) return '<div class="player-slot bye">BYE (exempt)</div>';
-    return '<div class="player-slot empty">En attente…</div>';
+    h+='<div class="vs-div">VS</div>';
+
+    // P2
+    let p2cls='player-btn';
+    if(round.done) p2cls+=(w&&w.id===p2?.id)?' winner':' loser';
+    else if(isCurrent) p2cls+=' clickable';
+    const p2seed=p2?.seed?'<span class="seed">#'+p2.seed+'</span>':'';
+    if(isCurrent&&!round.done){
+      h+='<button class="'+p2cls+'" onclick="askWinner('+i+',brackets['+i+'].p2,brackets['+i+'].p1)">'+p2seed+(p2?.name||'?')+'</button>';
+    } else {
+      h+='<div class="'+p2cls+'">'+p2seed+(p2?.name||'?')+'</div>';
+    }
+
+    h+='</div></div>';
   }
-  const isWinner = winnerId === team.id;
-  const isLoser  = winnerId && !isWinner;
-  const cls      = isWinner ? 'winner' : isLoser ? 'loser' : '';
-  const seed     = team.seed ? '<span class="seed-badge">#'+team.seed+'</span>' : '';
-  const canClick = !winnerId && !isBye;
-  const onclick  = canClick ? 'onclick="askWinner(\''+matchId+'\',\''+team.id+'\',\''+( team.name||'').replace(/'/g,"\\'")+'\')"' : '';
-  const title    = canClick ? 'title="Cliquer pour désigner comme gagnant"' : '';
-  return '<div class="player-slot '+cls+'" '+onclick+' '+title+'>'+
-    seed +
-    '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(team.name||'?')+'</span>'+
-    (isWinner ? '<span style="font-size:14px">🏆</span>' : '')+
-    '</div>';
+
+  // Remaining players pool
+  if(remaining.length>0&&!champion){
+    h+='<div class="pool"><div class="pool-title">Joueurs en attente ('+remaining.length+')</div>';
+    h+='<div class="pool-chips">'+remaining.map(t=>'<span class="pool-chip">'+(t.seed?'#'+t.seed+' ':'')+t.name+'</span>').join('')+'</div></div>';
+  }
+
+  area.innerHTML=h;
 }
 
-function askWinner(matchId, teamId, teamName) {
-  pendingWin = { matchId, teamId };
-  document.getElementById('confirm-title').textContent = 'Désigner le gagnant du point';
-  document.getElementById('confirm-sub').textContent   = teamName + ' remporte le point et avance dans le tableau.';
-  document.getElementById('confirm-btn').onclick = confirmWinner;
-  document.getElementById('confirm-overlay').style.display = 'flex';
-}
-function closeConfirm() { document.getElementById('confirm-overlay').style.display='none'; pendingWin=null; }
+// Make bracket accessible in onclick
+// (use global variable instead of bracket[i] inside onclick string)
+const brackets=new Proxy({},{get:(_,i)=>bracket[parseInt(i)]});
 
-async function confirmWinner() {
-  if (!pendingWin) return;
-  const {matchId,teamId} = pendingWin;
-  closeConfirm();
-  try {
-    await sb.patch('match','id=eq.'+matchId,{ winner_id:teamId, status:'finished', ts_match_end:new Date().toISOString() });
-    await advanceWinner(matchId, teamId);
-    toast('Gagnant enregistré ✓','success');
-    await loadComp(currentComp.id);
-  } catch(e) { toast('Erreur : '+e.message,'error'); }
-}
-
-async function advanceWinner(finishedMatchId, winnerId) {
-  const finishedMatch = bracketMatches.find(m=>m.id===finishedMatchId);
-  if (!finishedMatch) return;
-
-  // Trouver l'index dans son round
-  const sameRound = bracketMatches
-    .filter(m=>m.round===finishedMatch.round)
-    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-  const matchIndex = sameRound.findIndex(m=>m.id===finishedMatchId);
-  const nextRoundMatchIndex = Math.floor(matchIndex / 2);
-  const isFirstSlot = matchIndex % 2 === 0;
-
-  // Trouver le round suivant (plus petit = plus avancé)
-  const getSize = r => r==='F'?1:parseInt(r.replace('R',''))||1;
-  const presentRounds = [...new Set(bracketMatches.map(m=>m.round))].sort((a,b)=>getSize(b)-getSize(a));
-  const currentIdx = presentRounds.indexOf(finishedMatch.round);
-  if (currentIdx <= 0) return; // Finale déjà
-
-  const nextRound = presentRounds[currentIdx - 1];
-  const nextRoundMatches = bracketMatches
-    .filter(m=>m.round===nextRound)
-    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-  const nextMatch = nextRoundMatches[nextRoundMatchIndex];
-  if (!nextMatch) return;
-
-  const updateBody = isFirstSlot ? {team1_id:winnerId} : {team2_id:winnerId};
-  await sb.patch('match','id=eq.'+nextMatch.id, updateBody);
-}
-
-if (activeTournamentId) init();
-else document.getElementById('bracket-area').innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
+if(tid) initPage();
+else document.getElementById('bracket').innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
 </script>
 </body>
 </html>
