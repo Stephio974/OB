@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#191970">
+<title>Commission Sportive — Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.hero{background:var(--bg);border-bottom:1px solid var(--border2);padding:20px 20px 16px}
+.hero-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+.hero-title{font-size:22px;font-weight:800;color:var(--text)}
+.hero-sub{font-size:12px;color:var(--text3)}
+.period-badge{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700}
+.period-now{background:rgba(0,217,138,.18);border:1px solid rgba(0,217,138,.4);color:var(--cp)}
+.period-next{background:rgba(46,189,245,.12);border:1px solid rgba(46,189,245,.3);color:var(--cc)}
+.section-block{margin-bottom:16px}
+.sb-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sb-title{font-size:16px;font-weight:700;color:var(--text)}
+.sb-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.sb-now{background:var(--cpl);color:var(--cp);border:1px solid var(--cpd)}
+.sb-next{background:var(--ccl);color:var(--cc);border:1px solid #0a3d5a}
+.role-group{margin-bottom:12px}
+.rg-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.staff-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:12px 14px}
+.staff-card.now{border-color:var(--cp);background:var(--cpl)}
+.staff-card.next{border-color:var(--cc);background:var(--ccl)}
+.sc-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
+.sc-role{font-size:12px;font-weight:600;margin-bottom:2px}
+.sc-detail{font-size:11px;color:var(--text3)}
+.sc-player{font-size:10px;color:var(--co);font-weight:600}
+.empty-slot{text-align:center;padding:24px;color:var(--text3);background:var(--bg);border-radius:var(--rl);border:1px dashed var(--border2);font-size:13px}
+.divider-h{height:2px;background:var(--border2);margin:20px 0;border-radius:1px}
+.court-block{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:12px;margin-bottom:8px}
+.court-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
+.court-person{font-size:13px;color:var(--text2)}
+.no-one{color:var(--ca);font-size:12px}
+.clock{font-size:18px;font-weight:700;color:var(--cp);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div>
+        <div class="topbar-logo" id="tb-itf">Commission Sportive</div>
+        <div class="topbar-name" id="tb-name">🦺 Dashboard Sportive</div>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <a href="portal.html">Portail</a>
+      <a href="admin.html">Admin</a>
+      <a href="dashboard.html">Matchs</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="clock" id="clock">—</span>
+      <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.55)" onclick="auth.logout()">⎋</button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div id="main-content">
+      <div class="loading-overlay"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+auth.require(['admin','arbitre','terrain']);
+
+const tid=getActiveTournament();
+let staff=[], avail=[], assign=[], courts=[], tournament=null, allDates=[];
+
+// Live clock
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000);updateClock();
+
+// Determine current and next slot
+function getCurrentSlot(){
+  const now=new Date();
+  const todayStr=now.toISOString().slice(0,10);
+  const slot=now.getHours()<13?'AM':'PM';
+  return{date:todayStr,slot};
+}
+function getNextSlot(cur){
+  if(cur.slot==='AM') return{date:cur.date,slot:'PM'};
+  // Next day
+  const d=new Date(cur.date+'T00:00:00');d.setDate(d.getDate()+1);
+  const next=d.toISOString().slice(0,10);
+  if(allDates.includes(next)) return{date:next,slot:'AM'};
+  return null;
+}
+
+function fmtDate(d,slot){
+  const label=new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  return label+' — '+(slot==='AM'?'☀️ Matin':'🌤️ Après-midi');
+}
+
+async function init(){
+  if(!tid){
+    document.getElementById('main-content').innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
+    return;
+  }
+  // Branding
+  const ts=await sb.get('tournament','id=eq.'+tid).catch(()=>[]);
+  tournament=ts[0];
+  if(tournament){
+    document.getElementById('tb-name').textContent='🦺 Commission Sportive — '+tournament.name;
+    if(tournament.itf_label)document.getElementById('tb-itf').textContent=tournament.itf_label;
+    // Build dates
+    if(tournament.start_date&&tournament.end_date){
+      const d=new Date(tournament.start_date+'T00:00:00'),end=new Date(tournament.end_date+'T00:00:00');
+      while(d<=end){allDates.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}
+    }
+  }
+  await loadData();
+  setInterval(loadData,60000); // refresh every minute
+}
+
+async function loadData(){
+  courts=await sb.get('court','tournament_id=eq.'+tid+'&is_active=eq.true&order=sort_order').catch(()=>[]);
+  staff=await sb.get('staff','tournament_id=eq.'+tid+'&order=last_name,first_name').catch(()=>[]);
+  if(staff.length){
+    const sids=staff.map(s=>s.id);
+    [avail,assign]=await Promise.all([
+      sb.get('staff_availability','staff_id=in.('+sids.join(',')+')'+'&order=avail_date,slot').catch(()=>[]),
+      sb.get('staff_assignment','tournament_id=eq.'+tid+'&select=*,court(name)&order=assign_date,slot').catch(()=>[]),
+    ]);
+  }
+  render();
+}
+
+function getSlotAssigns(date,slot){
+  return assign.filter(a=>a.assign_date===date&&a.slot===slot);
+}
+
+function renderSlotBlock(label,date,slot,isNow){
+  const assigns=getSlotAssigns(date,slot);
+  const cardClass=isNow?'now':'next';
+  const badgeClass=isNow?'sb-now':'sb-next';
+  const badgeLabel=isNow?'En cours':'Prochaine demi-journée';
+
+  let h='<div class="section-block">';
+  h+='<div class="sb-header">';
+  h+='<div class="sb-title">'+label+'</div>';
+  h+='<span class="sb-badge '+badgeClass+'">'+badgeLabel+'</span>';
+  h+='</div>';
+
+  if(!assigns.length){
+    h+='<div class="empty-slot">Aucune affectation planifiée pour cette demi-journée</div>';
+    h+='</div>';
+    return h;
+  }
+
+  // Group by role
+  const resp=assigns.filter(a=>a.role==='responsable');
+  const sup=assigns.filter(a=>a.role==='superviseur');
+  const res=assigns.filter(a=>a.role==='reserve');
+
+  // ── Vue par terrain (responsables) ──
+  if(resp.length||sup.length){
+    h+='<div class="role-group"><div class="rg-label">🏖️ Terrains</div>';
+    // Pour chaque terrain, qui est responsable ?
+    const assignedCourts=new Set([...resp.map(a=>a.court_id),...sup.flatMap(a=>a.courts_ids?JSON.parse(a.courts_ids):[])].filter(Boolean));
+    const unassignedCourts=courts.filter(c=>!assignedCourts.has(c.id));
+
+    h+='<div class="staff-grid">';
+    courts.forEach(c=>{
+      const r=resp.find(a=>a.court_id===c.id);
+      const sv=sup.filter(a=>{const ids=a.courts_ids?JSON.parse(a.courts_ids):[];return ids.includes(c.id);});
+      h+='<div class="court-block">';
+      h+='<div class="court-name">🏖️ '+c.name+'</div>';
+      if(r){
+        const st=staff.find(x=>x.id===r.staff_id);
+        h+='<div class="court-person" style="color:var(--cp);font-weight:600">'+(st?.last_name||'?')+' '+(st?.first_name||''+(st?.is_player?' 🎾':''))+'</div>';
+        h+='<div class="sc-role" style="font-size:11px;color:var(--text3)">Responsable terrain</div>';
+      } else {
+        h+='<div class="no-one">⚠️ Non affecté</div>';
+      }
+      if(sv.length){
+        sv.forEach(a=>{
+          const st=staff.find(x=>x.id===a.staff_id);
+          h+='<div style="font-size:11px;color:var(--cc);margin-top:3px">👁️ Supervisé par '+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+        });
+      }
+      h+='</div>';
+    });
+    h+='</div></div>';
+  }
+
+  // ── Liste complète par rôle ──
+  if(resp.length){
+    h+='<div class="role-group"><div class="rg-label">Responsables terrain</div><div class="staff-grid">';
+    resp.forEach(a=>{
+      const st=staff.find(x=>x.id===a.staff_id);
+      h+='<div class="staff-card '+cardClass+'"><div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+      h+='<div class="sc-role" style="color:var(--cp)">Terrain : '+(a.court?.name||'—')+'</div>';
+      if(st?.is_player)h+='<div class="sc-player">🎾 Participe au tournoi</div>';
+      if(a.notes)h+='<div class="sc-detail">'+a.notes+'</div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  }
+
+  if(sup.length){
+    h+='<div class="role-group"><div class="rg-label">Superviseurs multi-terrains</div><div class="staff-grid">';
+    sup.forEach(a=>{
+      const st=staff.find(x=>x.id===a.staff_id);
+      const cids=a.courts_ids?JSON.parse(a.courts_ids):[];
+      const cnames=cids.map(id=>courts.find(c=>c.id===id)?.name||id).join(', ');
+      h+='<div class="staff-card '+cardClass+'"><div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+      h+='<div class="sc-role" style="color:var(--cc)">👁️ Superviseur</div>';
+      h+='<div class="sc-detail">'+(cnames||'Terrains à définir')+'</div>';
+      if(a.notes)h+='<div class="sc-detail">'+a.notes+'</div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  }
+
+  if(res.length){
+    h+='<div class="role-group"><div class="rg-label">⏳ En réserve</div><div class="staff-grid">';
+    res.forEach(a=>{
+      const st=staff.find(x=>x.id===a.staff_id);
+      h+='<div class="staff-card '+cardClass+'"><div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+      h+='<div class="sc-role" style="color:var(--co)">⏳ Réserve</div>';
+      if(a.notes)h+='<div class="sc-detail">'+a.notes+'</div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  }
+
+  h+='</div>';
+  return h;
+}
+
+function render(){
+  const cur=getCurrentSlot();
+  const nxt=getNextSlot(cur);
+  const inTournament=allDates.includes(cur.date);
+
+  let h='';
+
+  // Résumé global
+  h+='<div class="hero">';
+  h+='<div class="hero-top">';
+  h+='<div>';
+  h+='<div class="hero-title">Commission Sportive</div>';
+  h+='<div class="hero-sub">'+(tournament?.name||'')+(tournament?.location?' · '+tournament.location:'')+'</div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  h+='<span class="period-badge period-now"><span class="live-dot"></span>'+fmtDate(cur.date,cur.slot)+'</span>';
+  h+='</div>';
+  h+='</div>';
+  // Metrics
+  const curAssigns=getSlotAssigns(cur.date,cur.slot);
+  const nxtAssigns=nxt?getSlotAssigns(nxt.date,nxt.slot):[];
+  h+='<div class="card-grid cols4" style="margin-top:10px">';
+  h+='<div class="metric"><div class="metric-label">Responsables</div><div class="metric-value green">'+staff.length+'</div></div>';
+  h+='<div class="metric"><div class="metric-label">En poste maintenant</div><div class="metric-value" style="color:var(--cp)">'+curAssigns.length+'</div></div>';
+  h+='<div class="metric"><div class="metric-label">Terrains couverts</div><div class="metric-value" style="color:var(--cc)">'+[...new Set(curAssigns.filter(a=>a.role==='responsable').map(a=>a.court_id).filter(Boolean))].length+' / '+courts.length+'</div></div>';
+  h+='<div class="metric"><div class="metric-label">Prochaine demi-journée</div><div class="metric-value" style="color:var(--co)">'+nxtAssigns.length+' affecté'+(nxtAssigns.length!==1?'s':'')+'</div></div>';
+  h+='</div></div>';
+
+  // CURRENT SLOT
+  if(!inTournament){
+    h+='<div class="alert alert-info" style="margin-top:12px">Nous sommes en dehors des dates du tournoi.</div>';
+  } else {
+    h+=renderSlotBlock(fmtDate(cur.date,cur.slot),cur.date,cur.slot,true);
+    h+='<div class="divider-h"></div>';
+    if(nxt){
+      h+=renderSlotBlock(fmtDate(nxt.date,nxt.slot),nxt.date,nxt.slot,false);
+    } else {
+      h+='<div class="alert alert-success">✓ Tournoi terminé — Merci à toute l\'équipe de la Commission Sportive !</div>';
+    }
+  }
+
+  // Lien admin
+  h+='<div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">';
+  h+='<a href="admin.html" class="btn btn-outline btn-sm">⚙️ Gérer les affectations (Admin → Sportive)</a>';
+  h+='</div>';
+
+  document.getElementById('main-content').innerHTML=h;
+}
+
+if(tid) init();
+else document.getElementById('main-content').innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
+</script>
+</body>
+</html>

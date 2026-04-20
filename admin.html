@@ -71,6 +71,8 @@
       <div class="sidebar-sep"></div>
       <button class="sidebar-item" onclick="showSection('matches',this)">📋 Matchs</button>
       <div class="sidebar-sep"></div>
+      <button class="sidebar-item" onclick="showSection('sportive',this)">🦺 Sportive</button>
+      <div class="sidebar-sep"></div>
       <button class="sidebar-item" onclick="showSection('import',this)">📥 Import CSV</button>
     </div>
     <div class="main-area" id="main-area"><div class="loading-overlay"><div class="spinner"></div></div></div>
@@ -357,12 +359,13 @@ function showSection(name,btn){
 }
 
 function renderSection(){
-  const renders={tournament:sTournament,courts:sCourts,competitions:sCompetitions,teams:sTeams,players:sPlayers,matches:sMatches,import:sImport};
+  const renders={tournament:sTournament,courts:sCourts,competitions:sCompetitions,teams:sTeams,players:sPlayers,matches:sMatches,import:sImport,sportive:sSportive};
   document.getElementById('main-area').innerHTML=renders[currentSection]?renders[currentSection]():'';
   if(currentSection==='players')loadPlayersTable();
   if(currentSection==='matches')loadMatchesTable();
   if(currentSection==='import')setupDrop();
   if(currentSection==='teams')renderSpreadsheet();
+  if(currentSection==='sportive')loadSportive();
 }
 
 // ── TOURNAMENT ────────────────────────────────────────────────
@@ -954,6 +957,387 @@ function openModal(id){
 function closeModal(id){
   const el=document.getElementById(id);
   if(el)el.style.display='none';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SPORTIVE — Commission gestion responsables terrain
+// ═══════════════════════════════════════════════════════════════
+let spStaff=[], spAvail=[], spAssign=[], spDates=[];
+let spView='staff'; // 'staff' | 'planning' | 'repartition'
+
+function sSportive(){
+  return `<div class="section-head">
+    <h2>🦺 Commission Sportive</h2>
+    <a href="sportive.html" target="_blank" class="btn btn-outline btn-sm">↗ Dashboard Sportive</a>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-sm" id="sp-tab-staff"    onclick="spSetView('staff')"       style="background:var(--cp);color:#001a10">👤 Responsables</button>
+    <button class="btn btn-outline btn-sm" id="sp-tab-planning" onclick="spSetView('planning')">📅 Planification</button>
+    <button class="btn btn-outline btn-sm" id="sp-tab-rep"      onclick="spSetView('repartition')">🗺️ Répartition</button>
+  </div>
+  <div id="sp-content"><div class="loading-overlay"><div class="spinner"></div></div></div>`;
+}
+
+async function loadSportive(){
+  if(!activeTournamentId) return;
+  const t=allTournaments.find(x=>x.id===activeTournamentId);
+  // Build list of tournament dates
+  if(t?.start_date&&t?.end_date){
+    const d=new Date(t.start_date+'T00:00:00'), end=new Date(t.end_date+'T00:00:00');
+    spDates=[];
+    while(d<=end){spDates.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}
+  }
+  [spStaff,spAvail,spAssign]=await Promise.all([
+    sb.get('staff','tournament_id=eq.'+activeTournamentId+'&order=last_name,first_name').catch(()=>[]),
+    sb.get('staff_availability','staff_id=in.('+(spStaff.map(s=>s.id).join(',')||'00000000-0000-0000-0000-000000000000')+')').catch(()=>[]),
+    sb.get('staff_assignment','tournament_id=eq.'+activeTournamentId+'&order=assign_date,slot').catch(()=>[]),
+  ]);
+  // reload avail after staff loaded
+  if(spStaff.length){
+    spAvail=await sb.get('staff_availability','staff_id=in.('+spStaff.map(s=>s.id).join(',')+')'+'&order=avail_date,slot').catch(()=>[]);
+    spAssign=await sb.get('staff_assignment','tournament_id=eq.'+activeTournamentId+'&select=*,court(name)&order=assign_date,slot').catch(()=>[]);
+  }
+  renderSp();
+}
+
+function spSetView(v){
+  spView=v;
+  ['staff','planning','repartition'].forEach(n=>{
+    const b=document.getElementById('sp-tab-'+n);
+    if(!b)return;
+    b.className=n===v?'btn btn-sm':'btn btn-outline btn-sm';
+    if(n===v){b.style.background='var(--cp)';b.style.color='#001a10';}
+    else{b.style.background='';b.style.color='';}
+  });
+  renderSp();
+}
+
+function spFmtDate(d){return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});}
+
+function spGetAvail(staffId,date,slot){
+  return spAvail.find(a=>a.staff_id===staffId&&a.avail_date===date&&a.slot===slot)?.available||false;
+}
+function spGetAssign(staffId,date,slot){
+  return spAssign.find(a=>a.staff_id===staffId&&a.assign_date===date&&a.slot===slot)||null;
+}
+
+async function spToggleAvail(staffId,date,slot,val){
+  const existing=spAvail.find(a=>a.staff_id===staffId&&a.avail_date===date&&a.slot===slot);
+  if(existing){
+    await sb.patch('staff_availability','id=eq.'+existing.id,{available:val}).catch(e=>toast(e.message,'error'));
+    existing.available=val;
+  } else {
+    const r=await sb.post('staff_availability',{staff_id:staffId,avail_date:date,slot,available:val}).catch(e=>{toast(e.message,'error');return null;});
+    if(r?.[0])spAvail.push(r[0]);
+  }
+  renderSp();
+}
+
+async function spSaveAssign(staffId,date,slot,role,courtId,courtsIds,notes){
+  const existing=spAssign.find(a=>a.staff_id===staffId&&a.assign_date===date&&a.slot===slot);
+  const body={staff_id:staffId,tournament_id:activeTournamentId,assign_date:date,slot,role:role||null,court_id:courtId||null,courts_ids:courtsIds||null,notes:notes||null};
+  let r;
+  if(existing){
+    r=await sb.patch('staff_assignment','id=eq.'+existing.id,body).catch(e=>{toast(e.message,'error');return null;});
+    if(r?.[0])Object.assign(existing,r[0]);
+  } else {
+    r=await sb.post('staff_assignment',body).catch(e=>{toast(e.message,'error');return null;});
+    if(r?.[0]){
+      const full=await sb.get('staff_assignment','id=eq.'+r[0].id+'&select=*,court(name)').catch(()=>[]);
+      if(full[0])spAssign.push(full[0]);
+    }
+  }
+  renderSp();
+}
+
+async function spRemoveAssign(staffId,date,slot){
+  const existing=spAssign.find(a=>a.staff_id===staffId&&a.assign_date===date&&a.slot===slot);
+  if(!existing)return;
+  await sb.delete('staff_assignment','id=eq.'+existing.id).catch(e=>toast(e.message,'error'));
+  spAssign.splice(spAssign.indexOf(existing),1);
+  renderSp();
+}
+
+function renderSp(){
+  const el=document.getElementById('sp-content');
+  if(!el)return;
+  if(spView==='staff')     el.innerHTML=renderSpStaff();
+  if(spView==='planning')  el.innerHTML=renderSpPlanning();
+  if(spView==='repartition')el.innerHTML=renderSpRepartition();
+}
+
+// ─ VIEW 1 : Responsables (personnes) ──────────────────────────
+function renderSpStaff(){
+  const sizes=['XS','S','M','L','XL','XXL','XXXL'];
+  let h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+  h+='<div style="font-size:13px;color:var(--text2)">'+spStaff.length+' responsable'+(spStaff.length!==1?'s':'')+' enregistré'+(spStaff.length!==1?'s':'')+'</div>';
+  h+='<button class="btn btn-primary btn-sm" onclick="spOpenStaffModal()">+ Ajouter</button></div>';
+
+  if(!spStaff.length){
+    h+='<div class="card" style="text-align:center;padding:40px;color:var(--text3)">Aucun responsable terrain enregistré.<br>Cliquez "+ Ajouter" pour commencer.</div>';
+    return h;
+  }
+
+  h+='<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr>';
+  h+='<th>Nom</th><th>Prénom</th><th>Genre</th><th>T-Shirt</th><th>Joueur</th>';
+  spDates.forEach(d=>h+='<th colspan="2" style="text-align:center;border-left:1px solid var(--border2)">'+spFmtDate(d)+'</th>');
+  h+='<th>Actions</th></tr>';
+  h+='<tr><th colspan="5"></th>';
+  spDates.forEach(()=>h+='<th style="border-left:1px solid var(--border2);font-size:10px;color:var(--cp)">AM</th><th style="font-size:10px;color:var(--co)">PM</th>');
+  h+='<th></th></tr></thead><tbody>';
+
+  spStaff.forEach(st=>{
+    h+='<tr><td><strong>'+st.last_name+'</strong></td><td>'+st.first_name+'</td>';
+    h+='<td>'+(st.gender||'—')+'</td><td>'+(st.tshirt_size||'—')+'</td>';
+    h+='<td style="text-align:center">'+(st.is_player?'🎾':'—')+'</td>';
+    spDates.forEach(d=>{
+      ['AM','PM'].forEach((slot,si)=>{
+        const av=spGetAvail(st.id,d,slot);
+        h+='<td style="text-align:center;border-left:'+(si===0?'1px solid var(--border2)':'none')+'">'+
+          '<input type="checkbox" '+(av?'checked':'')
+          +' onchange="spToggleAvail(\''+st.id+'\',\''+d+'\',\''+slot+'\',this.checked)"'
+          +' style="width:16px;height:16px;cursor:pointer;accent-color:var(--cp)"></td>';
+      });
+    });
+    h+='<td class="actions"><button class="btn btn-outline btn-xs" onclick="spOpenStaffModal(\''+st.id+'\')">✏️</button>'
+      +'<button class="btn btn-danger btn-xs" onclick="spDeleteStaff(\''+st.id+'\')">✕</button></td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+
+  // Modal HTML (hidden)
+  h+=`<div id="sp-staff-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('sp-staff-modal')">
+  <div class="modal"><div class="modal-title" id="sp-staff-modal-title">Responsable terrain</div>
+  <input type="hidden" id="sp-st-id">
+  <div class="form-row cols2">
+    <div class="form-group"><label class="form-label">Prénom *</label><input class="form-input" id="sp-st-first" placeholder="Jean"></div>
+    <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="sp-st-last" placeholder="Dupont"></div>
+  </div>
+  <div class="form-row cols3">
+    <div class="form-group"><label class="form-label">Genre</label>
+      <select class="form-select" id="sp-st-gender"><option value="">—</option><option value="H">H</option><option value="F">F</option></select></div>
+    <div class="form-group"><label class="form-label">T-Shirt</label>
+      <select class="form-select" id="sp-st-size"><option value="">—</option>${sizes.map(s=>'<option value="'+s+'">'+s+'</option>').join('')}</select></div>
+    <div class="form-group"><label class="form-label">Joueur inscrit</label>
+      <select class="form-select" id="sp-st-player"><option value="false">Non</option><option value="true">Oui 🎾</option></select></div>
+  </div>
+  <div class="form-row cols2">
+    <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="sp-st-phone" placeholder="0692 xx xx xx"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="sp-st-email" type="email"></div>
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-outline" onclick="closeModal('sp-staff-modal')">Annuler</button>
+    <button class="btn btn-primary" onclick="spSaveStaff()">Enregistrer</button>
+  </div></div></div>`;
+  return h;
+}
+
+function spOpenStaffModal(id){
+  const st=id?spStaff.find(x=>x.id===id):null;
+  document.getElementById('sp-staff-modal-title').textContent=st?'Modifier le responsable':'Nouveau responsable';
+  document.getElementById('sp-st-id').value=st?.id||'';
+  document.getElementById('sp-st-first').value=st?.first_name||'';
+  document.getElementById('sp-st-last').value=st?.last_name||'';
+  document.getElementById('sp-st-gender').value=st?.gender||'';
+  document.getElementById('sp-st-size').value=st?.tshirt_size||'';
+  document.getElementById('sp-st-player').value=st?.is_player?'true':'false';
+  document.getElementById('sp-st-phone').value=st?.phone||'';
+  document.getElementById('sp-st-email').value=st?.email||'';
+  openModal('sp-staff-modal');
+}
+async function spSaveStaff(){
+  const id=document.getElementById('sp-st-id').value;
+  const body={tournament_id:activeTournamentId,first_name:document.getElementById('sp-st-first').value.trim(),last_name:document.getElementById('sp-st-last').value.trim(),gender:document.getElementById('sp-st-gender').value||null,tshirt_size:document.getElementById('sp-st-size').value||null,is_player:document.getElementById('sp-st-player').value==='true',phone:document.getElementById('sp-st-phone').value.trim()||null,email:document.getElementById('sp-st-email').value.trim()||null};
+  if(!body.first_name||!body.last_name){toast('Prénom et nom obligatoires','error');return;}
+  try{
+    if(id)await sb.patch('staff','id=eq.'+id,body);
+    else await sb.post('staff',body);
+    closeModal('sp-staff-modal');
+    await loadSportive();
+  }catch(e){toast(e.message,'error');}
+}
+async function spDeleteStaff(id){
+  if(!confirm('Supprimer ce responsable et toutes ses affectations ?'))return;
+  try{await sb.delete('staff','id=eq.'+id);await loadSportive();}catch(e){toast(e.message,'error');}
+}
+
+// ─ VIEW 2 : Planification ─────────────────────────────────────
+function renderSpPlanning(){
+  if(!spStaff.length)return '<div class="alert alert-info">Ajoutez d\'abord des responsables dans l\'onglet "Responsables".</div>';
+
+  const roleLabel={responsable:'🏖️ Responsable terrain',superviseur:'👁️ Superviseur multi-terrains',reserve:'⏳ Réserve'};
+  let h='<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr>';
+  h+='<th>Responsable</th>';
+  spDates.forEach(d=>{
+    h+='<th colspan="2" style="text-align:center;border-left:1px solid var(--border2)">'+spFmtDate(d)+'</th>';
+  });
+  h+='</tr><tr><th></th>';
+  spDates.forEach(()=>h+='<th style="border-left:1px solid var(--border2);font-size:10px;color:var(--cp)">AM</th><th style="font-size:10px;color:var(--co)">PM</th>');
+  h+='</tr></thead><tbody>';
+
+  spStaff.forEach(st=>{
+    h+='<tr><td><strong>'+st.last_name+'</strong> '+st.first_name+(st.is_player?' 🎾':'')+'</td>';
+    spDates.forEach(d=>{
+      ['AM','PM'].forEach((slot,si)=>{
+        const av=spGetAvail(st.id,d,slot);
+        const assign=spGetAssign(st.id,d,slot);
+        const bl=si===0?'border-left:1px solid var(--border2)':'';
+        h+='<td style="'+bl+';padding:4px;min-width:130px">';
+        if(!av){
+          // Not available — greyed checkbox
+          h+='<div style="text-align:center;color:var(--text3);font-size:11px">—</div>';
+        } else if(!assign){
+          // Available but not assigned
+          h+='<div style="display:flex;align-items:center;gap:4px">';
+          h+='<input type="checkbox" style="accent-color:var(--cp);cursor:pointer" onchange="if(this.checked)spOpenAssignModal(\''+st.id+'\',\''+st.last_name+' '+st.first_name+'\',\''+d+'\',\''+slot+'\')">';
+          h+='<span style="font-size:11px;color:var(--text3)">Planifier</span></div>';
+        } else {
+          // Assigned
+          const cname=assign.court?.name||'';
+          h+='<div style="background:var(--cpl);border:1px solid var(--cp);border-radius:6px;padding:3px 6px">';
+          h+='<div style="font-size:11px;font-weight:600;color:var(--cp)">'+(assign.role==='responsable'?'🏖️ '+cname:assign.role==='superviseur'?'👁️ Multi':assign.role==='reserve'?'⏳ Réserve':'')+'</div>';
+          h+='<button class="btn btn-danger btn-xs" style="margin-top:3px;font-size:10px" onclick="spRemoveAssign(\''+st.id+'\',\''+d+'\',\''+slot+'\')">✕ Retirer</button></div>';
+        }
+        h+='</td>';
+      });
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+
+  // Assign modal
+  h+=`<div id="sp-assign-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('sp-assign-modal')">
+  <div class="modal"><div class="modal-title" id="sp-am-title">Planifier</div>
+  <input type="hidden" id="sp-am-staff"><input type="hidden" id="sp-am-date"><input type="hidden" id="sp-am-slot">
+  <div class="form-group"><label class="form-label">Rôle *</label>
+    <select class="form-select" id="sp-am-role" onchange="spAmRoleChange()">
+      <option value="">— Sélectionner —</option>
+      <option value="responsable">🏖️ Responsable terrain</option>
+      <option value="superviseur">👁️ Superviseur multi-terrains</option>
+      <option value="reserve">⏳ En réserve</option>
+    </select>
+  </div>
+  <div id="sp-am-court-wrap" style="display:none" class="form-group">
+    <label class="form-label">Terrain *</label>
+    <select class="form-select" id="sp-am-court">
+      <option value="">— Sélectionner —</option>
+      ${allCourts.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')}
+    </select>
+  </div>
+  <div id="sp-am-courts-wrap" style="display:none" class="form-group">
+    <label class="form-label">Terrains supervisés</label>
+    <div id="sp-am-courts-checks" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;background:var(--bg2);border-radius:var(--r)">
+      ${allCourts.map(c=>'<label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" value="'+c.id+'" style="accent-color:var(--cp)"> '+c.name+'</label>').join('')}
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="sp-am-notes" placeholder="(optionnel)"></div>
+  <div class="modal-actions">
+    <button class="btn btn-outline" onclick="closeModal('sp-assign-modal')">Annuler</button>
+    <button class="btn btn-primary" onclick="spConfirmAssign()">Planifier</button>
+  </div></div></div>`;
+  return h;
+}
+
+function spOpenAssignModal(staffId,staffName,date,slot){
+  document.getElementById('sp-am-title').textContent='Planifier — '+staffName+' — '+spFmtDate(date)+' '+(slot==='AM'?'Matin':'Après-midi');
+  document.getElementById('sp-am-staff').value=staffId;
+  document.getElementById('sp-am-date').value=date;
+  document.getElementById('sp-am-slot').value=slot;
+  document.getElementById('sp-am-role').value='';
+  document.getElementById('sp-am-notes').value='';
+  document.getElementById('sp-am-court-wrap').style.display='none';
+  document.getElementById('sp-am-courts-wrap').style.display='none';
+  openModal('sp-assign-modal');
+}
+function spAmRoleChange(){
+  const r=document.getElementById('sp-am-role').value;
+  document.getElementById('sp-am-court-wrap').style.display=r==='responsable'?'block':'none';
+  document.getElementById('sp-am-courts-wrap').style.display=r==='superviseur'?'block':'none';
+}
+async function spConfirmAssign(){
+  const staffId=document.getElementById('sp-am-staff').value;
+  const date=document.getElementById('sp-am-date').value;
+  const slot=document.getElementById('sp-am-slot').value;
+  const role=document.getElementById('sp-am-role').value;
+  const notes=document.getElementById('sp-am-notes').value;
+  if(!role){toast('Sélectionnez un rôle','error');return;}
+  let courtId=null,courtsIds=null;
+  if(role==='responsable'){
+    courtId=document.getElementById('sp-am-court').value||null;
+  } else if(role==='superviseur'){
+    const checked=[...document.querySelectorAll('#sp-am-courts-checks input:checked')].map(i=>i.value);
+    if(checked.length)courtsIds=JSON.stringify(checked);
+  }
+  closeModal('sp-assign-modal');
+  await spSaveAssign(staffId,date,slot,role,courtId,courtsIds,notes);
+}
+
+// ─ VIEW 3 : Répartition par terrain ───────────────────────────
+function renderSpRepartition(){
+  const now=new Date();
+  const todayStr=now.toISOString().slice(0,10);
+  const currentSlot=now.getHours()<13?'AM':'PM';
+
+  // Group by date+slot
+  let h='';
+  spDates.forEach(d=>{
+    ['AM','PM'].forEach(slot=>{
+      const isNow=d===todayStr&&slot===currentSlot;
+      const dayAssigns=spAssign.filter(a=>a.assign_date===d&&a.slot===slot);
+      if(!dayAssigns.length&&!isNow)return;
+      h+='<div class="card" style="margin-bottom:12px;'+(isNow?'border-color:var(--cp)':'')+'">'+
+        '<div class="card-title" style="display:flex;align-items:center;gap:8px">'+
+        (isNow?'<span style="font-size:10px;background:var(--cp);color:#001a10;border-radius:20px;padding:2px 8px;font-weight:700">EN COURS</span>':'')+
+        spFmtDate(d)+' — '+(slot==='AM'?'☀️ Matin':'🌤️ Après-midi')+'</div>';
+      if(!dayAssigns.length){h+='<div style="color:var(--text3);font-size:12px">Aucune affectation planifiée</div></div>';return;}
+
+      // By role
+      const resp=dayAssigns.filter(a=>a.role==='responsable');
+      const sup=dayAssigns.filter(a=>a.role==='superviseur');
+      const res=dayAssigns.filter(a=>a.role==='reserve');
+
+      if(resp.length){
+        h+='<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">🏖️ Responsables terrain</div>';
+        h+='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">';
+        resp.forEach(a=>{
+          const st=spStaff.find(x=>x.id===a.staff_id);
+          h+='<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:8px 12px;min-width:140px">';
+          h+='<div style="font-size:12px;font-weight:700;color:var(--text)">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+          h+='<div style="font-size:11px;color:var(--cp);margin-top:2px">Terrain : '+(a.court?.name||'Non assigné')+'</div>';
+          if(a.notes)h+='<div style="font-size:10px;color:var(--text3)">'+a.notes+'</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+      }
+      if(sup.length){
+        h+='<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">👁️ Superviseurs multi-terrains</div>';
+        h+='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">';
+        sup.forEach(a=>{
+          const st=spStaff.find(x=>x.id===a.staff_id);
+          const cids=a.courts_ids?JSON.parse(a.courts_ids):[];
+          const cnames=cids.map(id=>allCourts.find(c=>c.id===id)?.name||id).join(', ');
+          h+='<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:8px 12px;min-width:140px">';
+          h+='<div style="font-size:12px;font-weight:700;color:var(--text)">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+          h+='<div style="font-size:11px;color:var(--cc);margin-top:2px">'+( cnames||'Terrains à définir')+'</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+      }
+      if(res.length){
+        h+='<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">⏳ En réserve</div>';
+        h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+        res.forEach(a=>{
+          const st=spStaff.find(x=>x.id===a.staff_id);
+          h+='<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:8px 12px">';
+          h+='<div style="font-size:12px;font-weight:700;color:var(--text)">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+          if(a.notes)h+='<div style="font-size:10px;color:var(--text3)">'+a.notes+'</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+      }
+      h+='</div>';
+    });
+  });
+  return h||'<div class="alert alert-info">Aucune affectation planifiée. Utilisez l\'onglet "Planification" pour affecter les responsables.</div>';
 }
 
 init();
