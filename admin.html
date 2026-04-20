@@ -947,6 +947,15 @@ function filterPlayers(q){
   if(cnt)cnt.textContent=visible+' joueur'+(visible!==1?'s':'')+' affiché'+(visible!==1?'s':'');
 }
 
+function openModal(id){
+  const el=document.getElementById(id);
+  if(el)el.style.display='flex';
+}
+function closeModal(id){
+  const el=document.getElementById(id);
+  if(el)el.style.display='none';
+}
+
 init();
 </script>
 </body>
