@@ -167,7 +167,36 @@
     <div class="form-group"><label class="form-label">Dotation USD</label><input class="form-input" type="number" id="co-prize" value="0"></div>
   </div>
   <div class="form-group"><label class="form-label">Remplacement balles</label><input class="form-input" id="co-ballrule" placeholder="Fin du 1er set"></div>
-  <div class="form-group"><label class="form-label">Format du match</label><input class="form-input" id="co-matchfmt" placeholder="2 sets de 6 jeux, jeu décisif à 6/6, 3ème set super tie-break 10 pts"></div>
+  <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">Format du match (détermine les boutons terrain)</div>
+  <div class="form-row cols3">
+    <div class="form-group">
+      <label class="form-label">Jeux par set</label>
+      <select class="form-select" id="co-games" onchange="updateMatchFmtPreview()">
+        <option value="6">6 jeux (adultes)</option>
+        <option value="4">4 jeux (jeunes)</option>
+      </select>
+      <div class="form-hint">Détermine quand le TB démarre</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Score tie-break</label>
+      <select class="form-select" id="co-tbat" onchange="updateMatchFmtPreview()">
+        <option value="6">À 6/6 (set en 6)</option>
+        <option value="3">À 3/3 (set en 4)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Super TB (3ème set)</label>
+      <select class="form-select" id="co-suptb" onchange="updateMatchFmtPreview()">
+        <option value="10">10 pts (adultes)</option>
+        <option value="7">7 pts (jeunes)</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Format du match (généré automatiquement)</label>
+    <input class="form-input" id="co-matchfmt" placeholder="2 sets de 6 jeux, jeu décisif à 6/6, 3ème set super tie-break 10 pts">
+    <div class="form-hint">Éditable manuellement si besoin — mis à jour automatiquement si vous changez les champs ci-dessus</div>
+  </div>
   <div class="form-group"><label class="form-label">Niveau</label><input class="form-input" id="co-level" placeholder="ITF100K, Amateur, Jeunes…"></div>
   <div class="modal-actions">
     <button class="btn btn-outline" onclick="closeModal('modal-competition')">Annuler</button>
@@ -606,11 +635,7 @@ async function saveTeamEdit(){
 }
 
 // ── PLAYERS — dedup by firstname+lastname+nationality+birthdate ──
-function sPlayers(){
-  return '<div class="section-head"><h2>Joueurs</h2></div>'+
-  '<div class="alert alert-info" style="font-size:12px">Un joueur inscrit sur plusieurs compétitions n\'apparaît qu\'une fois. Unicité : Prénom + Nom + Nationalité + Date de naissance.</div>'+
-  '<div class="card"><div id="players-table"><div class="loading-overlay"><div class="spinner"></div></div></div></div>';
-}
+// sPlayers defined below with search support
 
 async function loadPlayersTable(){
   try{
@@ -644,7 +669,7 @@ async function loadPlayersTable(){
     function age(d){if(!d)return'—';const b=new Date(d);let a=now.getFullYear()-b.getFullYear();if(now<new Date(now.getFullYear(),b.getMonth(),b.getDate()))a--;return a+' ans';}
 
     document.getElementById('players-table').innerHTML=
-      '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">'+unique.length+' joueur'+(unique.length!==1?'s':'')+' unique'+(unique.length!==1?'s':'')+'</div>'+
+      '<div style="font-size:12px;color:var(--text3);margin-bottom:8px" id="player-count">'+unique.length+' joueur'+(unique.length!==1?'s':'')+' unique'+(unique.length!==1?'s':'')+'</div>'+
       '<table class="data-table"><thead><tr><th>Nom</th><th>Prénom</th><th>Nat.</th><th>Âge</th><th>Compétitions</th><th>ITF ID</th><th>Clt. ITF</th><th></th></tr></thead><tbody>'+
       (unique.length?unique.map(p=>{
         const comps=[...p._comps.values()];
@@ -662,6 +687,8 @@ async function loadPlayersTable(){
       }).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">Aucun joueur</td></tr>')+
       '</tbody></table>';
     window._players=ps;
+    const sq=document.getElementById('player-search')?.value||'';
+    if(sq)filterPlayers(sq);
   }catch(e){document.getElementById('players-table').innerHTML='<div class="alert alert-danger">'+e.message+'</div>';}
 }
 
@@ -798,13 +825,18 @@ async function deleteCourt(id){if(!confirm('Supprimer ce terrain ?'))return;try{
 
 function openCompModal(c){
   document.getElementById('mco-title').textContent=c?'Modifier':'Nouvelle compétition';
-  document.getElementById('co-id').value=c?.id||'';document.getElementById('co-name').value=c?.name||'';document.getElementById('co-cat').value=c?.category||'DH';document.getElementById('co-draw').value=c?.draw_size||'16';document.getElementById('co-format').value=c?.format||'direct';document.getElementById('co-sets').value=c?.sets_to_win||'2';document.getElementById('co-net').value=c?.net_height_cm||'';document.getElementById('co-balls').value=c?.balls_per_match||'';document.getElementById('co-prize').value=c?.prize_money||'0';document.getElementById('co-ballrule').value=c?.ball_change_rule||'';document.getElementById('co-matchfmt').value=c?.match_format||'';document.getElementById('co-level').value=c?.level||'';openModal('modal-competition');
+  document.getElementById('co-id').value=c?.id||'';document.getElementById('co-name').value=c?.name||'';document.getElementById('co-cat').value=c?.category||'DH';document.getElementById('co-draw').value=c?.draw_size||'16';document.getElementById('co-format').value=c?.format||'direct';document.getElementById('co-sets').value=c?.sets_to_win||'2';document.getElementById('co-net').value=c?.net_height_cm||'';document.getElementById('co-balls').value=c?.balls_per_match||'';document.getElementById('co-prize').value=c?.prize_money||'0';document.getElementById('co-ballrule').value=c?.ball_change_rule||'';document.getElementById('co-matchfmt').value=c?.match_format||'';document.getElementById('co-level').value=c?.level||'';
+  document.getElementById('co-games').value=String(c?.games_per_set||6);
+  document.getElementById('co-tbat').value=String(c?.tiebreak_at||6);
+  document.getElementById('co-suptb').value=String(c?.super_tb_points||10);
+  if(!c?.match_format)updateMatchFmtPreview();
+  openModal('modal-competition');
 }
 async function editComp(id){openCompModal(allCompetitions.find(c=>c.id===id));}
 async function saveCompetition(){
   const btn=document.getElementById('co-save-btn');btn.disabled=true;btn.textContent='…';
   const id=document.getElementById('co-id').value;
-  const body={tournament_id:activeTournamentId,name:document.getElementById('co-name').value.trim(),category:document.getElementById('co-cat').value,draw_size:parseInt(document.getElementById('co-draw').value)||null,format:document.getElementById('co-format').value||null,sets_to_win:parseInt(document.getElementById('co-sets').value)||2,net_height_cm:parseInt(document.getElementById('co-net').value)||null,balls_per_match:parseInt(document.getElementById('co-balls').value)||null,prize_money:parseInt(document.getElementById('co-prize').value)||0,ball_change_rule:document.getElementById('co-ballrule').value.trim()||null,match_format:document.getElementById('co-matchfmt').value.trim()||null,level:document.getElementById('co-level').value.trim()||null};
+  const body={tournament_id:activeTournamentId,name:document.getElementById('co-name').value.trim(),category:document.getElementById('co-cat').value,draw_size:parseInt(document.getElementById('co-draw').value)||null,format:document.getElementById('co-format').value||null,sets_to_win:parseInt(document.getElementById('co-sets').value)||2,net_height_cm:parseInt(document.getElementById('co-net').value)||null,balls_per_match:parseInt(document.getElementById('co-balls').value)||null,prize_money:parseInt(document.getElementById('co-prize').value)||0,ball_change_rule:document.getElementById('co-ballrule').value.trim()||null,match_format:document.getElementById('co-matchfmt').value.trim()||null,level:document.getElementById('co-level').value.trim()||null,games_per_set:parseInt(document.getElementById('co-games').value)||6,tiebreak_at:parseInt(document.getElementById('co-tbat').value)||6,super_tb_points:parseInt(document.getElementById('co-suptb').value)||10};
   if(!body.name||!activeTournamentId){toast('Nom et tournoi obligatoires','error');btn.disabled=false;btn.textContent='Enregistrer';return;}
   try{if(id)await sb.patch('competition','id=eq.'+id,body);else await sb.post('competition',body);closeModal('modal-competition');toast('Compétition enregistrée');await loadAll();}catch(e){toast(e.message,'error');}finally{btn.disabled=false;btn.textContent='Enregistrer';}
 }
@@ -883,8 +915,37 @@ function csvFile(file,type){
 async function importTeams(){let ok=0;for(const row of parsedTeams){try{let comp=allCompetitions.find(c=>c.name===row.competition_name&&c.category===row.category);if(!comp){const cr=await sb.post('competition',{tournament_id:activeTournamentId,name:row.competition_name,category:row.category});comp=cr[0];allCompetitions.push(comp);}const team=await sb.post('team',{competition_id:comp.id,name:row.team_name,nationality:row.nationality||null,seed:parseInt(row.seed)||null,itf_ranking:parseInt(row.itf_ranking)||null});const tid=team[0].id;for(const pos of[1,2]){const fn=row['p'+pos+'_first'],ln=row['p'+pos+'_last'];if(!fn&&!ln)continue;const p=await sb.post('player',{first_name:fn||'',last_name:ln||'',nationality:row['p'+pos+'_nat']||null,birth_date:row['p'+pos+'_birth']||null});await sb.post('team_player',{team_id:tid,player_id:p[0].id,position:pos});}ok++;}catch(e){console.warn(e);}}toast('Import : '+ok+' équipes','success');await loadAll();}
 async function importMatches(){let ok=0;for(const row of parsedMatches){try{const comp=allCompetitions.find(c=>c.name===row.competition_name);const court=allCourts.find(c=>c.name===row.court_name);const t1=allTeams.find(t=>t.name===row.team1_name);const t2=allTeams.find(t=>t.name===row.team2_name);const dt=row.scheduled_date&&row.scheduled_time?new Date(row.scheduled_date+'T'+row.scheduled_time+':00').toISOString():null;await sb.post('match',{competition_id:comp?.id,court_id:court?.id||null,team1_id:t1?.id||null,team2_id:t2?.id||null,round:row.round||'pool',scheduled_at:dt,status:'scheduled'});ok++;}catch(e){console.warn(e);}}toast('Import : '+ok+' matchs','success');}
 
-function openModal(id){document.getElementById(id).style.display='flex';}
-function closeModal(id){document.getElementById(id).style.display='none';}
+function updateMatchFmtPreview(){
+  const g=parseInt(document.getElementById('co-games')?.value||6);
+  const tb=parseInt(document.getElementById('co-tbat')?.value||6);
+  const sp=parseInt(document.getElementById('co-suptb')?.value||10);
+  const fmt=`2 sets de ${g} jeux, jeu décisif à ${tb}/${tb}, 3ème set super tie-break ${sp} pts`;
+  const el=document.getElementById('co-matchfmt');
+  if(el)el.value=fmt;
+}
+
+function sPlayers(){
+  return '<div class="section-head"><h2>Joueurs</h2></div>'+
+  '<div class="filters-bar" style="margin-bottom:10px">'+
+  '<div class="form-group" style="flex:2;min-width:180px"><label class="form-label">Recherche nom / prénom</label>'+
+  '<input class="form-input" id="player-search" placeholder="Nom, prénom…" oninput="filterPlayers(this.value)"></div>'+
+  '</div>'+
+  '<div class="card"><div id="players-table"><div class="loading-overlay"><div class="spinner"></div></div></div></div>';
+}
+
+function filterPlayers(q){
+  if(!window._players)return;
+  const lq=q.toLowerCase().trim();
+  const all=document.querySelectorAll('#players-table tbody tr');
+  all.forEach(tr=>{
+    const txt=tr.textContent.toLowerCase();
+    tr.style.display=(!lq||txt.includes(lq))?'':'none';
+  });
+  // Update count
+  const visible=[...all].filter(tr=>tr.style.display!=='none').length;
+  const cnt=document.getElementById('player-count');
+  if(cnt)cnt.textContent=visible+' joueur'+(visible!==1?'s':'')+' affiché'+(visible!==1?'s':'');
+}
 
 init();
 </script>

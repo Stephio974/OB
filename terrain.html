@@ -21,7 +21,6 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);min-height:100vh}
 .app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
-/* TOPBAR */
 .topbar{background:var(--bg4);color:#fff;padding:0 14px 10px;padding-top:max(env(safe-area-inset-top),12px);border-bottom:1px solid var(--border2)}
 .tb-inner{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .tb-logo{height:28px;width:auto;object-fit:contain;flex-shrink:0;display:none}
@@ -38,13 +37,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tdots{display:flex;justify-content:center;gap:4px;margin-top:5px}
 .tdot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2)}
 .tdot.on{background:var(--cp)}
-/* NAV BARS */
 .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border)}
 .nav-lbl{font-size:12px;font-weight:600;color:var(--text2);flex:1;text-align:center}
 .nav-btn{background:rgba(255,255,255,.07);border:1px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text2)}
 .nav-btn:disabled{opacity:.2}
 /* CARDS */
-.card{margin:12px;background:var(--bg2);border-radius:var(--rl);padding:12px;border:1px solid var(--border)}
+.card{margin:10px 12px;background:var(--bg2);border-radius:var(--rl);padding:12px;border:1px solid var(--border)}
 .match-time{font-size:22px;font-weight:700;color:var(--cp)}
 .badge{display:inline-block;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:600}
 .badge-cat{background:var(--cpl);color:var(--cp);border:1px solid #1a5c3a}
@@ -53,34 +51,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rule-chip{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--text3);white-space:nowrap}
 .rule-chip strong{color:var(--text2)}
 /* CHRONO */
-.chrono-box{display:flex;gap:8px;margin:10px 12px 4px}
+.chrono-box{display:flex;gap:8px;margin:8px 12px 0}
 .chrono-pill{flex:1;background:var(--bg2);border-radius:var(--rl);padding:10px;text-align:center;border:1px solid var(--border)}
 .chrono-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;font-weight:600}
 .chrono-val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
-.c-warm{color:var(--co)}.c-over{color:var(--ca)}.c-play{color:var(--cp)}
+.cw{color:var(--co)}.cover{color:var(--ca)}.cp{color:var(--cp)}
+/* GUARDS */
+.guard-box{margin:8px 12px 0;padding:9px 12px;background:var(--cal);border:1px solid var(--ca);border-radius:var(--r);font-size:12px;color:var(--ca);line-height:1.45}
+.info-box{margin:8px 12px 0;padding:9px 12px;background:var(--cpl);border:1px solid #1a5c3a;border-radius:var(--r);font-size:12px;color:var(--cp);line-height:1.45}
 /* BUTTONS */
-.btns{padding:0 12px}
+.btns{padding:8px 12px 0}
 .action-btn{width:100%;padding:13px 14px;border-radius:var(--rl);border:none;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;justify-content:space-between;font-family:inherit}
 .action-btn:active{opacity:.8}
-.btn-warm   {background:var(--col);border:1.5px solid var(--co);color:var(--co)}
+.btn-warm{background:var(--col);border:1.5px solid var(--co);color:var(--co)}
 .btn-endwarm{background:rgba(255,140,66,.08);border:1.5px solid #b86010;color:var(--co)}
-.btn-play   {background:var(--cpl);border:1.5px solid var(--cp);color:var(--cp)}
-.btn-endset {background:var(--ccl);border:1.5px solid var(--cc);color:var(--cc)}
-.btn-end    {background:var(--cal);border:1.5px solid var(--ca);color:var(--ca)}
-.btn-done   {background:var(--bg2);border:1.5px solid var(--border);color:var(--text3);pointer-events:none;cursor:default}
-.btn-locked {background:rgba(255,255,255,.04);border:1.5px dashed var(--border2);color:var(--text3);pointer-events:none;cursor:default}
+.btn-play{background:var(--cpl);border:1.5px solid var(--cp);color:var(--cp)}
+.btn-endset{background:var(--ccl);border:1.5px solid var(--cc);color:var(--cc)}
+.btn-end{background:var(--cal);border:1.5px solid var(--ca);color:var(--ca)}
+.btn-done{background:var(--bg2);border:1.5px solid var(--border);color:var(--text3);pointer-events:none}
+.btn-locked{background:rgba(255,255,255,.03);border:1.5px dashed var(--border2);color:var(--text3);pointer-events:none}
 .btn-tag{font-size:11px;font-weight:400;opacity:.6;margin-left:6px}
-/* GUARD */
-.guard-box{margin:0 12px 8px;padding:9px 12px;background:var(--cal);border:1px solid var(--ca);border-radius:var(--r);font-size:12px;color:var(--ca);line-height:1.45}
-/* FORFAIT — always visible */
 .btn-forfait{width:100%;padding:12px 14px;border-radius:var(--rl);border:1.5px dashed var(--ca);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;background:transparent;color:var(--ca);text-align:left;font-family:inherit;display:flex;align-items:center;gap:8px}
 .btn-forfait:active{opacity:.8}
-.retired-info{margin:0 12px 8px;padding:9px 12px;background:var(--cal);border:1px solid var(--ca);border-radius:var(--r);font-size:12px;color:var(--ca);line-height:1.5}
-/* MASTER */
+.retired-info{margin:0 12px 8px;padding:9px 12px;background:var(--cal);border:1px solid var(--ca);border-radius:var(--r);font-size:12px;color:var(--ca)}
 .btn-master{width:100%;padding:12px 14px;border-radius:var(--rl);border:2px solid var(--ca);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;background:transparent;color:var(--ca);display:flex;align-items:center;gap:10px;font-family:inherit}
 .btn-master.sent{background:var(--cal)}
-/* SERVE SELECT */
-.serve-box{margin:0 12px 8px;padding:10px 12px;background:var(--bg2);border-radius:var(--rl);border:1px solid var(--border)}
+/* SERVE */
+.serve-box{margin:8px 12px 0;padding:10px 12px;background:var(--bg2);border-radius:var(--rl);border:1px solid var(--border)}
 .serve-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-weight:600}
 .serve-btn{display:block;width:100%;text-align:left;padding:9px 11px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg3);margin-bottom:5px;font-size:13px;cursor:pointer;color:var(--text2);font-weight:500;font-family:inherit}
 .serve-btn.sel{border-color:var(--cp);background:var(--cpl);color:var(--cp);font-weight:600}
@@ -89,30 +86,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .team-row{display:flex;align-items:center;gap:5px;margin-bottom:9px;min-height:40px}
 .sball{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--cy);border:2px solid #A89000;flex-shrink:0}
 .sball.h{opacity:0}
-.team-name-s{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.tname{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .tnat{font-size:10px;color:var(--text3);margin-left:3px}
 .set-scores{display:flex;gap:3px}
 .sc{display:flex;align-items:center}
 .sd{width:32px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;background:var(--bg3);color:var(--text);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
 .sd.lk{background:var(--bg2);color:var(--text3)}
+.sd.win{background:var(--cpl);color:var(--cp)}
 .sb{width:28px;height:40px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
 .sb.m{border-radius:7px 0 0 7px}
 .sb.p{border-radius:0 7px 7px 0;background:var(--cp);color:#001a10;border-color:var(--cpd);font-weight:700}
 .sb.lk{opacity:.22;pointer-events:none}
 .sb:active:not(.lk){transform:scale(.88)}
-.toggle-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg2);border-radius:var(--r);margin:0 12px 8px;cursor:pointer;border:1px solid var(--border)}
-.tgl-lbl{font-size:12px;color:var(--text2);flex:1;font-weight:500}
-.tgl-sw{width:36px;height:20px;border-radius:10px;background:var(--border2);position:relative;transition:background .2s;flex-shrink:0}
-.tgl-sw.on{background:var(--cp)}
-.tgl-knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
-.tgl-sw.on .tgl-knob{left:18px}
-/* LOG */
+/* LOG / MINI */
 .log-section{margin:8px 12px 0;padding-top:8px;border-top:1px solid var(--border)}
 .log-title{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;font-weight:600}
 .log-item{font-size:11px;color:var(--text3);padding:3px 0;display:flex;gap:8px;border-bottom:1px solid var(--border)}
 .log-item:last-child{border-bottom:none}
 .log-t{font-weight:700;color:var(--text2);min-width:38px}
-/* MINI LIST */
 .mini-list{padding:10px 12px 44px}
 .mini-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600}
 .mini-m{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:4px;background:var(--bg2);cursor:pointer}
@@ -122,10 +113,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mini-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .mini-teams{font-size:11px;flex:1;min-width:0;color:var(--text2)}
 .mini-sc{font-size:11px;font-weight:700;color:var(--cp)}
-
 /* MODAL FORFAIT */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.modal-sheet{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rxl) var(--rxl) 0 0;padding:20px 16px 32px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto}
+.m-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.m-sheet{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rxl) var(--rxl) 0 0;padding:20px 16px 32px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto}
 .m-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px}
 .m-group{margin-bottom:12px}
 .m-label{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
@@ -137,14 +127,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-actions{display:flex;gap:10px;margin-top:16px}
 .m-cancel{flex:1;padding:12px;border-radius:var(--r);border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--bg2);color:var(--text2)}
 .m-confirm{flex:1;padding:12px;border-radius:var(--r);border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ca);color:#fff}
-/* SYNC */
 .sync{position:fixed;bottom:16px;right:16px;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:50}
 .sync.show{opacity:1}.sync.ok{background:var(--cp);color:#001a10}.sync.err{background:var(--ca);color:#fff}
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="tb-inner">
       <img id="logo-left"  class="tb-logo" alt="">
@@ -180,15 +168,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="main"></div>
 </div>
 
-<!-- MODAL FORFAIT / ABANDON -->
-<div id="forf-overlay" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeForf()">
-  <div class="modal-sheet">
+<!-- MODAL FORFAIT -->
+<div id="forf-overlay" class="m-overlay" style="display:none" onclick="if(event.target===this)closeForf()">
+  <div class="m-sheet">
     <div class="m-title">⚠️ Signaler un forfait / abandon</div>
     <div class="m-group">
       <label class="m-label">Équipe concernée *</label>
-      <select class="m-select" id="forf-team">
-        <option value="">— Sélectionner l'équipe —</option>
-      </select>
+      <select class="m-select" id="forf-team"></select>
     </div>
     <div class="m-group">
       <label class="m-label">Type *</label>
@@ -211,7 +197,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="m-group">
       <label class="m-label">Commentaire (optionnel)</label>
-      <textarea class="m-textarea" id="forf-comment" placeholder="Précisions supplémentaires…"></textarea>
+      <textarea class="m-textarea" id="forf-comment" placeholder="Précisions…"></textarea>
     </div>
     <div class="m-actions">
       <button class="m-cancel" onclick="closeForf()">Annuler</button>
@@ -226,21 +212,65 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <script>
 auth.require(['admin','arbitre','terrain']);
 
-const forcedCourt = new URLSearchParams(location.search).get('court');
+const forcedCourt=new URLSearchParams(location.search).get('court');
 let courts=[], days=[], terrainIdx=0, dayIdx=0, matchIdx=0;
-// State per match id
-const S={};    // S[mid] = full match state
-const TIM={};  // TIM[mid] = interval id
-let forfMid=null, forfData=null;
+const S={};   // State per match id
+const TIM={}; // Timers per match id
+let forfMid=null, forfMatchData=null;
 
-// ─── INIT ────────────────────────────────────────────────────
+// ─── SCORE LOGIC ─────────────────────────────────────────────
+// Returns set winner (0=team1, 1=team2, null=not done)
+// Based on competition format: gamesPerSet, tiebreakAt
+function setWinner(sc1, sc2, gamesPerSet, tiebreakAt){
+  // Won by reaching gamesPerSet with 2 ahead, OR tiebreak
+  if(sc1>=gamesPerSet&&sc1-sc2>=2) return 0;
+  if(sc2>=gamesPerSet&&sc2-sc1>=2) return 1;
+  // Tiebreak: at tiebreakAt/tiebreakAt, one more game wins
+  if(sc1===tiebreakAt&&sc2===tiebreakAt){
+    if(sc1>sc2) return 0; // won TB
+    if(sc2>sc1) return 1;
+  }
+  if(sc1===tiebreakAt+1&&sc2===tiebreakAt) return 0;
+  if(sc2===tiebreakAt+1&&sc1===tiebreakAt) return 1;
+  return null;
+}
+
+// Returns super TB winner (first to N with 2 ahead)
+function superTBWinner(sc1, sc2, points){
+  if(sc1>=points&&sc1-sc2>=2) return 0;
+  if(sc2>=points&&sc2-sc1>=2) return 1;
+  return null;
+}
+
+// Compute match result from scores
+// Returns {winner: 0|1|null, sets1: X, sets2: Y, isOver: bool}
+function computeMatchResult(scores, locked, set3, comp){
+  const gps=comp?.games_per_set||6;
+  const tba=comp?.tiebreak_at||6;
+  const stp=comp?.super_tb_points||10;
+  let sets1=0, sets2=0;
+  for(let i=0;i<2;i++){
+    if(!locked.includes(i))continue;
+    const w=setWinner(scores[i][0],scores[i][1],gps,tba);
+    if(w===0)sets1++;else if(w===1)sets2++;
+  }
+  // 3rd set
+  if(set3&&locked.includes(2)){
+    const w=superTBWinner(scores[2][0],scores[2][1],stp);
+    if(w===0)sets1++;else if(w===1)sets2++;
+  }
+  // Match won?
+  if(sets1>=2)return{winner:0,sets1,sets2,isOver:true};
+  if(sets2>=2)return{winner:1,sets1,sets2,isOver:true};
+  return{winner:null,sets1,sets2,isOver:false};
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
 async function init(){
   const tid=getActiveTournament();
-  if(!tid){show('<div style="padding:48px 20px;text-align:center;color:var(--text3)">🏖️<br>Aucun tournoi actif.<br><a href="portal.html" style="color:var(--cp)">Portail</a></div>');return;}
-  // Branding
+  if(!tid){show('<div style="padding:48px 20px;text-align:center;color:var(--text3)">🏖️<br>Aucun tournoi. <a href="portal.html" style="color:var(--cp)">Portail</a></div>');return;}
   const ts=await sb.get('tournament','id=eq.'+tid).catch(()=>[]);
   applyBrand(ts[0]);
-  // Courts
   courts=await sb.get('court','tournament_id=eq.'+tid+'&is_active=eq.true&order=sort_order').catch(()=>[]);
   if(!courts.length){show('<div style="padding:40px;text-align:center;color:var(--text3)">Aucun terrain configuré.</div>');return;}
   if(forcedCourt){const i=courts.findIndex(c=>c.id===forcedCourt);if(i>=0)terrainIdx=i;}
@@ -249,8 +279,8 @@ async function init(){
 
 function applyBrand(t){
   if(!t)return;
-  const ll=document.getElementById('logo-left'), lr=document.getElementById('logo-right');
-  const itf=document.getElementById('tb-itf'), nm=document.getElementById('tb-name');
+  const ll=document.getElementById('logo-left'),lr=document.getElementById('logo-right');
+  const itf=document.getElementById('tb-itf'),nm=document.getElementById('tb-name');
   if(t.logo1_url){ll.src=t.logo1_url;ll.style.display='block';ll.onerror=()=>ll.style.display='none';}
   if(t.logo2_url){lr.src=t.logo2_url;lr.style.display='block';lr.onerror=()=>lr.style.display='none';}
   if(t.name)nm.textContent=t.name;
@@ -258,67 +288,49 @@ function applyBrand(t){
 }
 
 async function loadCourt(){
-  const court=courts[terrainIdx];
-  const tid=getActiveTournament();
+  const court=courts[terrainIdx];const tid=getActiveTournament();
   const comps=await sb.get('competition','tournament_id=eq.'+tid).catch(()=>[]);
   const cids=comps.map(c=>c.id);
   if(!cids.length){days=[{label:'Aucune compétition',matches:[]}];render();return;}
-
   const matches=await sb.get('match',
     'competition_id=in.('+cids.join(',')+')'
     +'&court_id=eq.'+court.id
     +'&select=*'
-    +',competition(name,category,match_format,sets_to_win,net_height_cm,balls_per_match,ball_change_rule)'
+    +',competition(name,category,match_format,sets_to_win,net_height_cm,balls_per_match,ball_change_rule,games_per_set,tiebreak_at,super_tb_points)'
     +',team1:team1_id(name,nationality)'
     +',team2:team2_id(name,nationality)'
     +'&order=scheduled_at'
   ).catch(()=>[]);
-
   const mids=matches.map(m=>m.id);
   const sets=mids.length?await sb.get('set','match_id=in.('+mids.join(',')+')'+'&order=set_number').catch(()=>[]):[];
 
   matches.forEach(m=>{
-    // Only init if not already in state (preserve live timers)
     if(!S[m.id]){
       S[m.id]={
-        status:m.status,
-        scores:[[0,0],[0,0],[0,0]],
+        status:m.status,scores:[[0,0],[0,0],[0,0]],
         set3:false,curSet:0,locked:[],
         server:null,serving:null,
-        warmStart:m.ts_warm_start||null,
-        warmEnd:m.ts_warm_end||null,
-        matchStart:m.ts_match_start||null,
-        matchEnd:m.ts_match_end||null,
-        warmSec:0,matchSec:0,
-        masterAlert:m.master_alert||false,
-        retReason:m.retirement_reason||null,
-        log:[],
+        warmStart:m.ts_warm_start||null,warmEnd:m.ts_warm_end||null,
+        matchStart:m.ts_match_start||null,matchEnd:m.ts_match_end||null,
+        warmSec:0,matchSec:0,masterAlert:m.master_alert||false,
+        retReason:m.retirement_reason||null,winnerId:m.winner_id||null,log:[],
       };
     } else {
-      // Update status from DB but keep local timer state
-      S[m.id].status=m.status;
-      S[m.id].masterAlert=m.master_alert||false;
+      S[m.id].status=m.status;S[m.id].masterAlert=m.master_alert||false;
+      S[m.id].winnerId=m.winner_id||null;
     }
     const s=S[m.id];
-    // Recalculate elapsed times
-    if(m.ts_warm_start){
-      const e=m.ts_warm_end?new Date(m.ts_warm_end):new Date();
-      s.warmSec=Math.round((e-new Date(m.ts_warm_start))/1000);
-    }
-    if(m.ts_match_start){
-      const e=m.ts_match_end?new Date(m.ts_match_end):(m.status==='in_progress'?new Date():new Date(m.ts_match_start));
-      s.matchSec=Math.max(0,Math.round((e-new Date(m.ts_match_start))/1000));
-    }
-    // Load sets scores
-    const msets=sets.filter(st=>st.match_id===m.id).sort((a,b)=>a.set_number-b.set_number);
-    if(msets.length){
-      msets.forEach(st=>s.scores[st.set_number-1]=[st.score_t1,st.score_t2]);
-      s.locked=[...Array(msets.filter(st=>!!st.ts_end).length).keys()];
-      s.curSet=Math.min(msets.length,2);
+    if(m.ts_warm_start){const e=m.ts_warm_end?new Date(m.ts_warm_end):new Date();s.warmSec=Math.round((e-new Date(m.ts_warm_start))/1000);}
+    if(m.ts_match_start){const e=m.ts_match_end?new Date(m.ts_match_end):(m.status==='in_progress'?new Date():new Date(m.ts_match_start));s.matchSec=Math.max(0,Math.round((e-new Date(m.ts_match_start))/1000));}
+    const ms=sets.filter(st=>st.match_id===m.id).sort((a,b)=>a.set_number-b.set_number);
+    if(ms.length){
+      ms.forEach(st=>s.scores[st.set_number-1]=[st.score_t1,st.score_t2]);
+      s.locked=[...Array(ms.filter(st=>!!st.ts_end).length).keys()];
+      s.curSet=Math.min(ms.length,2);
+      if(ms.length===3)s.set3=true;
     }
   });
 
-  // Build days
   const dm={};
   matches.forEach(m=>{
     const d=m.scheduled_at?m.scheduled_at.slice(0,10):'x';
@@ -329,121 +341,81 @@ async function loadCourt(){
   if(!days.length)days=[{label:'Aucun match',matches:[]}];
   if(dayIdx>=days.length)dayIdx=0;
   if(matchIdx>=(days[dayIdx]?.matches.length||0))matchIdx=0;
-
-  // Start timers for live matches
   Object.values(TIM).forEach(t=>clearInterval(t));
-  matches.forEach(m=>{
-    if(m.status==='warmup')startWarm(m.id);
-    if(m.status==='in_progress')startPlay(m.id);
-  });
+  matches.forEach(m=>{if(m.status==='warmup')startWarm(m.id);if(m.status==='in_progress')startPlay(m.id);});
   render();
 }
 
-// ─── TIMERS ──────────────────────────────────────────────────
-function startWarm(mid){
-  stopTimer(mid);
-  TIM[mid]=setInterval(()=>{if(S[mid]){S[mid].warmSec++;tickTimers();}},1000);
-}
-function startPlay(mid){
-  stopTimer(mid);
-  TIM[mid]=setInterval(()=>{if(S[mid]){S[mid].matchSec++;tickTimers();}},1000);
-}
+// ─── TIMERS ───────────────────────────────────────────────────
+function startWarm(mid){stopTimer(mid);TIM[mid]=setInterval(()=>{if(S[mid]){S[mid].warmSec++;tick();}},1000);}
+function startPlay(mid){stopTimer(mid);TIM[mid]=setInterval(()=>{if(S[mid]){S[mid].matchSec++;tick();}},1000);}
 function stopTimer(mid){if(TIM[mid]){clearInterval(TIM[mid]);delete TIM[mid];}}
 function f2(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function nowISO(){return new Date().toISOString();}
 function nowHM(){return new Date().toTimeString().slice(0,5);}
 
-function tickTimers(){
+function tick(){
   const ms=days[dayIdx]?.matches||[];const m=ms[matchIdx];if(!m)return;
   const s=S[m.id];if(!s)return;
   const ew=document.getElementById('cw');
   if(ew){
     ew.textContent=f2(s.warmSec);
-    ew.className='chrono-val '+(s.warmSec>=270?'c-warm':'c-over');
-    // Update guard hint
+    ew.className='chrono-val '+(s.warmSec>=270?'cw':'cover');
     const gh=document.getElementById('guard-warm');
-    if(gh){
-      if(s.warmSec>=270)gh.style.display='none';
-      else gh.textContent='⏱ Durée minimale 4:30 — encore '+f2(270-s.warmSec);
-    }
-    // Re-enable endWarm button when 270s reached
+    if(gh){if(s.warmSec>=270)gh.style.display='none';else gh.textContent='⏱ Minimum 4:30 — encore '+f2(270-s.warmSec);}
     const bew=document.getElementById('btn-endwarm');
-    if(bew&&s.status==='warmup'&&!s.warmEnd){
-      if(s.warmSec>=270){
-        bew.className='action-btn btn-endwarm';
-        bew.onclick=()=>doAction(m.id,'endWarm');
-        bew.style.pointerEvents='';
-      }
+    if(bew&&s.status==='warmup'&&!s.warmEnd&&s.warmSec>=270){
+      bew.className='action-btn btn-endwarm';
+      bew.onclick=()=>doAction(m.id,'endWarm');
     }
   }
-  const ep=document.getElementById('cp');
-  if(ep)ep.textContent=f2(s.matchSec);
+  const ep=document.getElementById('cp');if(ep)ep.textContent=f2(s.matchSec);
 }
 
-// ─── CHECK: is previous match done? ──────────────────────────
 function prevDone(){
   const ms=days[dayIdx]?.matches||[];
   for(let i=0;i<matchIdx;i++){
     const ps=S[ms[i].id];
-    if(ps&&!['finished','retired','walkover'].includes(ps.status)){
+    if(ps&&!['finished','retired','walkover'].includes(ps.status))
       return{ok:false,t1:ms[i].team1?.name||'?',t2:ms[i].team2?.name||'?'};
-    }
   }
   return{ok:true};
 }
 
-// ─── ACTIONS ─────────────────────────────────────────────────
+// ─── ACTIONS ──────────────────────────────────────────────────
 async function doAction(mid,action,extra){
   extra=extra||{};
   const s=S[mid];if(!s)return;
+  const matches=days[dayIdx]?.matches||[];
+  const m=matches.find(x=>x.id===mid);
+  const comp=m?.competition||{};
   const now=nowISO();const hm=nowHM();
   let patch={};
 
   switch(action){
-
     case 'startWarm':{
       const g=prevDone();
-      if(!g.ok){
-        alert('⛔ Impossible de démarrer l\'échauffement\n\nLe match précédent ('+g.t1+' vs '+g.t2+') n\'est pas encore terminé.\n\nTerminez ce match avant de commencer le suivant.');
-        return;
-      }
-      if(s.warmStart)return; // already started
-      s.warmStart=now; s.status='warmup';
-      patch={status:'warmup',ts_warm_start:now};
-      s.log.push({t:hm,msg:'Début échauffement'});
-      startWarm(mid);
-      break;
+      if(!g.ok){alert('⛔ Impossible de démarrer l\'échauffement\n\nLe match précédent ('+g.t1+' vs '+g.t2+') n\'est pas encore terminé.');return;}
+      if(s.warmStart)return;
+      s.warmStart=now;s.status='warmup';patch={status:'warmup',ts_warm_start:now};
+      s.log.push({t:hm,msg:'Début échauffement'});startWarm(mid);break;
     }
-
     case 'endWarm':{
       if(s.warmEnd||!s.warmStart)return;
-      // Guard: minimum 270 seconds
-      if(s.warmSec<270){
-        alert('⛔ Durée minimale 4:30 non atteinte\n\nDurée actuelle : '+f2(s.warmSec)+'\nEncore '+f2(270-s.warmSec)+' secondes requises.');
-        return;
-      }
+      if(s.warmSec<270){alert('⛔ Durée minimale 4:30 non atteinte\nActuelle : '+f2(s.warmSec)+'\nEncore : '+f2(270-s.warmSec));return;}
       const dur=Math.round((new Date(now)-new Date(s.warmStart))/1000);
-      s.warmEnd=now; stopTimer(mid);
-      s.status='serve-select';
+      s.warmEnd=now;stopTimer(mid);s.status='serve-select';
       patch={ts_warm_end:now,warm_duration_sec:dur};
-      s.log.push({t:hm,msg:'Fin échauffement ('+f2(dur)+')'});
-      break;
+      s.log.push({t:hm,msg:'Fin échauffement ('+f2(dur)+')'});break;
     }
-
-    case 'selectServer':
-      s.server=extra.team; s.serving=extra.team;
-      break;
-
+    case 'selectServer':s.server=extra.team;s.serving=extra.team;break;
     case 'startMatch':{
       if(s.matchStart||s.server===null)return;
-      s.matchStart=now; s.status='in_progress';
+      s.matchStart=now;s.status='in_progress';
       patch={status:'in_progress',ts_match_start:now,server_team:s.server+1};
-      s.log.push({t:hm,msg:'Début du match'});
-      startPlay(mid);
-      await sb.post('set',{match_id:mid,set_number:1,score_t1:0,score_t2:0,ts_start:now}).catch(()=>{});
-      break;
+      s.log.push({t:hm,msg:'Début du match'});startPlay(mid);
+      await sb.post('set',{match_id:mid,set_number:1,score_t1:0,score_t2:0,ts_start:now}).catch(()=>{});break;
     }
-
     case 'endSet':{
       const cs=s.curSet;
       if(s.locked.includes(cs)||s.status!=='in_progress')return;
@@ -451,49 +423,58 @@ async function doAction(mid,action,extra){
       const sc=s.scores[cs];
       await sb.patch('set','match_id=eq.'+mid+'&set_number=eq.'+(cs+1),{score_t1:sc[0],score_t2:sc[1],ts_end:now,duration_sec:0}).catch(()=>{});
       s.log.push({t:hm,msg:'Fin Set '+(cs+1)+' ('+sc[0]+'-'+sc[1]+')'});
-      s.serving=s.serving===0?1:0;
-      s.curSet=cs+1;
-      if(s.curSet<3)await sb.post('set',{match_id:mid,set_number:s.curSet+1,score_t1:0,score_t2:0,ts_start:now}).catch(()=>{});
+      s.serving=s.serving===0?1:0;s.curSet=cs+1;
+      // Check if match is now over after this set
+      const res=computeMatchResult(s.scores,s.locked,s.set3,comp);
+      if(res.isOver){await autoEndMatch(mid,m,s,res,now,hm);return;}
+      // Need 3rd set?
+      if(s.curSet===2&&res.sets1===1&&res.sets2===1){
+        s.set3=true;
+        await sb.post('set',{match_id:mid,set_number:3,score_t1:0,score_t2:0,ts_start:now}).catch(()=>{});
+      } else if(s.curSet<3){
+        await sb.post('set',{match_id:mid,set_number:s.curSet+1,score_t1:0,score_t2:0,ts_start:now}).catch(()=>{});
+      }
       break;
     }
-
     case 'endMatch':{
       if(s.matchEnd||s.status==='retired')return;
-      const dur=s.matchStart?Math.round((new Date(now)-new Date(s.matchStart))/1000):0;
-      s.matchEnd=now; s.status='finished'; stopTimer(mid);
-      patch={status:'finished',ts_match_end:now,match_duration_sec:dur};
-      s.log.push({t:hm,msg:'Fin du match ('+f2(dur)+')'});
-      break;
+      // Guard: at least 2 sets must be locked
+      if(s.locked.length<2){alert('⛔ Impossible de terminer le match\n\nLes 2 premiers sets doivent être validés avant de terminer le match.');return;}
+      const res=computeMatchResult(s.scores,s.locked,s.set3,comp);
+      await autoEndMatch(mid,m,s,res,now,hm);return;
     }
-
     case 'score':{
-      const{team,set,delta}=extra;
-      if(s.locked.includes(set))return;
+      const{team,set,delta}=extra;if(s.locked.includes(set))return;
       s.scores[set][team]=Math.max(0,s.scores[set][team]+delta);
       if(delta===1)s.serving=s.serving===0?1:0;
       clearTimeout(s._st);
-      s._st=setTimeout(()=>{
-        const sc=s.scores[set];
-        sb.patch('set','match_id=eq.'+mid+'&set_number=eq.'+(set+1),{score_t1:sc[0],score_t2:sc[1]}).catch(()=>{});
-      },700);
+      s._st=setTimeout(()=>{const sc=s.scores[set];sb.patch('set','match_id=eq.'+mid+'&set_number=eq.'+(set+1),{score_t1:sc[0],score_t2:sc[1]}).catch(()=>{});},700);
       break;
     }
-
-    case 'set3':
-      s.set3=!s.set3;
-      break;
-
     case 'master':
-      s.masterAlert=!s.masterAlert;
-      patch={master_alert:s.masterAlert};
-      s.log.push({t:hm,msg:s.masterAlert?'🚨 Alerte Master envoyée':'🚨 Alerte annulée'});
-      break;
+      s.masterAlert=!s.masterAlert;patch={master_alert:s.masterAlert};
+      s.log.push({t:hm,msg:s.masterAlert?'🚨 Alerte Master envoyée':'🚨 Alerte annulée'});break;
   }
 
   if(Object.keys(patch).length){
     const ok=await sb.patch('match','id=eq.'+mid,patch).then(()=>true).catch(()=>false);
     flashSync(ok);
   }
+  render();
+}
+
+async function autoEndMatch(mid,m,s,res,now,hm){
+  const dur=s.matchStart?Math.round((new Date(now)-new Date(s.matchStart))/1000):0;
+  s.matchEnd=now;s.status='finished';stopTimer(mid);
+  const winnerId=res.winner===0?m.team1_id:res.winner===1?m.team2_id:null;
+  s.winnerId=winnerId;
+  const winnerName=res.winner===0?m.team1?.name:res.winner===1?m.team2?.name:'Indéterminé';
+  s.log.push({t:hm,msg:'Fin du match — Vainqueur : '+(winnerName||'?')+' ('+f2(dur)+')'});
+  const ok=await sb.patch('match','id=eq.'+mid,{
+    status:'finished',ts_match_end:now,match_duration_sec:dur,
+    winner_id:winnerId,
+  }).then(()=>true).catch(()=>false);
+  flashSync(ok);
   render();
 }
 
@@ -504,9 +485,9 @@ function flashSync(ok){
   clearTimeout(el._t);el._t=setTimeout(()=>el.className='sync',2500);
 }
 
-// ─── FORFAIT MODAL ───────────────────────────────────────────
+// ─── FORFAIT MODAL ────────────────────────────────────────────
 function openForf(mid,m){
-  forfMid=mid; forfData=m;
+  forfMid=mid;forfMatchData=m;
   const sel=document.getElementById('forf-team');
   sel.innerHTML='<option value="">— Sélectionner l\'équipe —</option>';
   if(m.team1?.name)sel.innerHTML+='<option value="1">'+m.team1.name+'</option>';
@@ -517,45 +498,41 @@ function openForf(mid,m){
   document.getElementById('forf-reason-wrap').style.display='none';
   document.getElementById('forf-overlay').style.display='flex';
 }
-function closeForf(){document.getElementById('forf-overlay').style.display='none';forfMid=null;forfData=null;}
-function onForfType(){
-  const t=document.getElementById('forf-type').value;
-  document.getElementById('forf-reason-wrap').style.display=t==='Abandon'?'block':'none';
-}
+function closeForf(){document.getElementById('forf-overlay').style.display='none';forfMid=null;forfMatchData=null;}
+function onForfType(){document.getElementById('forf-reason-wrap').style.display=document.getElementById('forf-type').value==='Abandon'?'block':'none';}
 async function confirmForf(){
   const team=document.getElementById('forf-team').value;
   const type=document.getElementById('forf-type').value;
   const reason=document.getElementById('forf-reason').value;
   const comment=document.getElementById('forf-comment').value.trim();
-  if(!team){alert('Sélectionnez l\'équipe concernée.');return;}
-  if(!type){alert('Sélectionnez le type : Forfait ou Abandon.');return;}
-  if(type==='Abandon'&&!reason){alert('Sélectionnez la raison de l\'abandon.');return;}
-  const mid=forfMid; const s=S[mid]; if(!s)return;
-  const now=nowISO(); const hm=nowHM();
-  const tname=parseInt(team)===1?forfData.team1?.name:forfData.team2?.name;
+  if(!team){alert('Sélectionnez l\'équipe.');return;}
+  if(!type){alert('Sélectionnez le type.');return;}
+  if(type==='Abandon'&&!reason){alert('Sélectionnez la raison.');return;}
+  const mid=forfMid;const s=S[mid];if(!s)return;
+  const now=nowISO();const hm=nowHM();
+  const tname=parseInt(team)===1?forfMatchData.team1?.name:forfMatchData.team2?.name;
   const parts=[type,'Équipe : '+(tname||'?')];
   if(reason)parts.push('Raison : '+reason);
   if(comment)parts.push(comment);
   const fullReason=parts.join(' — ');
   stopTimer(mid);
   const dur=s.matchStart?Math.round((new Date(now)-new Date(s.matchStart))/1000):0;
-  s.matchEnd=now; s.status='retired'; s.retReason=fullReason;
+  s.matchEnd=now;s.status='retired';s.retReason=fullReason;
   s.log.push({t:hm,msg:type+' — '+tname+(reason?' ('+reason+')':'')});
   const ok=await sb.patch('match','id=eq.'+mid,{
     status:'retired',ts_match_end:now,match_duration_sec:dur,
     retirement_team:parseInt(team),retirement_reason:fullReason,
   }).then(()=>true).catch(()=>false);
-  flashSync(ok);
-  closeForf();render();
+  flashSync(ok);closeForf();render();
 }
 
-// ─── NAVIGATION ──────────────────────────────────────────────
+// ─── NAVIGATION ───────────────────────────────────────────────
 function changeTerrain(d){terrainIdx=Math.max(0,Math.min(courts.length-1,terrainIdx+d));matchIdx=0;dayIdx=0;Object.values(TIM).forEach(t=>clearInterval(t));loadCourt();}
 function changeDay(d){dayIdx=Math.max(0,Math.min(days.length-1,dayIdx+d));matchIdx=0;render();}
 function gotoMatch(d){const ms=days[dayIdx]?.matches||[];matchIdx=Math.max(0,Math.min(ms.length-1,matchIdx+d));render();}
 function show(html){document.getElementById('main').innerHTML=html;}
 
-// ─── RENDER ──────────────────────────────────────────────────
+// ─── RENDER ───────────────────────────────────────────────────
 function render(){
   const court=courts[terrainIdx];
   document.getElementById('terrain-name').textContent=court?.name||'—';
@@ -568,92 +545,94 @@ function render(){
 
   const matches=days[dayIdx]?.matches||[];
   if(!matches.length){
-    document.getElementById('btn-mp').disabled=true;
-    document.getElementById('btn-mn').disabled=true;
+    document.getElementById('btn-mp').disabled=true;document.getElementById('btn-mn').disabled=true;
     document.getElementById('match-cnt').textContent='Aucun match';
-    show('<div style="padding:40px;text-align:center;color:var(--text3)">Aucun match ce jour</div>');
-    return;
+    show('<div style="padding:40px;text-align:center;color:var(--text3)">Aucun match ce jour</div>');return;
   }
   if(matchIdx>=matches.length)matchIdx=0;
   document.getElementById('btn-mp').disabled=matchIdx===0;
   document.getElementById('btn-mn').disabled=matchIdx===matches.length-1;
   document.getElementById('match-cnt').textContent='Match '+(matchIdx+1)+'/'+matches.length;
 
-  const m=matches[matchIdx]; const mid=m.id; const s=S[mid];if(!s)return;
-  const c=m.competition||{};
+  const m=matches[matchIdx];const mid=m.id;const s=S[mid];if(!s)return;
+  const comp=m.competition||{};
+  const gps=comp.games_per_set||6;
+  const tba=comp.tiebreak_at||6;
+  const stp=comp.super_tb_points||10;
   const done=s.status==='finished'||s.status==='retired';
-  // Previous match guard
   const g=prevDone();
 
-  // Status color
+  // Compute current result
+  const res=computeMatchResult(s.scores,s.locked,s.set3,comp);
+
   const sc={'scheduled':'var(--text3)','warmup':'var(--co)','serve-select':'var(--co)','in_progress':'var(--cp)','finished':'var(--text3)','retired':'var(--ca)'}[s.status]||'var(--text3)';
   const sl={'scheduled':'En attente','warmup':'Échauffement','serve-select':'Choix du serveur','in_progress':'En cours','finished':'Terminé','retired':'Abandon/Forfait'}[s.status]||'';
 
   let h='';
 
-  // ── MATCH HEADER CARD ──
+  // MATCH HEADER
   h+='<div class="card">';
   h+='<div style="display:flex;justify-content:space-between;align-items:flex-start">';
   h+='<div class="match-time">'+(m.scheduled_at?new Date(m.scheduled_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'—')+'</div>';
   h+='<span style="font-size:11px;font-weight:600;color:'+sc+';display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+sc+';display:inline-block"></span>'+sl+'</span></div>';
-  h+='<div style="display:flex;gap:5px;margin-top:6px"><span class="badge badge-cat">'+(c.category||'')+'</span><span class="badge badge-comp">'+(c.name||'')+'</span></div>';
+  h+='<div style="display:flex;gap:5px;margin-top:6px"><span class="badge badge-cat">'+(comp.category||'')+'</span><span class="badge badge-comp">'+(comp.name||'')+'</span></div>';
   h+='<div style="margin-top:8px">';
   h+='<div style="font-size:13px;font-weight:600;color:var(--text)">'+(m.team1?.name||'?')+'<span style="font-size:10px;color:var(--text3);margin-left:4px">'+(m.team1?.nationality||'')+'</span></div>';
   h+='<div style="font-size:10px;color:var(--text3);margin:2px 0">vs</div>';
   h+='<div style="font-size:13px;font-weight:600;color:var(--text)">'+(m.team2?.name||'?')+'<span style="font-size:10px;color:var(--text3);margin-left:4px">'+(m.team2?.nationality||'')+'</span></div>';
   h+='</div>';
-  // Rules
   const rules=[];
-  if(c.net_height_cm)rules.push('🏐 Filet <strong>'+c.net_height_cm+' cm</strong>');
-  if(c.balls_per_match)rules.push('🎾 <strong>'+c.balls_per_match+' balles</strong>');
-  if(c.ball_change_rule)rules.push('🔄 <strong>'+c.ball_change_rule+'</strong>');
-  if(c.match_format)rules.push(c.match_format);
+  if(comp.net_height_cm)rules.push('🏐 Filet <strong>'+comp.net_height_cm+' cm</strong>');
+  if(comp.balls_per_match)rules.push('🎾 <strong>'+comp.balls_per_match+' balles</strong>');
+  if(comp.ball_change_rule)rules.push('🔄 <strong>'+comp.ball_change_rule+'</strong>');
+  if(comp.match_format)rules.push(comp.match_format);
   if(rules.length)h+='<div class="rules-row">'+rules.map(r=>'<div class="rule-chip">'+r+'</div>').join('')+'</div>';
   h+='</div>';
 
-  // ── CHRONOS ──
+  // Winner banner
+  if(s.status==='finished'&&s.winnerId){
+    const wname=s.winnerId===m.team1_id?m.team1?.name:m.team2?.name;
+    h+='<div style="margin-top:8px;padding:8px 10px;background:var(--cpl);border:1px solid var(--cp);border-radius:var(--r);font-size:13px;font-weight:700;color:var(--cp)">🏆 Vainqueur : '+wname+'</div>';
+  }
+
+  // CHRONOS
   if(s.status!=='scheduled'){
     h+='<div class="chrono-box">';
-    h+='<div class="chrono-pill"><div class="chrono-lbl">Échauffement</div><div class="chrono-val '+(s.warmSec>=270?'c-warm':'c-over')+'" id="cw">'+f2(s.warmSec)+'</div></div>';
-    h+='<div class="chrono-pill"><div class="chrono-lbl">Temps de jeu</div><div class="chrono-val c-play" id="cp">'+f2(s.matchSec)+'</div></div>';
+    h+='<div class="chrono-pill"><div class="chrono-lbl">Échauffement</div><div class="chrono-val '+(s.warmSec>=270?'cw':'cover')+'" id="cw">'+f2(s.warmSec)+'</div></div>';
+    h+='<div class="chrono-pill"><div class="chrono-lbl">Temps de jeu</div><div class="chrono-val cp" id="cp">'+f2(s.matchSec)+'</div></div>';
     h+='</div>';
   }
+  h+='</div>'; // end card
 
-  // ── GUARD HINTS ──
-  // Guard for startWarm: prev match not done
-  if(s.status==='scheduled'&&!g.ok){
+  // GUARDS (outside card)
+  if(s.status==='scheduled'&&!g.ok)
     h+='<div class="guard-box">⛔ Match précédent non terminé ('+g.t1+' vs '+g.t2+'). Terminez-le avant de démarrer l\'échauffement.</div>';
-  }
-  // Guard for endWarm: min time not reached
-  if(s.status==='warmup'&&s.warmSec<270){
-    h+='<div class="guard-box" id="guard-warm">⏱ Durée minimale 4:30 — encore '+f2(270-s.warmSec)+'</div>';
-  }
+  if(s.status==='warmup'&&s.warmSec<270)
+    h+='<div class="guard-box" id="guard-warm">⏱ Minimum 4:30 — encore '+f2(270-s.warmSec)+'</div>';
 
-  // ── BUTTONS ──
+  // BUTTONS
   h+='<div class="btns">';
   const tWS=s.warmStart?new Date(s.warmStart).toTimeString().slice(0,5):'';
   const tWE=s.warmEnd?new Date(s.warmEnd).toTimeString().slice(0,5):'';
   const tMS=s.matchStart?new Date(s.matchStart).toTimeString().slice(0,5):'';
   const tME=s.matchEnd?new Date(s.matchEnd).toTimeString().slice(0,5):'';
 
-  // Bouton Début échauffement
-  if(s.warmStart||done){
+  // Début échauffement
+  if(s.warmStart||done)
     h+='<div class="action-btn btn-done"><span>▶ Début échauffement<span class="btn-tag">'+tWS+'</span></span><span style="color:var(--cp)">✓</span></div>';
-  } else {
+  else
     h+='<div class="action-btn btn-warm" onclick="doAction(\''+mid+'\',\'startWarm\')">▶ Début échauffement</div>';
-  }
 
-  // Bouton Fin échauffement
-  if(s.warmEnd||done){
+  // Fin échauffement
+  if(s.warmEnd||done)
     h+='<div class="action-btn btn-done"><span>◼ Fin échauffement<span class="btn-tag">'+tWE+'</span></span><span style="color:var(--cp)">✓</span></div>';
-  } else if(s.status==='warmup'&&s.warmSec<270){
-    // Locked — not enough warm time
+  else if(s.status==='warmup'&&s.warmSec<270)
     h+='<div class="action-btn btn-locked" id="btn-endwarm">◼ Fin échauffement <span class="btn-tag" style="color:var(--ca)">attendre '+f2(270-s.warmSec)+'</span></div>';
-  } else if(s.status==='warmup'){
+  else if(s.status==='warmup')
     h+='<div class="action-btn btn-endwarm" id="btn-endwarm" onclick="doAction(\''+mid+'\',\'endWarm\')">◼ Fin échauffement</div>';
-  } else {
+  else
     h+='<div class="action-btn btn-locked">◼ Fin échauffement</div>';
-  }
+
   h+='</div>';
 
   // Serve select
@@ -665,19 +644,18 @@ function render(){
   }
 
   h+='<div class="btns">';
-  // Bouton Début du match
-  if(s.matchStart||done){
+  // Début match
+  if(s.matchStart||done)
     h+='<div class="action-btn btn-done"><span>▶ Début du match<span class="btn-tag">'+tMS+'</span></span><span style="color:var(--cp)">✓</span></div>';
-  } else if(s.status==='serve-select'&&s.server!==null){
+  else if(s.status==='serve-select'&&s.server!==null)
     h+='<div class="action-btn btn-play" onclick="doAction(\''+mid+'\',\'startMatch\')">▶ Début du match</div>';
-  } else {
+  else
     h+='<div class="action-btn btn-locked">▶ Début du match</div>';
-  }
   h+='</div>';
 
-  // Scores
+  // SCORE PANEL
   if(['in_progress','finished'].includes(s.status)){
-    const sets=s.set3?3:2; const cs=s.curSet;
+    const sets=s.set3?3:2;const cs=s.curSet;
     h+='<div class="btns">';
     const endSetLocked=s.locked.includes(cs)||s.status!=='in_progress';
     if(endSetLocked)h+='<div class="action-btn btn-done"><span>◼ Fin set '+(cs+1)+'</span><span style="color:var(--cp)">✓</span></div>';
@@ -685,72 +663,74 @@ function render(){
     h+='</div>';
     // Set headers
     h+='<div style="display:flex;justify-content:flex-end;gap:3px;margin:0 12px 7px">';
-    for(let i=0;i<sets;i++)h+='<div style="width:32px;text-align:center;font-size:9px;color:var(--text3);font-weight:600">S'+(i+1)+'</div>';
+    for(let i=0;i<sets;i++)h+='<div style="width:32px;text-align:center;font-size:9px;color:var(--text3);font-weight:600">S'+(i+1)+(i===2?' (TB)':'')+'</div>';
     h+='</div>';
     h+='<div class="score-section">';
     [0,1].forEach(team=>{
       const isServing=s.serving===team&&s.status==='in_progress';
       const tn=team===0?m.team1:m.team2;
       h+='<div class="team-row"><span class="sball'+(isServing?'':' h')+'"></span>';
-      h+='<span class="team-name-s">'+(tn?.name||'?')+'<span class="tnat">'+(tn?.nationality||'')+'</span></span>';
+      h+='<span class="tname">'+(tn?.name||'?')+'<span class="tnat">'+(tn?.nationality||'')+'</span></span>';
       h+='<div class="set-scores">';
       for(let i=0;i<sets;i++){
-        const lk=s.locked.includes(i); const v=s.scores[i][team];
+        const lk=s.locked.includes(i);const v=s.scores[i][team];
+        const sw=lk&&i<2?setWinner(s.scores[i][0],s.scores[i][1],gps,tba):lk&&i===2?superTBWinner(s.scores[i][0],s.scores[i][1],stp):null;
+        const isWinnerCell=sw===team;
         h+='<div class="sc"><button class="sb m'+(lk?' lk':'')+'" onclick="doAction(\''+mid+'\',\'score\',{team:'+team+',set:'+i+',delta:-1})">−</button>';
-        h+='<div class="sd'+(lk?' lk':'')+'">'+v+'</div>';
+        h+='<div class="sd'+(lk?' lk':'')+(isWinnerCell?' win':'')+'">'+v+'</div>';
         h+='<button class="sb p'+(lk?' lk':'')+'" onclick="doAction(\''+mid+'\',\'score\',{team:'+team+',set:'+i+',delta:1})">+</button></div>';
       }
       h+='</div></div>';
     });
     h+='</div>';
-    if(s.status==='in_progress'){
-      h+='<div class="toggle-row" onclick="doAction(\''+mid+'\',\'set3\')"><span class="tgl-lbl">3ème set (super tie-break)</span><div class="tgl-sw'+(s.set3?' on':'')+'"><div class="tgl-knob"></div></div></div>';
-    }
   }
 
   h+='<div class="btns">';
-  // Bouton Fin du match
-  if(s.matchEnd||s.status==='retired'){
+  // Fin du match
+  if(s.matchEnd||s.status==='retired')
     h+='<div class="action-btn btn-done"><span>◼ Fin du match<span class="btn-tag">'+tME+'</span></span><span style="color:var(--cp)">✓</span></div>';
-  } else if(s.status==='in_progress'){
-    h+='<div class="action-btn btn-end" onclick="doAction(\''+mid+'\',\'endMatch\')">◼ Fin du match</div>';
-  } else {
+  else if(s.status==='in_progress'){
+    const canEnd=s.locked.length>=2;
+    if(canEnd)h+='<div class="action-btn btn-end" onclick="doAction(\''+mid+'\',\'endMatch\')">◼ Fin du match</div>';
+    else h+='<div class="action-btn btn-locked">◼ Fin du match <span class="btn-tag" style="color:var(--ca)">2 sets requis</span></div>';
+  } else
     h+='<div class="action-btn btn-locked">◼ Fin du match</div>';
+
+  // FORFAIT — always visible unless already done
+  if(!done){
+    const mJson=JSON.stringify({team1:{name:m.team1?.name||''},team2:{name:m.team2?.name||''}});
+    h+='<button class="btn-forfait" onclick=\'openForf("'+mid+'",'+mJson+')\'>⚠️ Forfait / Abandon</button>';
   }
   h+='</div>';
 
-  // ── FORFAIT/ABANDON — ALWAYS VISIBLE unless already retired ──
-  if(!done){
-    const mJson=JSON.stringify({team1:{name:m.team1?.name||''},team2:{name:m.team2?.name||''}});
-    h+='<div class="btns"><button class="btn-forfait" onclick=\'openForf("'+mid+'",'+mJson+')\'>⚠️ Forfait / Abandon</button></div>';
-  } else if(s.status==='retired'&&s.retReason){
+  // Retired info
+  if(s.status==='retired'&&s.retReason)
     h+='<div class="retired-info">'+s.retReason+'</div>';
-  }
 
-  // ── MASTER ALERT — visible if not done ──
+  // MASTER ALERT — visible if not done
   if(!done){
     h+='<div class="btns"><button class="btn-master'+(s.masterAlert?' sent':'')+'" onclick="doAction(\''+mid+'\',\'master\')">'+'<span style="font-size:18px">🚨</span><span style="flex:1;font-size:13px">'+(s.masterAlert?'Alerte envoyée — Appuyer pour annuler':'Appeler le Master Responsable Terrain')+'</span></button></div>';
   }
 
-  // ── LOG ──
+  // LOG
   if(s.log.length){
     h+='<div class="log-section"><div class="log-title">Horodatage</div>';
     h+=s.log.map(l=>'<div class="log-item"><span class="log-t">'+l.t+'</span><span>'+l.msg+'</span></div>').join('');
     h+='</div>';
   }
 
-  // ── MINI PROGRAMME ──
+  // MINI PROGRAMME
   h+='<hr style="border:none;border-top:1px solid var(--border);margin:10px 12px 0">';
   h+='<div class="mini-list"><div class="mini-lbl">Programme — '+(court?.name||'')+'</div>';
   matches.forEach((mm,i)=>{
-    const ms=S[mm.id]; const st=ms?.status||'scheduled';
+    const ms=S[mm.id];const st=ms?.status||'scheduled';
     const dc={'finished':'var(--text3)','in_progress':'var(--cp)','warmup':'var(--co)','serve-select':'var(--co)','retired':'var(--ca)','scheduled':'var(--border2)'}[st];
-    const sc2=ms?ms.scores.slice(0,ms.set3?3:2).map(s=>s[0]+'-'+s[1]).filter((_,i)=>ms.scores[i][0]+ms.scores[i][1]>0).join(' '):'';
+    const sc3=ms?ms.scores.slice(0,ms.set3?3:2).map((sv,si)=>ms.locked.includes(si)?sv[0]+'-'+sv[1]:null).filter(Boolean).join(' '):'';
     h+='<div class="mini-m'+(i===matchIdx?' on':(['finished','retired'].includes(st)?' done':''))+'" onclick="matchIdx='+i+';render()">';
     h+='<span class="mini-time">'+(mm.scheduled_at?new Date(mm.scheduled_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'—')+'</span>';
     h+='<span class="mini-dot" style="background:'+dc+'"></span>';
     h+='<div class="mini-teams">'+(mm.team1?.name?.split('/')[0]?.trim()||'?')+' / '+(mm.team2?.name?.split('/')[0]?.trim()||'?')+'<br><span style="font-size:10px;color:var(--text3)">'+(mm.competition?.category||'')+' · '+(mm.competition?.name||'')+'</span></div>';
-    h+=(sc2?'<span class="mini-sc">'+sc2+'</span>':'');
+    h+=(sc3?'<span class="mini-sc">'+sc3+'</span>':'');
     h+=(ms?.masterAlert?'<span style="font-size:12px">🚨</span>':'');
     h+='</div>';
   });
