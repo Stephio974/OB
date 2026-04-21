@@ -148,6 +148,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="tnav-center">
         <div class="tnav-sub">Terrain</div>
         <div class="tnav-name" id="terrain-name">…</div>
+        <div id="terrain-staff" style="font-size:10px;color:var(--cp);opacity:.85;margin-top:2px;display:none"></div>
       </div>
       <button class="tnav-btn" id="btn-tn" onclick="changeTerrain(1)">›</button>
     </div>
@@ -271,6 +272,8 @@ async function init(){
   if(!tid){show('<div style="padding:48px 20px;text-align:center;color:var(--text3)">🏖️<br>Aucun tournoi. <a href="portal.html" style="color:var(--cp)">Portail</a></div>');return;}
   const ts=await sb.get('tournament','id=eq.'+tid).catch(()=>[]);
   applyBrand(ts[0]);
+  // Load current staff assignment for this court
+  await loadCurrentStaff(tid);
   courts=await sb.get('court','tournament_id=eq.'+tid+'&is_active=eq.true&order=sort_order').catch(()=>[]);
   if(!courts.length){show('<div style="padding:40px;text-align:center;color:var(--text3)">Aucun terrain configuré.</div>');return;}
   if(forcedCourt){const i=courts.findIndex(c=>c.id===forcedCourt);if(i>=0)terrainIdx=i;}
@@ -285,6 +288,38 @@ function applyBrand(t){
   if(t.logo2_url){lr.src=t.logo2_url;lr.style.display='block';lr.onerror=()=>lr.style.display='none';}
   if(t.name)nm.textContent=t.name;
   if(t.itf_label){itf.textContent=t.itf_label;itf.style.display='block';}
+}
+
+// Load staff assignment for current court + slot, display in topbar
+let staffAssignCache=[];
+async function loadCurrentStaff(tid){
+  try{
+    staffAssignCache=await sb.get('staff_assignment',
+      'tournament_id=eq.'+tid
+      +'&select=*,staff(first_name,last_name,is_player)'
+    ).catch(()=>[]);
+  }catch{staffAssignCache=[];}
+  updateStaffDisplay();
+}
+function updateStaffDisplay(){
+  const court=courts[terrainIdx];if(!court)return;
+  const now=new Date();
+  const dateStr=now.toISOString().slice(0,10);
+  const slot=now.getHours()<13?'AM':'PM';
+  const el=document.getElementById('terrain-staff');if(!el)return;
+  // Find assignment for this court + today + current slot
+  const a=staffAssignCache.find(x=>
+    x.assign_date===dateStr&&x.slot===slot&&
+    (x.court_id===court.id||
+     (x.courts_ids&&JSON.parse(x.courts_ids).includes(court.id)))
+  );
+  if(a&&a.staff){
+    const role=a.role==='responsable'?'Responsable':a.role==='superviseur'?'Superviseur':'Réserve';
+    el.textContent=role+' : '+a.staff.last_name+' '+a.staff.first_name+(a.staff.is_player?' 🎾':'');
+    el.style.display='block';
+  } else {
+    el.style.display='none';
+  }
 }
 
 async function loadCourt(){
@@ -536,6 +571,7 @@ function show(html){document.getElementById('main').innerHTML=html;}
 function render(){
   const court=courts[terrainIdx];
   document.getElementById('terrain-name').textContent=court?.name||'—';
+  updateStaffDisplay();
   document.getElementById('btn-tp').disabled=terrainIdx===0;
   document.getElementById('btn-tn').disabled=terrainIdx===courts.length-1;
   document.getElementById('tdots').innerHTML=courts.map((_,i)=>'<div class="tdot'+(i===terrainIdx?' on':'')+'"></div>').join('');

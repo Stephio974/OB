@@ -53,7 +53,17 @@
       <a href="admin.html">Admin</a>
       <a href="dashboard.html">Matchs</a>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <!-- Simulation date picker -->
+      <div id="sim-bar" style="display:flex;align-items:center;gap:6px;background:rgba(255,211,61,.12);border:1px solid rgba(255,211,61,.3);border-radius:8px;padding:4px 10px">
+        <span style="font-size:10px;font-weight:700;color:var(--cy);text-transform:uppercase;letter-spacing:.05em">Simulation</span>
+        <input type="date" id="sim-date-input" style="background:transparent;border:none;color:var(--cy);font-size:12px;font-family:inherit;outline:none;cursor:pointer" onchange="applySimDate(this.value)">
+        <select id="sim-time-input" style="background:transparent;border:none;color:var(--cy);font-size:12px;font-family:inherit;outline:none;cursor:pointer" onchange="applySimTime(this.value)">
+          <option value="09:00">Matin (09:00)</option>
+          <option value="15:00">Après-midi (15:00)</option>
+        </select>
+        <button onclick="clearSimDate()" style="background:none;border:none;color:var(--cy);cursor:pointer;font-size:13px;padding:0 2px" title="Revenir à la date réelle">✕</button>
+      </div>
       <span class="clock" id="clock">—</span>
       <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.55)" onclick="auth.logout()">⎋</button>
     </div>
@@ -76,17 +86,47 @@ let staff=[], avail=[], assign=[], courts=[], tournament=null, allDates=[];
 // Live clock
 function updateClock(){
   const now=new Date();
-  document.getElementById('clock').textContent=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const realTime=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const clockEl=document.getElementById('clock');
+  if(clockEl){
+    if(simDate){
+      clockEl.textContent=simDate+' '+simTime;
+      clockEl.style.color='var(--cy)';
+    } else {
+      clockEl.textContent=realTime;
+      clockEl.style.color='var(--cp)';
+    }
+  }
 }
 setInterval(updateClock,1000);updateClock();
 
-// Determine current and next slot
+function applySimDate(val){
+  simDate=val||null;
+  if(!val){simDate=null;}
+  render();
+}
+function applySimTime(val){
+  simTime=val||'10:00';
+  render();
+}
+function clearSimDate(){
+  simDate=null;
+  const inp=document.getElementById('sim-date-input');
+  if(inp)inp.value='';
+  render();
+}
+
+// Simulation date (null = real now)
+let simDate=null;
+
 function getCurrentSlot(){
-  const now=new Date();
+  const now=simDate?new Date(simDate+'T'+(simTime||'10:00')+':00'):new Date();
   const todayStr=now.toISOString().slice(0,10);
   const slot=now.getHours()<13?'AM':'PM';
   return{date:todayStr,slot};
 }
+
+let simTime='10:00'; // default simulation time
 function getNextSlot(cur){
   if(cur.slot==='AM') return{date:cur.date,slot:'PM'};
   // Next day

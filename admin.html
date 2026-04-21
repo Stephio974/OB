@@ -1075,8 +1075,8 @@ function renderSpStaff(){
 
   if(!spStaff.length){
     h+='<div class="card" style="text-align:center;padding:40px;color:var(--text3)">Aucun responsable terrain enregistré.<br>Cliquez "+ Ajouter" pour commencer.</div>';
-    return h;
-  }
+    // Modal must always be injected so the + Ajouter button works
+  } else {
 
   h+='<div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr>';
   h+='<th>Nom</th><th>Prénom</th><th>Genre</th><th>T-Shirt</th><th>Joueur</th>';
@@ -1102,7 +1102,8 @@ function renderSpStaff(){
     h+='<td class="actions"><button class="btn btn-outline btn-xs" onclick="spOpenStaffModal(\''+st.id+'\')">✏️</button>'
       +'<button class="btn btn-danger btn-xs" onclick="spDeleteStaff(\''+st.id+'\')">✕</button></td></tr>';
   });
-  h+='</tbody></table></div></div>';
+    h+='</tbody></table></div></div>';
+  } // end else
 
   // Modal HTML (hidden)
   h+=`<div id="sp-staff-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('sp-staff-modal')">
