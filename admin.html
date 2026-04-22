@@ -1274,165 +1274,382 @@ async function spConfirmAssign(){
 }
 
 // ─ VIEW 3 : Répartition ──────────────────────────────────────
-let repView='jour-terrain'; // 'jour-terrain' | 'role-terrain-jour'
+let repView='role-jour-terrain'; // 'role-jour-terrain' | 'role-terrain-jour'
 let repFilters={role:'',terrain:'',jour:'',staff:''};
 
 function renderSpRepartition(){
   const now=new Date();
   const todayStr=localDateStr(now);
-  const currentSlot=now.getHours()<13?'AM':'PM';
 
   let h='';
-  // Sub-tabs
+
+  // ── Sub-tabs (active = btn-primary, inactive = btn-outline) ──
+  const t1active=repView==='role-jour-terrain';
+  const t2active=repView==='role-terrain-jour';
   h+='<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">';
-  h+='<button class="btn btn-sm '+(repView==='jour-terrain'?'btn-primary':'btn-outline')+'" onclick="repSetView(\'jour-terrain\')">📅 Vue Jour / Terrain</button>';
-  h+='<button class="btn btn-sm '+(repView==='role-terrain-jour'?'btn-primary':'btn-outline')+'" onclick="repSetView(\'role-terrain-jour\')">🗺️ Vue Rôle / Terrain / Jour</button>';
+  h+='<button class="btn btn-sm" style="'+(t1active?'background:var(--cp);color:#001a10;border-color:var(--cpd)':'')
+    +'" onclick="repSetView(\'role-jour-terrain\')">📅 Vue Rôle / Jour / Terrain</button>';
+  h+='<button class="btn btn-sm" style="'+(t2active?'background:var(--cp);color:#001a10;border-color:var(--cpd)':'')
+    +'" onclick="repSetView(\'role-terrain-jour\')">🗺️ Vue Rôle / Terrain / Jour</button>';
   h+='</div>';
 
-  // Filters
+  // ── Filters (Jour kept in filter but not in columns) ──
   h+='<div class="filters-bar" style="margin-bottom:10px">';
-  h+='<div class="form-group"><label class="form-label">Rôle</label><select class="form-select" id="rep-f-role" onchange="repApplyFilter()" style="font-size:12px"><option value="">Tous</option><option value="responsable">Responsable</option><option value="superviseur">Superviseur</option><option value="reserve">Réserve</option></select></div>';
-  h+='<div class="form-group"><label class="form-label">Terrain</label><select class="form-select" id="rep-f-terrain" onchange="repApplyFilter()" style="font-size:12px"><option value="">Tous</option>'+allCourts.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')+'</select></div>';
-  h+='<div class="form-group"><label class="form-label">Jour</label><select class="form-select" id="rep-f-jour" onchange="repApplyFilter()" style="font-size:12px"><option value="">Tous</option>'+spDates.map(d=>'<option value="'+d+'">'+spFmtDate(d)+'</option>').join('')+'</select></div>';
-  h+='<div class="form-group"><label class="form-label">Responsable</label><select class="form-select" id="rep-f-staff" onchange="repApplyFilter()" style="font-size:12px"><option value="">Tous</option>'+spStaff.map(s=>'<option value="'+s.id+'">'+s.last_name+' '+s.first_name+'</option>').join('')+'</select></div>';
+  h+='<div class="form-group"><label class="form-label">Rôle</label>'
+    +'<select class="form-select" id="rep-f-role" onchange="repApplyFilter()" style="font-size:12px">'
+    +'<option value="">Tous</option><option value="responsable">Responsable</option>'
+    +'<option value="superviseur">Superviseur</option><option value="reserve">Réserve</option>'
+    +'</select></div>';
+  h+='<div class="form-group"><label class="form-label">Terrain</label>'
+    +'<select class="form-select" id="rep-f-terrain" onchange="repApplyFilter()" style="font-size:12px">'
+    +'<option value="">Tous</option>'
+    +allCourts.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('')
+    +'</select></div>';
+  h+='<div class="form-group"><label class="form-label">Jour</label>'
+    +'<select class="form-select" id="rep-f-jour" onchange="repApplyFilter()" style="font-size:12px">'
+    +'<option value="">Tous</option>'
+    +spDates.map(d=>'<option value="'+d+'">'+spFmtDate(d)+'</option>').join('')
+    +'</select></div>';
+  h+='<div class="form-group"><label class="form-label">Responsable</label>'
+    +'<select class="form-select" id="rep-f-staff" onchange="repApplyFilter()" style="font-size:12px">'
+    +'<option value="">Tous</option>'
+    +spStaff.map(s=>'<option value="'+s.id+'">'+s.last_name+' '+s.first_name+'</option>').join('')
+    +'</select></div>';
   h+='<button class="btn btn-outline btn-sm" onclick="repResetFilters()">✕ Reset</button>';
   h+='</div>';
 
-  h+='<div id="rep-content">'+renderRepContent(todayStr,currentSlot)+'</div>';
+  h+='<div id="rep-content">'+renderRepContent(todayStr)+'</div>';
   return h;
 }
 
-function repSetView(v){repView=v;const el=document.getElementById('rep-content');if(el){const now=new Date();el.innerHTML=renderRepContent(localDateStr(now),now.getHours()<13?'AM':'PM');}}
+function repSetView(v){
+  repView=v;
+  // Update button styles
+  const el=document.getElementById('rep-content');
+  if(el) el.innerHTML=renderRepContent(localDateStr(new Date()));
+  // Re-render full section to update button styles
+  const sp=document.getElementById('sp-content');
+  if(sp) sp.innerHTML=renderSpRepartition();
+}
 function repApplyFilter(){
   repFilters.role   =document.getElementById('rep-f-role')?.value||'';
   repFilters.terrain=document.getElementById('rep-f-terrain')?.value||'';
   repFilters.jour   =document.getElementById('rep-f-jour')?.value||'';
   repFilters.staff  =document.getElementById('rep-f-staff')?.value||'';
-  const now=new Date();
-  const el=document.getElementById('rep-content');if(el)el.innerHTML=renderRepContent(localDateStr(now),now.getHours()<13?'AM':'PM');
+  const el=document.getElementById('rep-content');
+  if(el) el.innerHTML=renderRepContent(localDateStr(new Date()));
 }
 function repResetFilters(){
   ['rep-f-role','rep-f-terrain','rep-f-jour','rep-f-staff'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   repFilters={role:'',terrain:'',jour:'',staff:''};
-  const now=new Date();
-  const el=document.getElementById('rep-content');if(el)el.innerHTML=renderRepContent(localDateStr(now),now.getHours()<13?'AM':'PM');
+  const el=document.getElementById('rep-content');
+  if(el) el.innerHTML=renderRepContent(localDateStr(new Date()));
 }
 
+// Filter assignments by current repFilters
 function filterAssigns(assigns){
   return assigns.filter(a=>{
-    if(repFilters.role&&a.role!==repFilters.role)return false;
-    if(repFilters.staff&&a.staff_id!==repFilters.staff)return false;
+    if(repFilters.role&&a.role!==repFilters.role) return false;
+    if(repFilters.staff&&a.staff_id!==repFilters.staff) return false;
     if(repFilters.terrain){
-      if(a.role==='responsable'&&a.court_id!==repFilters.terrain)return false;
-      if(a.role==='superviseur'){let ids=[];try{ids=JSON.parse(a.courts_ids||'[]');}catch{}if(!ids.includes(repFilters.terrain))return false;}
-      if(a.role==='reserve')return true; // reserve not filtered by terrain
+      if(a.role==='responsable') return a.court_id===repFilters.terrain;
+      if(a.role==='superviseur'){
+        let ids=[];try{ids=JSON.parse(a.courts_ids||'[]');}catch{}
+        return ids.includes(repFilters.terrain);
+      }
+      // reserve: not filtered by terrain
     }
     return true;
   });
 }
 
-function renderRepContent(todayStr,currentSlot){
-  if(repView==='jour-terrain') return renderRepJourTerrain(todayStr,currentSlot);
-  return renderRepRoleTerrainJour(todayStr,currentSlot);
+function renderRepContent(todayStr){
+  if(repView==='role-terrain-jour') return renderRepRoleTerrainJour(todayStr);
+  return renderRepRoleJourTerrain(todayStr);
 }
 
-// ── Vue Jour/Terrain : colonnes Jour | Terrain | AM | PM ───────
-function renderRepJourTerrain(todayStr,currentSlot){
-  const dates=repFilters.jour?[repFilters.jour]:spDates;
-  if(!dates.length)return'<div class="alert alert-info">Aucune date de tournoi configurée.</div>';
-
-  let rows=[];
-  dates.forEach(d=>{
-    allCourts.forEach(c=>{
-      if(repFilters.terrain&&c.id!==repFilters.terrain)return;
-      const amA=filterAssigns(spAssign.filter(a=>a.assign_date===d&&a.slot==='AM')).find(a=>
-        a.court_id===c.id||(a.courts_ids&&JSON.parse(a.courts_ids||'[]').includes(c.id)));
-      const pmA=filterAssigns(spAssign.filter(a=>a.assign_date===d&&a.slot==='PM')).find(a=>
-        a.court_id===c.id||(a.courts_ids&&JSON.parse(a.courts_ids||'[]').includes(c.id)));
-      if(!amA&&!pmA)return;
-      rows.push({d,c,amA,pmA});
-    });
-  });
-
-  if(!rows.length)return'<div class="alert alert-info">Aucune affectation pour ces filtres.</div>';
-
-  let h='<div style="overflow-x:auto"><table class="data-table"><thead><tr>'+
-    '<th>Jour</th><th>Terrain</th><th style="color:var(--cp)">☀️ Matin</th><th style="color:var(--co)">🌤️ Après-midi</th></tr></thead><tbody>';
-  let lastD='';
-  rows.forEach(({d,c,amA,pmA})=>{
-    const isNow=d===todayStr;
-    const showDate=d!==lastD;lastD=d;
-    h+='<tr style="'+(isNow?'background:rgba(0,217,138,.05)':'')+'">';
-    h+='<td>'+(showDate?'<strong>'+spFmtDate(d)+'</strong>'+(isNow?' <span style="font-size:10px;background:var(--cp);color:#001a10;border-radius:20px;padding:1px 7px">Auj.</span>':''):'')+'</td>';
-    h+='<td><strong>'+c.name+'</strong></td>';
-    h+='<td>'+renderRepCell(amA)+'</td>';
-    h+='<td>'+renderRepCell(pmA)+'</td>';
-    h+='</tr>';
-  });
-  h+='</tbody></table></div>';
-  return h;
+// Helper: get person name from staff_id
+function stName(staffId){
+  const s=spStaff.find(x=>x.id===staffId);
+  return s?('<strong>'+s.last_name+'</strong> '+s.first_name+(s.is_player?' 🎾':'')):' <span style="color:var(--text3)">?</span>';
 }
 
-// ── Vue Rôle/Terrain/Jour : groupé par rôle ───────────────────
-function renderRepRoleTerrainJour(todayStr,currentSlot){
+// Helper: find assignment for a role+court(s)+date+slot
+function findAssign(role, courtId, date, slot){
+  return filterAssigns(spAssign.filter(a=>
+    a.role===role && a.assign_date===date && a.slot===slot &&
+    (role==='responsable'? a.court_id===courtId :
+     role==='reserve'? true :
+     (()=>{let ids=[];try{ids=JSON.parse(a.courts_ids||'[]');}catch{}return ids.includes(courtId);})())
+  ))[0]||null;
+}
+
+// Helper: render a cell — shows person name or empty dash
+function repCell(assign){
+  if(!assign) return '<span style="color:var(--text3);font-size:11px">—</span>';
+  return stName(assign.staff_id);
+}
+
+// ══ VUE 1 : Rôle > Jour > Terrain ════════════════════════════
+// Structure : groupé par Rôle > sous-groupé par Jour
+// Colonnes : Terrain | AM | PM  (jour en sous-titre de section)
+function renderRepRoleJourTerrain(todayStr){
   const roles=['responsable','superviseur','reserve'];
-  const roleLabel={responsable:'🏖️ Responsables terrain',superviseur:'👁️ Superviseurs multi-terrains',reserve:'⏳ Réserve'};
+  const roleLabel={responsable:'🏖️ Responsables terrain', superviseur:'👁️ Superviseurs multi-terrains', reserve:'⏳ Réserve'};
   let h='';
-  roles.forEach(role=>{
-    if(repFilters.role&&repFilters.role!==role)return;
-    const roleAssigns=filterAssigns(spAssign.filter(a=>a.role===role));
-    if(!roleAssigns.length)return;
-    // Group by terrain + date
-    const rows=[];
-    const addedKeys=new Set();
-    roleAssigns.forEach(a=>{
-      const terrains=a.role==='responsable'?[a.court_id||null]:a.role==='superviseur'?(()=>{try{return JSON.parse(a.courts_ids||'[]');}catch{return [null];}})():[null];
-      terrains.forEach(tid=>{
-        if(repFilters.terrain&&tid&&tid!==repFilters.terrain)return;
-        const key=role+'|'+(tid||'none')+'|'+a.assign_date;
-        if(!addedKeys.has(key)){addedKeys.add(key);}
-        // Find AM + PM for this terrain + date
-        const amA=spAssign.filter(x=>x.role===role&&x.assign_date===a.assign_date&&x.slot==='AM').find(x=>{
-          if(role==='responsable')return x.court_id===tid;
-          if(role==='superviseur'){let ids=[];try{ids=JSON.parse(x.courts_ids||'[]');}catch{}return ids.includes(tid);}
-          return true;
-        });
-        const pmA=spAssign.filter(x=>x.role===role&&x.assign_date===a.assign_date&&x.slot==='PM').find(x=>{
-          if(role==='responsable')return x.court_id===tid;
-          if(role==='superviseur'){let ids=[];try{ids=JSON.parse(x.courts_ids||'[]');}catch{}return ids.includes(tid);}
-          return true;
-        });
-        const keyFull=role+'|'+(tid||'none')+'|'+a.assign_date;
-        if(!rows.find(r=>r.key===keyFull))rows.push({key:keyFull,role,tid,d:a.assign_date,amA,pmA});
-      });
-    });
-    if(!rows.length)return;
 
+  roles.forEach(role=>{
+    if(repFilters.role&&repFilters.role!==role) return;
+
+    let roleContent='';
+    const dates=repFilters.jour?[repFilters.jour]:spDates;
+
+    dates.forEach(d=>{
+      const isToday=d===todayStr;
+      // Gather rows for this role+date
+      let rows=[];
+
+      if(role==='responsable'){
+        // One row per court
+        const courts=repFilters.terrain?allCourts.filter(c=>c.id===repFilters.terrain):allCourts;
+        courts.forEach(c=>{
+          const amA=findAssign(role,c.id,d,'AM');
+          const pmA=findAssign(role,c.id,d,'PM');
+          if(!amA&&!pmA) return; // skip if no assignment at all (but filter by terrain keeps them)
+          if(repFilters.staff&&amA?.staff_id!==repFilters.staff&&pmA?.staff_id!==repFilters.staff) return;
+          rows.push({label:c.name, amA, pmA});
+        });
+      } else if(role==='superviseur'){
+        // One row per SUPERVISOR (not per terrain) — shows all their terrains concatenated
+        const dayAssigns=filterAssigns(spAssign.filter(a=>a.role==='superviseur'&&a.assign_date===d));
+        const staffSeen=new Set();
+        // Collect unique staff for this day
+        const allStaffIds=[...new Set(dayAssigns.map(a=>a.staff_id))];
+        allStaffIds.forEach(staffId=>{
+          const amA=dayAssigns.find(a=>a.staff_id===staffId&&a.slot==='AM')||null;
+          const pmA=dayAssigns.find(a=>a.staff_id===staffId&&a.slot==='PM')||null;
+          if(repFilters.staff&&staffId!==repFilters.staff) return;
+          // Build terrain labels from both AM and PM
+          const getTerrainNames=(a)=>{
+            if(!a) return [];
+            let ids=[];try{ids=JSON.parse(a.courts_ids||'[]');}catch{}
+            return ids.map(id=>allCourts.find(c=>c.id===id)?.name||id);
+          };
+          const amTerrains=getTerrainNames(amA);
+          const pmTerrains=getTerrainNames(pmA);
+          const allTerrainNames=[...new Set([...amTerrains,...pmTerrains])];
+          // Show unsupervised courts
+          const allCourtNames=allCourts.map(c=>c.name);
+          // Build label = supervised terrains for this supervisor
+          rows.push({staffId, amA, pmA, amTerrains, pmTerrains});
+        });
+        // Add "Non supervisé" rows for courts not covered AM or PM
+        const coveredAM=new Set(dayAssigns.filter(a=>a.slot==='AM').flatMap(a=>{let ids=[];try{ids=JSON.parse(a.courts_ids||'[]');}catch{}return ids;}));
+        const coveredPM=new Set(dayAssigns.filter(a=>a.slot==='PM').flatMap(a=>{let ids=[];try{ids=JSON.parse(a.courts_ids||'[]');}catch{}return ids;}));
+        const uncoveredCourts=allCourts.filter(c=>
+          (!repFilters.terrain||c.id===repFilters.terrain)&&
+          (!coveredAM.has(c.id)||!coveredPM.has(c.id))
+        );
+        if(uncoveredCourts.length>0&&!repFilters.staff){
+          rows.push({isUncovered:true, courts:uncoveredCourts, coveredAM, coveredPM});
+        }
+      } else if(role==='reserve'){
+        const dayAssigns=filterAssigns(spAssign.filter(a=>a.role==='reserve'&&a.assign_date===d));
+        const allStaffIds=[...new Set(dayAssigns.map(a=>a.staff_id))];
+        allStaffIds.forEach(staffId=>{
+          if(repFilters.staff&&staffId!==repFilters.staff) return;
+          const amA=dayAssigns.find(a=>a.staff_id===staffId&&a.slot==='AM')||null;
+          const pmA=dayAssigns.find(a=>a.staff_id===staffId&&a.slot==='PM')||null;
+          rows.push({staffId, amA, pmA});
+        });
+      }
+
+      if(!rows.length) return;
+
+      const todayBadge=isToday?'<span style="font-size:10px;background:var(--cp);color:#001a10;border-radius:20px;padding:1px 7px;margin-left:6px;font-weight:700">Auj.</span>':'';
+      roleContent+='<div style="margin-bottom:10px">';
+      roleContent+='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:5px 0 5px;border-bottom:1px solid var(--border2);margin-bottom:6px">'
+        +spFmtDate(d)+todayBadge+'</div>';
+      roleContent+='<div style="overflow-x:auto"><table class="data-table" style="font-size:12px"><thead><tr>'
+        +'<th>Terrain</th>'
+        +'<th style="color:var(--cp)">☀️ Matin</th>'
+        +'<th style="color:var(--co)">🌤️ Après-midi</th>'
+        +'</tr></thead><tbody>';
+
+      if(role==='responsable'){
+        rows.forEach(({label,amA,pmA})=>{
+          roleContent+='<tr><td><strong>'+label+'</strong></td><td>'+repCell(amA)+'</td><td>'+repCell(pmA)+'</td></tr>';
+        });
+      } else if(role==='superviseur'){
+        rows.forEach(row=>{
+          if(row.isUncovered){
+            row.courts.forEach(c=>{
+              const am=row.coveredAM.has(c.id)?'':'<span style="color:var(--ca);font-size:11px">⚠️ Non supervisé</span>';
+              const pm=row.coveredPM.has(c.id)?'':'<span style="color:var(--ca);font-size:11px">⚠️ Non supervisé</span>';
+              if(!am&&!pm) return;
+              roleContent+='<tr style="background:rgba(247,92,92,.04)"><td><strong>'+c.name+'</strong></td><td>'+(am||'—')+'</td><td>'+(pm||'—')+'</td></tr>';
+            });
+          } else {
+            // One row: terrain cell = all terrains, cells = person name
+            const amTerrains=row.amTerrains?.join(', ')||'—';
+            const pmTerrains=row.pmTerrains?.join(', ')||'—';
+            const terrainLabel=[...new Set([...( row.amTerrains||[]),...(row.pmTerrains||[])])].join(', ')||'—';
+            roleContent+='<tr><td><strong>'+terrainLabel+'</strong></td>';
+            roleContent+='<td>'+(row.amA?stName(row.staffId):'<span style="color:var(--text3)">—</span>')+'</td>';
+            roleContent+='<td>'+(row.pmA?stName(row.staffId):'<span style="color:var(--text3)">—</span>')+'</td></tr>';
+          }
+        });
+      } else if(role==='reserve'){
+        rows.forEach(({staffId,amA,pmA})=>{
+          roleContent+='<tr><td><strong>Réserve</strong></td>'
+            +'<td>'+(amA?stName(staffId):'<span style="color:var(--text3)">—</span>')+'</td>'
+            +'<td>'+(pmA?stName(staffId):'<span style="color:var(--text3)">—</span>')+'</td></tr>';
+        });
+      }
+      roleContent+='</tbody></table></div></div>';
+    });
+
+    if(!roleContent) return;
     h+='<div class="card" style="margin-bottom:12px">';
     h+='<div class="card-title">'+roleLabel[role]+'</div>';
-    h+='<div style="overflow-x:auto"><table class="data-table"><thead><tr>'+
-      '<th>Terrain</th><th>Jour</th><th style="color:var(--cp)">☀️ Matin</th><th style="color:var(--co)">🌤️ Après-midi</th></tr></thead><tbody>';
-    rows.filter(r=>!repFilters.jour||r.d===repFilters.jour).forEach(({tid,d,amA,pmA})=>{
-      const court=allCourts.find(c=>c.id===tid);
-      const isNow=d===todayStr;
-      h+='<tr style="'+(isNow?'background:rgba(0,217,138,.05)':'')+'">';
-      h+='<td><strong>'+(court?.name||'Multi-terrains')+'</strong></td>';
-      h+='<td>'+spFmtDate(d)+(isNow?' <span style="font-size:9px;background:var(--cp);color:#001a10;border-radius:20px;padding:1px 6px">Auj.</span>':'')+'</td>';
-      h+='<td>'+renderRepCell(amA)+'</td>';
-      h+='<td>'+renderRepCell(pmA)+'</td>';
-      h+='</tr>';
-    });
-    h+='</tbody></table></div></div>';
+    h+=roleContent;
+    h+='</div>';
   });
+
   return h||'<div class="alert alert-info">Aucune affectation pour ces filtres.</div>';
 }
 
-function renderRepCell(a){
-  if(!a)return'<span style="color:var(--text3);font-size:11px">—</span>';
-  const st=spStaff.find(x=>x.id===a.staff_id);
-  if(!st)return'<span style="color:var(--text3)">?</span>';
-  return'<strong>'+st.last_name+'</strong> '+st.first_name+(st.is_player?' 🎾':'');
+// ══ VUE 2 : Rôle > Terrain > Jour ════════════════════════════
+// Structure : groupé par Rôle > sous-groupé par Terrain (ou par superviseur)
+// Colonnes : Jour | AM | PM
+function renderRepRoleTerrainJour(todayStr){
+  const roles=['responsable','superviseur','reserve'];
+  const roleLabel={responsable:'🏖️ Responsables terrain', superviseur:'👁️ Superviseurs multi-terrains', reserve:'⏳ Réserve'};
+  let h='';
+
+  roles.forEach(role=>{
+    if(repFilters.role&&repFilters.role!==role) return;
+    let roleContent='';
+    const dates=repFilters.jour?[repFilters.jour]:spDates;
+
+    if(role==='responsable'){
+      const courts=repFilters.terrain?allCourts.filter(c=>c.id===repFilters.terrain):allCourts;
+      courts.forEach(c=>{
+        const rows=dates.map(d=>{
+          const amA=findAssign(role,c.id,d,'AM');
+          const pmA=findAssign(role,c.id,d,'PM');
+          return{d,amA,pmA};
+        }).filter(r=>r.amA||r.pmA);
+        if(!rows.length) return;
+        if(repFilters.staff&&!rows.some(r=>r.amA?.staff_id===repFilters.staff||r.pmA?.staff_id===repFilters.staff)) return;
+
+        roleContent+='<div style="margin-bottom:10px">';
+        roleContent+='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:5px 0 5px;border-bottom:1px solid var(--border2);margin-bottom:6px">🏖️ Terrain : '+c.name+'</div>';
+        roleContent+='<div style="overflow-x:auto"><table class="data-table" style="font-size:12px"><thead><tr>'
+          +'<th>Jour</th><th style="color:var(--cp)">☀️ Matin</th><th style="color:var(--co)">🌤️ Après-midi</th></tr></thead><tbody>';
+        rows.forEach(({d,amA,pmA})=>{
+          const isToday=d===todayStr;
+          roleContent+='<tr style="'+(isToday?'background:rgba(0,217,138,.05)':'')+'">'
+            +'<td>'+spFmtDate(d)+(isToday?' <span style="font-size:9px;background:var(--cp);color:#001a10;border-radius:20px;padding:1px 5px">Auj.</span>':'')+'</td>'
+            +'<td>'+repCell(amA)+'</td><td>'+repCell(pmA)+'</td></tr>';
+        });
+        roleContent+='</tbody></table></div></div>';
+      });
+    } else if(role==='superviseur'){
+      // Group by staff (one block per supervisor)
+      const allStaffIds=[...new Set(
+        filterAssigns(spAssign.filter(a=>a.role==='superviseur')).map(a=>a.staff_id)
+      )];
+      allStaffIds.forEach(staffId=>{
+        if(repFilters.staff&&staffId!==repFilters.staff) return;
+        const staffAssigns=filterAssigns(spAssign.filter(a=>a.role==='superviseur'&&a.staff_id===staffId));
+        const rows=dates.map(d=>{
+          const amA=staffAssigns.find(a=>a.assign_date===d&&a.slot==='AM')||null;
+          const pmA=staffAssigns.find(a=>a.assign_date===d&&a.slot==='PM')||null;
+          return{d,amA,pmA};
+        }).filter(r=>r.amA||r.pmA);
+        if(!rows.length) return;
+
+        // Collect all terrains this supervisor covers across days
+        const allTNames=[...new Set(rows.flatMap(r=>{
+          const ids=[...new Set([...(()=>{let i=[];try{i=JSON.parse(r.amA?.courts_ids||'[]');}catch{}return i;})(),...(()=>{let i=[];try{i=JSON.parse(r.pmA?.courts_ids||'[]');}catch{}return i;})() ])];
+          return ids.map(id=>allCourts.find(c=>c.id===id)?.name||id);
+        }))].join(', ');
+
+        const st=spStaff.find(x=>x.id===staffId);
+        roleContent+='<div style="margin-bottom:10px">';
+        roleContent+='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:5px 0 5px;border-bottom:1px solid var(--border2);margin-bottom:6px">'
+          +'👁️ '+(st?.last_name||'?')+' '+(st?.first_name||'')
+          +(allTNames?' <span style="font-size:11px;color:var(--cc);font-weight:400">('+allTNames+')</span>':'')
+          +'</div>';
+        roleContent+='<div style="overflow-x:auto"><table class="data-table" style="font-size:12px"><thead><tr>'
+          +'<th>Jour</th><th style="color:var(--cp)">☀️ Terrains Matin</th><th style="color:var(--co)">🌤️ Terrains Après-midi</th></tr></thead><tbody>';
+        rows.forEach(({d,amA,pmA})=>{
+          const isToday=d===todayStr;
+          const amNames=(()=>{let i=[];try{i=JSON.parse(amA?.courts_ids||'[]');}catch{}return i.map(id=>allCourts.find(c=>c.id===id)?.name||id).join(', ');})();
+          const pmNames=(()=>{let i=[];try{i=JSON.parse(pmA?.courts_ids||'[]');}catch{}return i.map(id=>allCourts.find(c=>c.id===id)?.name||id).join(', ');})();
+          roleContent+='<tr style="'+(isToday?'background:rgba(0,217,138,.05)':'')+'">'
+            +'<td>'+spFmtDate(d)+(isToday?' <span style="font-size:9px;background:var(--cp);color:#001a10;border-radius:20px;padding:1px 5px">Auj.</span>':'')+'</td>'
+            +'<td>'+(amNames||'<span style="color:var(--text3)">—</span>')+'</td>'
+            +'<td>'+(pmNames||'<span style="color:var(--text3)">—</span>')+'</td></tr>';
+        });
+        roleContent+='</tbody></table></div>';
+
+        // Unsupervised courts for this supervisor's dates
+        dates.forEach(d=>{
+          const amA=staffAssigns.find(a=>a.assign_date===d&&a.slot==='AM');
+          const pmA=staffAssigns.find(a=>a.assign_date===d&&a.slot==='PM');
+          const covAM=new Set((()=>{let i=[];try{i=JSON.parse(amA?.courts_ids||'[]');}catch{}return i;})());
+          const covPM=new Set((()=>{let i=[];try{i=JSON.parse(pmA?.courts_ids||'[]');}catch{}return i;})());
+          const unA=allCourts.filter(c=>!covAM.has(c.id));
+          const unP=allCourts.filter(c=>!covPM.has(c.id));
+          if((amA&&unA.length)||(pmA&&unP.length)){
+            roleContent+='<div style="font-size:11px;color:var(--ca);padding:3px 0">⚠️ Non supervisés le '+spFmtDate(d)+' : '
+              +(amA&&unA.length?'Matin: '+unA.map(c=>c.name).join(', '):'')
+              +(amA&&unA.length&&pmA&&unP.length?' | ':'')
+              +(pmA&&unP.length?'PM: '+unP.map(c=>c.name).join(', '):'')
+              +'</div>';
+          }
+        });
+        roleContent+='</div>';
+      });
+    } else if(role==='reserve'){
+      const allStaffIds=[...new Set(filterAssigns(spAssign.filter(a=>a.role==='reserve')).map(a=>a.staff_id))];
+      allStaffIds.forEach(staffId=>{
+        if(repFilters.staff&&staffId!==repFilters.staff) return;
+        const rows=dates.map(d=>{
+          const amA=spAssign.find(a=>a.role==='reserve'&&a.staff_id===staffId&&a.assign_date===d&&a.slot==='AM')||null;
+          const pmA=spAssign.find(a=>a.role==='reserve'&&a.staff_id===staffId&&a.assign_date===d&&a.slot==='PM')||null;
+          return{d,amA,pmA};
+        }).filter(r=>r.amA||r.pmA);
+        if(!rows.length) return;
+        const st=spStaff.find(x=>x.id===staffId);
+        roleContent+='<div style="margin-bottom:10px">';
+        roleContent+='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:5px 0 5px;border-bottom:1px solid var(--border2);margin-bottom:6px">'
+          +'⏳ '+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+        roleContent+='<div style="overflow-x:auto"><table class="data-table" style="font-size:12px"><thead><tr>'
+          +'<th>Jour</th><th style="color:var(--cp)">☀️ Matin</th><th style="color:var(--co)">🌤️ Après-midi</th></tr></thead><tbody>';
+        rows.forEach(({d,amA,pmA})=>{
+          const isToday=d===todayStr;
+          roleContent+='<tr style="'+(isToday?'background:rgba(0,217,138,.05)':'')+'">'
+            +'<td>'+spFmtDate(d)+(isToday?' <span style="font-size:9px;background:var(--cp);color:#001a10;border-radius:20px;padding:1px 5px">Auj.</span>':'')+'</td>'
+            +'<td>'+(amA?'✓ En réserve':'<span style="color:var(--text3)">—</span>')+'</td>'
+            +'<td>'+(pmA?'✓ En réserve':'<span style="color:var(--text3)">—</span>')+'</td></tr>';
+        });
+        roleContent+='</tbody></table></div></div>';
+      });
+    }
+
+    if(!roleContent) return;
+    h+='<div class="card" style="margin-bottom:12px">';
+    h+='<div class="card-title">'+roleLabel[role]+'</div>';
+    h+=roleContent;
+    h+='</div>';
+  });
+
+  return h||'<div class="alert alert-info">Aucune affectation pour ces filtres.</div>';
 }
+
 
 init();
 </script>
