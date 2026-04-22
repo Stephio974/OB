@@ -213,6 +213,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <script>
 auth.require(['admin','arbitre','terrain']);
 
+function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const forcedCourt=new URLSearchParams(location.search).get('court');
 let courts=[], days=[], terrainIdx=0, dayIdx=0, matchIdx=0;
 const S={};   // State per match id
@@ -291,31 +292,49 @@ function applyBrand(t){
 }
 
 // Load staff assignment for current court + slot, display in topbar
-let staffAssignCache=[];
+let staffAssignCache=[], staffCache=[];
 async function loadCurrentStaff(tid){
   try{
+    // Fetch assignments and staff separately to avoid FK join issues
     staffAssignCache=await sb.get('staff_assignment',
-      'tournament_id=eq.'+tid
-      +'&select=*,staff(first_name,last_name,is_player)'
+      'tournament_id=eq.'+tid+'&order=assign_date,slot'
     ).catch(()=>[]);
-  }catch{staffAssignCache=[];}
+    staffCache=await sb.get('staff',
+      'tournament_id=eq.'+tid
+    ).catch(()=>[]);
+  }catch{staffAssignCache=[];staffCache=[];}
   updateStaffDisplay();
 }
 function updateStaffDisplay(){
   const court=courts[terrainIdx];if(!court)return;
   const now=new Date();
-  const dateStr=now.toISOString().slice(0,10);
+  const dateStr=localDateStr(now);
   const slot=now.getHours()<13?'AM':'PM';
   const el=document.getElementById('terrain-staff');if(!el)return;
-  // Find assignment for this court + today + current slot
-  const a=staffAssignCache.find(x=>
+
+  // Find responsable for this court
+  const resp=staffAssignCache.find(x=>
     x.assign_date===dateStr&&x.slot===slot&&
-    (x.court_id===court.id||
-     (x.courts_ids&&JSON.parse(x.courts_ids).includes(court.id)))
+    x.role==='responsable'&&x.court_id===court.id
   );
-  if(a&&a.staff){
-    const role=a.role==='responsable'?'Responsable':a.role==='superviseur'?'Superviseur':'Réserve';
-    el.textContent=role+' : '+a.staff.last_name+' '+a.staff.first_name+(a.staff.is_player?' 🎾':'');
+  // Find superviseur covering this court
+  const sup=staffAssignCache.find(x=>{
+    if(x.assign_date!==dateStr||x.slot!==slot||x.role!=='superviseur')return false;
+    try{return JSON.parse(x.courts_ids||'[]').includes(court.id);}catch{return false;}
+  });
+
+  const lines=[];
+  if(resp){
+    const st=staffCache.find(s=>s.id===resp.staff_id);
+    if(st)lines.push('🏖️ '+st.last_name+' '+st.first_name+(st.is_player?' 🎾':''));
+  }
+  if(sup){
+    const st=staffCache.find(s=>s.id===sup.staff_id);
+    if(st)lines.push('👁️ '+st.last_name+' '+st.first_name);
+  }
+
+  if(lines.length){
+    el.innerHTML=lines.join(' &nbsp;·&nbsp; ');
     el.style.display='block';
   } else {
     el.style.display='none';

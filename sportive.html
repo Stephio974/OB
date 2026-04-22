@@ -7,36 +7,34 @@
 <title>Commission Sportive — Dashboard</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.hero{background:var(--bg);border-bottom:1px solid var(--border2);padding:20px 20px 16px}
-.hero-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px}
-.hero-title{font-size:22px;font-weight:800;color:var(--text)}
+.hero{background:var(--bg);border-bottom:1px solid var(--border2);padding:18px 20px 14px}
+.hero-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:2px}
 .hero-sub{font-size:12px;color:var(--text3)}
-.period-badge{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700}
-.period-now{background:rgba(0,217,138,.18);border:1px solid rgba(0,217,138,.4);color:var(--cp)}
-.period-next{background:rgba(46,189,245,.12);border:1px solid rgba(46,189,245,.3);color:var(--cc)}
-.section-block{margin-bottom:16px}
-.sb-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.sb-title{font-size:16px;font-weight:700;color:var(--text)}
-.sb-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
-.sb-now{background:var(--cpl);color:var(--cp);border:1px solid var(--cpd)}
-.sb-next{background:var(--ccl);color:var(--cc);border:1px solid #0a3d5a}
-.role-group{margin-bottom:12px}
-.rg-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
-.staff-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:12px 14px}
-.staff-card.now{border-color:var(--cp);background:var(--cpl)}
-.staff-card.next{border-color:var(--cc);background:var(--ccl)}
-.sc-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
-.sc-role{font-size:12px;font-weight:600;margin-bottom:2px}
-.sc-detail{font-size:11px;color:var(--text3)}
-.sc-player{font-size:10px;color:var(--co);font-weight:600}
-.empty-slot{text-align:center;padding:24px;color:var(--text3);background:var(--bg);border-radius:var(--rl);border:1px dashed var(--border2);font-size:13px}
-.divider-h{height:2px;background:var(--border2);margin:20px 0;border-radius:1px}
-.court-block{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:12px;margin-bottom:8px}
-.court-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
-.court-person{font-size:13px;color:var(--text2)}
-.no-one{color:var(--ca);font-size:12px}
-.clock{font-size:18px;font-weight:700;color:var(--cp);font-variant-numeric:tabular-nums}
+.period-label{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.period-now-badge{background:rgba(0,217,138,.18);border:1px solid rgba(0,217,138,.4);color:var(--cp);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+.period-next-badge{background:rgba(46,189,245,.12);border:1px solid rgba(46,189,245,.3);color:var(--cc);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+.role-section{margin-bottom:14px}
+.role-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.staff-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:11px 13px}
+.staff-card.now{border-color:var(--cp);background:rgba(0,217,138,.06)}
+.staff-card.nxt{border-color:var(--cc);background:rgba(46,189,245,.06)}
+.sc-name{font-size:14px;font-weight:700;color:var(--text)}
+.sc-detail{font-size:11px;color:var(--text3);margin-top:2px}
+.sc-court{font-size:12px;font-weight:600;margin-top:3px}
+.court-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:10px}
+.court-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rl);padding:10px 12px}
+.court-card.covered{border-color:var(--cp)}
+.court-card.uncovered{border-color:var(--ca);background:rgba(247,92,92,.05)}
+.court-name-s{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.empty-slot{text-align:center;padding:20px;color:var(--text3);background:var(--bg);border-radius:var(--rl);border:1px dashed var(--border2);font-size:13px}
+.divider-h{height:2px;background:var(--border2);margin:16px 0;border-radius:1px}
+.sim-bar{background:rgba(255,211,61,.1);border:1px solid rgba(255,211,61,.3);border-radius:8px;padding:5px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sim-label{font-size:10px;font-weight:700;color:var(--cy);text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.sim-input{background:transparent;border:none;color:var(--cy);font-size:12px;font-family:inherit;outline:none;cursor:pointer}
+.clock{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--cp)}
+.clock.sim{color:var(--cy)}
+.no-assign{color:var(--ca);font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
@@ -51,25 +49,27 @@
     <div class="topbar-nav">
       <a href="portal.html">Portail</a>
       <a href="admin.html">Admin</a>
-      <a href="dashboard.html">Matchs</a>
+      <a href="dashboard.html">Juge-Arbitre</a>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <!-- Simulation date picker -->
-      <div id="sim-bar" style="display:flex;align-items:center;gap:6px;background:rgba(255,211,61,.12);border:1px solid rgba(255,211,61,.3);border-radius:8px;padding:4px 10px">
-        <span style="font-size:10px;font-weight:700;color:var(--cy);text-transform:uppercase;letter-spacing:.05em">Simulation</span>
-        <input type="date" id="sim-date-input" style="background:transparent;border:none;color:var(--cy);font-size:12px;font-family:inherit;outline:none;cursor:pointer" onchange="applySimDate(this.value)">
-        <select id="sim-time-input" style="background:transparent;border:none;color:var(--cy);font-size:12px;font-family:inherit;outline:none;cursor:pointer" onchange="applySimTime(this.value)">
-          <option value="09:00">Matin (09:00)</option>
-          <option value="15:00">Après-midi (15:00)</option>
-        </select>
-        <button onclick="clearSimDate()" style="background:none;border:none;color:var(--cy);cursor:pointer;font-size:13px;padding:0 2px" title="Revenir à la date réelle">✕</button>
-      </div>
+    <div style="display:flex;align-items:center;gap:8px">
       <span class="clock" id="clock">—</span>
       <button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.55)" onclick="auth.logout()">⎋</button>
     </div>
   </div>
 
   <div class="page-body">
+    <!-- Simulation bar -->
+    <div class="sim-bar" style="margin-bottom:14px">
+      <span class="sim-label">📅 Simulation</span>
+      <input type="date" id="sim-date" class="sim-input" onchange="onSimChange()">
+      <select id="sim-slot" class="sim-input" onchange="onSimChange()">
+        <option value="AM">Matin (AM)</option>
+        <option value="PM">Après-midi (PM)</option>
+      </select>
+      <button onclick="clearSim()" style="background:rgba(255,211,61,.2);border:1px solid rgba(255,211,61,.4);color:var(--cy);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-weight:600">✕ Temps réel</button>
+      <span id="sim-active-label" style="font-size:11px;color:var(--cy);display:none">— Simulation active</span>
+    </div>
+
     <div id="main-content">
       <div class="loading-overlay"><div class="spinner"></div> Chargement…</div>
     </div>
@@ -80,200 +80,192 @@
 <script>
 auth.require(['admin','arbitre','terrain']);
 
-const tid=getActiveTournament();
-let staff=[], avail=[], assign=[], courts=[], tournament=null, allDates=[];
+function localDateStr(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
 
-// Live clock
+const tid=getActiveTournament();
+let staff=[], assign=[], courts=[], tournament=null, allDates=[];
+let simDate=null, simSlot=null;
+
+// Clock
 function updateClock(){
-  const now=new Date();
-  const realTime=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  const clockEl=document.getElementById('clock');
-  if(clockEl){
-    if(simDate){
-      clockEl.textContent=simDate+' '+simTime;
-      clockEl.style.color='var(--cy)';
-    } else {
-      clockEl.textContent=realTime;
-      clockEl.style.color='var(--cp)';
-    }
+  const el=document.getElementById('clock');
+  if(!el)return;
+  if(simDate){
+    el.textContent=simDate+' '+( simSlot||'AM');
+    el.className='clock sim';
+  } else {
+    el.textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    el.className='clock';
   }
 }
 setInterval(updateClock,1000);updateClock();
 
-function applySimDate(val){
-  simDate=val||null;
-  if(!val){simDate=null;}
+function onSimChange(){
+  simDate=document.getElementById('sim-date').value||null;
+  simSlot=document.getElementById('sim-slot').value||'AM';
+  document.getElementById('sim-active-label').style.display=simDate?'inline':'none';
   render();
 }
-function applySimTime(val){
-  simTime=val||'10:00';
-  render();
-}
-function clearSimDate(){
-  simDate=null;
-  const inp=document.getElementById('sim-date-input');
-  if(inp)inp.value='';
+function clearSim(){
+  simDate=null;simSlot=null;
+  document.getElementById('sim-date').value='';
+  document.getElementById('sim-active-label').style.display='none';
   render();
 }
 
-// Simulation date (null = real now)
-let simDate=null;
-
+function getNow(){
+  if(simDate){
+    const h=simSlot==='AM'?9:14;
+    return new Date(simDate+'T'+String(h).padStart(2,'0')+':00:00');
+  }
+  return new Date();
+}
 function getCurrentSlot(){
-  const now=simDate?new Date(simDate+'T'+(simTime||'10:00')+':00'):new Date();
-  const todayStr=now.toISOString().slice(0,10);
-  const slot=now.getHours()<13?'AM':'PM';
-  return{date:todayStr,slot};
+  const now=getNow();
+  return{date:localDateStr(now),slot:now.getHours()<13?'AM':'PM'};
 }
-
-let simTime='10:00'; // default simulation time
 function getNextSlot(cur){
   if(cur.slot==='AM') return{date:cur.date,slot:'PM'};
-  // Next day
   const d=new Date(cur.date+'T00:00:00');d.setDate(d.getDate()+1);
-  const next=d.toISOString().slice(0,10);
-  if(allDates.includes(next)) return{date:next,slot:'AM'};
+  const next=localDateStr(d);
+  if(allDates.includes(next))return{date:next,slot:'AM'};
   return null;
 }
-
 function fmtDate(d,slot){
   const label=new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   return label+' — '+(slot==='AM'?'☀️ Matin':'🌤️ Après-midi');
 }
 
 async function init(){
-  if(!tid){
-    document.getElementById('main-content').innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';
-    return;
-  }
-  // Branding
-  const ts=await sb.get('tournament','id=eq.'+tid).catch(()=>[]);
-  tournament=ts[0];
-  if(tournament){
-    document.getElementById('tb-name').textContent='🦺 Commission Sportive — '+tournament.name;
-    if(tournament.itf_label)document.getElementById('tb-itf').textContent=tournament.itf_label;
-    // Build dates
-    if(tournament.start_date&&tournament.end_date){
-      const d=new Date(tournament.start_date+'T00:00:00'),end=new Date(tournament.end_date+'T00:00:00');
-      while(d<=end){allDates.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}
+  const el=document.getElementById('main-content');
+  if(!tid){el.innerHTML='<div class="alert alert-warning">Aucun tournoi actif. <a href="portal.html">Portail</a></div>';return;}
+  try{
+    const ts=await sb.get('tournament','id=eq.'+tid);
+    tournament=ts[0];
+    if(tournament){
+      document.getElementById('tb-name').textContent='🦺 Commission Sportive — '+tournament.name;
+      if(tournament.itf_label)document.getElementById('tb-itf').textContent=tournament.itf_label;
+      if(tournament.start_date&&tournament.end_date){
+        const d=new Date(tournament.start_date+'T00:00:00'),end=new Date(tournament.end_date+'T00:00:00');
+        while(d<=end){allDates.push(localDateStr(d));d.setDate(d.getDate()+1);}
+      }
+      // Pre-fill sim date picker with tournament dates
+      const sdEl=document.getElementById('sim-date');
+      if(sdEl&&allDates.length){sdEl.min=allDates[0];sdEl.max=allDates[allDates.length-1];}
     }
+    await loadData();
+    setInterval(loadData,60000);
+  }catch(e){
+    el.innerHTML='<div class="alert alert-danger">Erreur de chargement : '+e.message+'<br><small>Vérifiez que la migration SQL sportive a été exécutée dans Supabase.</small></div>';
   }
-  await loadData();
-  setInterval(loadData,60000); // refresh every minute
 }
 
 async function loadData(){
-  courts=await sb.get('court','tournament_id=eq.'+tid+'&is_active=eq.true&order=sort_order').catch(()=>[]);
-  staff=await sb.get('staff','tournament_id=eq.'+tid+'&order=last_name,first_name').catch(()=>[]);
-  if(staff.length){
-    const sids=staff.map(s=>s.id);
-    [avail,assign]=await Promise.all([
-      sb.get('staff_availability','staff_id=in.('+sids.join(',')+')'+'&order=avail_date,slot').catch(()=>[]),
-      sb.get('staff_assignment','tournament_id=eq.'+tid+'&select=*,court(name)&order=assign_date,slot').catch(()=>[]),
-    ]);
+  try{
+    courts=await sb.get('court','tournament_id=eq.'+tid+'&is_active=eq.true&order=sort_order').catch(()=>[]);
+    staff=await sb.get('staff','tournament_id=eq.'+tid+'&order=last_name,first_name').catch(()=>[]);
+    if(staff.length){
+      const sids=staff.map(s=>s.id).join(',');
+      assign=await sb.get('staff_assignment',
+        'tournament_id=eq.'+tid
+        +'&select=*,court(name)'
+        +'&order=assign_date,slot'
+      ).catch(()=>[]);
+    } else {
+      assign=[];
+    }
+    render();
+  }catch(e){
+    document.getElementById('main-content').innerHTML='<div class="alert alert-danger">Erreur : '+e.message+'</div>';
   }
-  render();
 }
 
 function getSlotAssigns(date,slot){
   return assign.filter(a=>a.assign_date===date&&a.slot===slot);
 }
 
-function renderSlotBlock(label,date,slot,isNow){
+function renderSlotBlock(date,slot,isNow){
   const assigns=getSlotAssigns(date,slot);
-  const cardClass=isNow?'now':'next';
-  const badgeClass=isNow?'sb-now':'sb-next';
-  const badgeLabel=isNow?'En cours':'Prochaine demi-journée';
+  const cls=isNow?'now':'nxt';
+  const badgeCls=isNow?'period-now-badge':'period-next-badge';
+  const badgeTxt=isNow?'En cours':'Prochaine demi-journée';
 
-  let h='<div class="section-block">';
-  h+='<div class="sb-header">';
-  h+='<div class="sb-title">'+label+'</div>';
-  h+='<span class="sb-badge '+badgeClass+'">'+badgeLabel+'</span>';
-  h+='</div>';
+  let h='<div style="margin-bottom:16px">';
+  h+='<div class="period-label">'+fmtDate(date,slot)+' <span class="'+badgeCls+'">'+badgeTxt+'</span></div>';
 
   if(!assigns.length){
-    h+='<div class="empty-slot">Aucune affectation planifiée pour cette demi-journée</div>';
-    h+='</div>';
+    h+='<div class="empty-slot">Aucune affectation planifiée</div></div>';
     return h;
   }
 
-  // Group by role
   const resp=assigns.filter(a=>a.role==='responsable');
   const sup=assigns.filter(a=>a.role==='superviseur');
   const res=assigns.filter(a=>a.role==='reserve');
 
-  // ── Vue par terrain (responsables) ──
-  if(resp.length||sup.length){
-    h+='<div class="role-group"><div class="rg-label">🏖️ Terrains</div>';
-    // Pour chaque terrain, qui est responsable ?
-    const assignedCourts=new Set([...resp.map(a=>a.court_id),...sup.flatMap(a=>a.courts_ids?JSON.parse(a.courts_ids):[])].filter(Boolean));
-    const unassignedCourts=courts.filter(c=>!assignedCourts.has(c.id));
-
-    h+='<div class="staff-grid">';
-    courts.forEach(c=>{
-      const r=resp.find(a=>a.court_id===c.id);
-      const sv=sup.filter(a=>{const ids=a.courts_ids?JSON.parse(a.courts_ids):[];return ids.includes(c.id);});
-      h+='<div class="court-block">';
-      h+='<div class="court-name">🏖️ '+c.name+'</div>';
-      if(r){
-        const st=staff.find(x=>x.id===r.staff_id);
-        h+='<div class="court-person" style="color:var(--cp);font-weight:600">'+(st?.last_name||'?')+' '+(st?.first_name||''+(st?.is_player?' 🎾':''))+'</div>';
-        h+='<div class="sc-role" style="font-size:11px;color:var(--text3)">Responsable terrain</div>';
-      } else {
-        h+='<div class="no-one">⚠️ Non affecté</div>';
-      }
-      if(sv.length){
-        sv.forEach(a=>{
-          const st=staff.find(x=>x.id===a.staff_id);
-          h+='<div style="font-size:11px;color:var(--cc);margin-top:3px">👁️ Supervisé par '+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
-        });
-      }
-      h+='</div>';
+  // Terrains coverage
+  h+='<div class="role-section"><div class="role-title">🏖️ Couverture des terrains</div>';
+  h+='<div class="court-grid">';
+  courts.forEach(c=>{
+    const r=resp.find(a=>a.court_id===c.id);
+    const sv=sup.filter(a=>{ try{return JSON.parse(a.courts_ids||'[]').includes(c.id);}catch{return false;} });
+    const covered=!!r;
+    h+='<div class="court-card '+(covered?'covered':'uncovered')+'">';
+    h+='<div class="court-name-s">🏖️ '+c.name+'</div>';
+    if(r){
+      const st=staff.find(x=>x.id===r.staff_id);
+      h+='<div class="sc-court" style="color:var(--cp)">'+(st?.last_name||'?')+' '+(st?.first_name||'')+(st?.is_player?' 🎾':'')+'</div>';
+    } else {
+      h+='<div class="no-assign">⚠️ Non affecté</div>';
+    }
+    sv.forEach(a=>{
+      const st=staff.find(x=>x.id===a.staff_id);
+      h+='<div style="font-size:11px;color:var(--cc);margin-top:2px">👁️ '+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
     });
-    h+='</div></div>';
-  }
+    h+='</div>';
+  });
+  h+='</div></div>';
 
-  // ── Liste complète par rôle ──
+  // Full list by role
   if(resp.length){
-    h+='<div class="role-group"><div class="rg-label">Responsables terrain</div><div class="staff-grid">';
+    h+='<div class="role-section"><div class="role-title">Responsables terrain</div><div class="staff-grid">';
     resp.forEach(a=>{
       const st=staff.find(x=>x.id===a.staff_id);
-      h+='<div class="staff-card '+cardClass+'"><div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
-      h+='<div class="sc-role" style="color:var(--cp)">Terrain : '+(a.court?.name||'—')+'</div>';
-      if(st?.is_player)h+='<div class="sc-player">🎾 Participe au tournoi</div>';
+      h+='<div class="staff-card '+cls+'">';
+      h+='<div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+      h+='<div class="sc-court" style="color:var(--cp)">Terrain : '+(a.court?.name||'—')+'</div>';
+      if(st?.is_player)h+='<div class="sc-detail">🎾 Participe au tournoi</div>';
       if(a.notes)h+='<div class="sc-detail">'+a.notes+'</div>';
       h+='</div>';
     });
     h+='</div></div>';
   }
-
   if(sup.length){
-    h+='<div class="role-group"><div class="rg-label">Superviseurs multi-terrains</div><div class="staff-grid">';
+    h+='<div class="role-section"><div class="role-title">Superviseurs multi-terrains</div><div class="staff-grid">';
     sup.forEach(a=>{
       const st=staff.find(x=>x.id===a.staff_id);
-      const cids=a.courts_ids?JSON.parse(a.courts_ids):[];
+      let cids=[];try{cids=JSON.parse(a.courts_ids||'[]');}catch{}
       const cnames=cids.map(id=>courts.find(c=>c.id===id)?.name||id).join(', ');
-      h+='<div class="staff-card '+cardClass+'"><div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
-      h+='<div class="sc-role" style="color:var(--cc)">👁️ Superviseur</div>';
-      h+='<div class="sc-detail">'+(cnames||'Terrains à définir')+'</div>';
+      h+='<div class="staff-card '+cls+'">';
+      h+='<div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
+      h+='<div class="sc-court" style="color:var(--cc)">👁️ '+(cnames||'Terrains à définir')+'</div>';
       if(a.notes)h+='<div class="sc-detail">'+a.notes+'</div>';
       h+='</div>';
     });
     h+='</div></div>';
   }
-
   if(res.length){
-    h+='<div class="role-group"><div class="rg-label">⏳ En réserve</div><div class="staff-grid">';
+    h+='<div class="role-section"><div class="role-title">⏳ En réserve</div><div class="staff-grid">';
     res.forEach(a=>{
       const st=staff.find(x=>x.id===a.staff_id);
-      h+='<div class="staff-card '+cardClass+'"><div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
-      h+='<div class="sc-role" style="color:var(--co)">⏳ Réserve</div>';
+      h+='<div class="staff-card '+cls+'">';
+      h+='<div class="sc-name">'+(st?.last_name||'?')+' '+(st?.first_name||'')+'</div>';
       if(a.notes)h+='<div class="sc-detail">'+a.notes+'</div>';
       h+='</div>';
     });
     h+='</div></div>';
   }
-
   h+='</div>';
   return h;
 }
@@ -281,47 +273,38 @@ function renderSlotBlock(label,date,slot,isNow){
 function render(){
   const cur=getCurrentSlot();
   const nxt=getNextSlot(cur);
-  const inTournament=allDates.includes(cur.date);
+  const inTournament=allDates.length===0||allDates.includes(cur.date);
+
+  // Metrics
+  const curA=getSlotAssigns(cur.date,cur.slot);
+  const nxtA=nxt?getSlotAssigns(nxt.date,nxt.slot):[];
+  const coveredCourts=new Set(curA.filter(a=>a.role==='responsable').map(a=>a.court_id).filter(Boolean)).size;
 
   let h='';
-
-  // Résumé global
   h+='<div class="hero">';
-  h+='<div class="hero-top">';
-  h+='<div>';
-  h+='<div class="hero-title">Commission Sportive</div>';
-  h+='<div class="hero-sub">'+(tournament?.name||'')+(tournament?.location?' · '+tournament.location:'')+'</div>';
-  h+='</div>';
-  h+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
-  h+='<span class="period-badge period-now"><span class="live-dot"></span>'+fmtDate(cur.date,cur.slot)+'</span>';
-  h+='</div>';
-  h+='</div>';
-  // Metrics
-  const curAssigns=getSlotAssigns(cur.date,cur.slot);
-  const nxtAssigns=nxt?getSlotAssigns(nxt.date,nxt.slot):[];
+  h+='<div class="hero-title">Commission Sportive — '+( tournament?.name||'')+'</div>';
+  h+='<div class="hero-sub">'+(tournament?.location||'')+(simDate?' · 📅 Simulation : '+fmtDate(simDate,simSlot||'AM'):'')+'</div>';
   h+='<div class="card-grid cols4" style="margin-top:10px">';
   h+='<div class="metric"><div class="metric-label">Responsables</div><div class="metric-value green">'+staff.length+'</div></div>';
-  h+='<div class="metric"><div class="metric-label">En poste maintenant</div><div class="metric-value" style="color:var(--cp)">'+curAssigns.length+'</div></div>';
-  h+='<div class="metric"><div class="metric-label">Terrains couverts</div><div class="metric-value" style="color:var(--cc)">'+[...new Set(curAssigns.filter(a=>a.role==='responsable').map(a=>a.court_id).filter(Boolean))].length+' / '+courts.length+'</div></div>';
-  h+='<div class="metric"><div class="metric-label">Prochaine demi-journée</div><div class="metric-value" style="color:var(--co)">'+nxtAssigns.length+' affecté'+(nxtAssigns.length!==1?'s':'')+'</div></div>';
+  h+='<div class="metric"><div class="metric-label">En poste maintenant</div><div class="metric-value" style="color:var(--cp)">'+curA.length+'</div></div>';
+  h+='<div class="metric"><div class="metric-label">Terrains couverts</div><div class="metric-value" style="color:var(--cc)">'+coveredCourts+' / '+courts.length+'</div></div>';
+  h+='<div class="metric"><div class="metric-label">Prochaine ½ journée</div><div class="metric-value" style="color:var(--co)">'+nxtA.length+' affecté'+(nxtA.length!==1?'s':'')+'</div></div>';
   h+='</div></div>';
 
-  // CURRENT SLOT
-  if(!inTournament){
-    h+='<div class="alert alert-info" style="margin-top:12px">Nous sommes en dehors des dates du tournoi.</div>';
-  } else {
-    h+=renderSlotBlock(fmtDate(cur.date,cur.slot),cur.date,cur.slot,true);
-    h+='<div class="divider-h"></div>';
-    if(nxt){
-      h+=renderSlotBlock(fmtDate(nxt.date,nxt.slot),nxt.date,nxt.slot,false);
-    } else {
-      h+='<div class="alert alert-success">✓ Tournoi terminé — Merci à toute l\'équipe de la Commission Sportive !</div>';
+  if(!inTournament&&!simDate){
+    h+='<div class="alert alert-info" style="margin-top:12px">📅 Hors dates du tournoi. Utilisez la simulation pour prévisualiser.</div>';
+    if(staff.length===0){
+      h+='<div class="alert alert-warning" style="margin-top:8px">⚠️ Aucun responsable enregistré. <a href="admin.html" style="color:var(--co)">Admin → Sportive</a></div>';
     }
+  } else {
+    h+=renderSlotBlock(cur.date,cur.slot,true);
+    h+='<div class="divider-h"></div>';
+    if(nxt) h+=renderSlotBlock(nxt.date,nxt.slot,false);
+    else h+='<div class="alert alert-success" style="margin-top:0">✓ Dernière demi-journée du tournoi.</div>';
   }
 
-  // Lien admin
-  h+='<div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">';
-  h+='<a href="admin.html" class="btn btn-outline btn-sm">⚙️ Gérer les affectations (Admin → Sportive)</a>';
+  h+='<div style="text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">';
+  h+='<a href="admin.html" class="btn btn-outline btn-sm">⚙️ Gérer les affectations</a>';
   h+='</div>';
 
   document.getElementById('main-content').innerHTML=h;
