@@ -203,6 +203,11 @@ async function init() {
     const cards = [];
     if (role === 'admin' || role === 'arbitre') {
       cards.push(
+        '<a href="sportive.html" class="pc">' +
+        '<div class="pc-icon" style="background:rgba(155,114,240,.12)">🦺</div>' +
+        '<div><div class="pc-title">Commission Sportive</div><div class="pc-desc">Dashboard des responsables terrain. Affectations par demi-journée.</div></div>' +
+        '<span class="pc-tag tag-j">Sportive</span></a>'
+        
         '<a href="dashboard.html" class="pc">' +
         '<div class="pc-icon" style="background:var(--col)">📊</div>' +
         '<div><div class="pc-title">Dashboard arbitre</div><div class="pc-desc">Vue temps réel de tous les terrains. Scores, alertes Master.</div></div>' +
@@ -222,11 +227,6 @@ async function init() {
         '<div class="pc-icon" style="background:rgba(255,211,61,.08)">☕</div>' +
         '<div><div class="pc-title">1 Point Challenge by Lavazza</div><div class="pc-desc">Tableau spécial — désignation du gagnant par point.</div></div>' +
         '<span class="pc-tag tag-s">Tournoi spécial</span></a>',
-
-        '<a href="sportive.html" class="pc">' +
-        '<div class="pc-icon" style="background:rgba(155,114,240,.12)">🦺</div>' +
-        '<div><div class="pc-title">Commission Sportive</div><div class="pc-desc">Dashboard des responsables terrain. Affectations par demi-journée.</div></div>' +
-        '<span class="pc-tag tag-j">Sportive</span></a>'
       );
     }
     if (role === 'admin') {
