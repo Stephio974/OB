@@ -215,28 +215,31 @@
   </div>
   <div class="modal-section">Équipe</div>
   <div class="form-row cols3">
-    <div class="form-group"><label class="form-label">Nom équipe *</label><input class="form-input" id="te-name" placeholder="Martin / Durand"></div>
+    <div class="form-group"><label class="form-label">Nom équipe *</label>
+      <input class="form-input" id="te-name" placeholder="Généré automatiquement — ou saisissez manuellement">
+      <div class="form-hint">Rempli automatiquement depuis les noms des joueurs</div>
+    </div>
     <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="te-nat" placeholder="FRA" maxlength="3"></div>
     <div class="form-group"><label class="form-label">Tête de série</label><input class="form-input" type="number" id="te-seed"></div>
   </div>
   <div class="form-group"><label class="form-label">Classement ITF</label><input class="form-input" type="number" id="te-rank" placeholder="(optionnel)"></div>
   <div class="modal-section" id="p1-lbl">Joueur 1</div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="p1-first"></div>
-    <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="p1-last"></div>
+    <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="p1-first" oninput="autoFillTeam()"></div>
+    <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="p1-last" oninput="autoFillTeam()"></div>
   </div>
   <div class="form-row cols2">
-    <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="p1-nat" placeholder="FRA" maxlength="3"></div>
+    <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="p1-nat" placeholder="FRA" maxlength="3" oninput="autoFillTeam()"></div>
     <div class="form-group"><label class="form-label">Date de naissance</label><input class="form-input" type="date" id="p1-birth"></div>
   </div>
   <div id="p2-section">
     <div class="modal-section">Joueur 2</div>
     <div class="form-row cols2">
-      <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="p2-first"></div>
-      <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="p2-last"></div>
+      <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="p2-first" oninput="autoFillTeam()"></div>
+      <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="p2-last" oninput="autoFillTeam()"></div>
     </div>
     <div class="form-row cols2">
-      <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="p2-nat" placeholder="FRA" maxlength="3"></div>
+      <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="p2-nat" placeholder="FRA" maxlength="3" oninput="autoFillTeam()"></div>
       <div class="form-group"><label class="form-label">Date de naissance</label><input class="form-input" type="date" id="p2-birth"></div>
     </div>
   </div>
@@ -845,12 +848,43 @@ async function saveCompetition(){
 }
 async function deleteComp(id){if(!confirm('Supprimer ?'))return;try{await sb.delete('competition','id=eq.'+id);await loadAll();toast('Supprimé');}catch(e){toast(e.message,'error');}}
 
+// Auto-fill team name and nationality from player fields
+function autoFillTeam(){
+  const comp=allCompetitions.find(c=>c.id===document.getElementById('te-comp')?.value);
+  const isSimple=comp?.category==='Simple';
+  const ln1=(document.getElementById('p1-last')?.value||'').trim();
+  const ln2=(document.getElementById('p2-last')?.value||'').trim();
+  const nat1=(document.getElementById('p1-nat')?.value||'').trim().toUpperCase();
+  const nat2=(document.getElementById('p2-nat')?.value||'').trim().toUpperCase();
+  // Auto-fill team name (only if user hasn't manually overridden)
+  const nameEl=document.getElementById('te-name');
+  if(nameEl&&!nameEl.dataset.manual){
+    const parts=[ln1,!isSimple&&ln2?ln2:null].filter(Boolean);
+    if(parts.length)nameEl.value=parts.join(' / ');
+  }
+  // Auto-fill team nationality
+  const natEl=document.getElementById('te-nat');
+  if(natEl&&!natEl.dataset.manual){
+    const nats=[nat1,!isSimple&&nat2&&nat2!==nat1?nat2:null].filter(Boolean);
+    if(nats.length)natEl.value=nats.join(' / ');
+  }
+}
+// Allow user to manually override auto-fill
+document.addEventListener('DOMContentLoaded',()=>{
+  ['te-name','te-nat'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('input',()=>{el.dataset.manual='1';});
+  });
+});
+
 function initTeamModal(){
   fillSelect('te-comp',allCompetitions.sort((a,b)=>a.name.localeCompare(b.name,'fr')),c=>c.id,c=>c.name+' — '+c.category);
-  ['te-name','te-nat','te-seed','te-rank','p1-first','p1-last','p1-nat','p2-first','p2-last','p2-nat'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['te-name','te-nat','te-seed','te-rank','p1-first','p1-last','p1-nat','p2-first','p2-last','p2-nat'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.value='';delete el.dataset.manual;}
+  });
   ['p1-birth','p2-birth'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   onTeamCompChange(document.getElementById('te-comp').value);
-  document.getElementById('te-comp').onchange=function(){onTeamCompChange(this.value);};
+  document.getElementById('te-comp').onchange=function(){onTeamCompChange(this.value);autoFillTeam();};
 }
 function onTeamCompChange(compId){
   const comp=allCompetitions.find(c=>c.id===compId);
@@ -880,8 +914,23 @@ async function openMatchModal(m){
   fillSelect('ma-comp',allCompetitions.sort((a,b)=>a.name.localeCompare(b.name,'fr')),c=>c.id,c=>c.name+' — '+c.category);
   fillSelect('ma-court',[{id:'',name:'Non assigné'},...allCourts],c=>c.id,c=>c.name);
   document.getElementById('ma-id').value=m?.id||'';
-  if(m){document.getElementById('ma-comp').value=m.competition_id||'';document.getElementById('ma-round').value=m.round||'pool';document.getElementById('ma-court').value=m.court_id||'';document.getElementById('ma-time').value=m.scheduled_at?m.scheduled_at.slice(0,16):'';await loadTeamsForComp(m.competition_id,m.team1_id,m.team2_id);}
-  else await loadTeamsForComp(allCompetitions[0]?.id);
+  // Set date constraints from tournament dates
+  const t=allTournaments.find(x=>x.id===activeTournamentId);
+  const timeEl=document.getElementById('ma-time');
+  if(t&&t.start_date&&t.end_date){
+    timeEl.min=t.start_date+'T00:00';
+    timeEl.max=t.end_date+'T23:59';
+  }
+  if(m){
+    document.getElementById('ma-comp').value=m.competition_id||'';
+    document.getElementById('ma-round').value=m.round||'pool';
+    document.getElementById('ma-court').value=m.court_id||'';
+    timeEl.value=m.scheduled_at?m.scheduled_at.slice(0,16):'';
+    await loadTeamsForComp(m.competition_id,m.team1_id,m.team2_id);
+  } else {
+    timeEl.value='';
+    await loadTeamsForComp(allCompetitions[0]?.id);
+  }
   openModal('modal-match');
 }
 async function editMatch(id){try{const ms=await sb.get('match','id=eq.'+id);if(ms[0])openMatchModal(ms[0]);}catch(e){toast(e.message,'error');}}
@@ -895,9 +944,50 @@ async function loadTeamsForComp(compId,t1Id,t2Id){
 async function saveMatch(){
   const id=document.getElementById('ma-id').value;
   const dt=document.getElementById('ma-time').value;
-  const body={competition_id:document.getElementById('ma-comp').value,round:document.getElementById('ma-round').value,court_id:document.getElementById('ma-court').value||null,team1_id:document.getElementById('ma-t1').value||null,team2_id:document.getElementById('ma-t2').value||null,scheduled_at:dt?new Date(dt).toISOString():null,status:'scheduled'};
+  const courtId=document.getElementById('ma-court').value||null;
+  const body={
+    competition_id:document.getElementById('ma-comp').value,
+    round:document.getElementById('ma-round').value,
+    court_id:courtId,
+    team1_id:document.getElementById('ma-t1').value||null,
+    team2_id:document.getElementById('ma-t2').value||null,
+    scheduled_at:dt?new Date(dt).toISOString():null,
+    status:'scheduled'
+  };
   if(!body.competition_id){toast('Compétition obligatoire','error');return;}
-  try{if(id)await sb.patch('match','id=eq.'+id,body);else await sb.post('match',body);closeModal('modal-match');toast('Match enregistré');loadMatchesTable();}catch(e){toast(e.message,'error');}
+
+  // ── Vérification de collision terrain ──
+  if(courtId&&dt){
+    const scheduledISO=new Date(dt).toISOString();
+    // Check: any match on same court with scheduled_at within ±2 hours
+    const cids=allCompetitions.map(c=>c.id);
+    if(cids.length){
+      const existing=await sb.get('match',
+        'competition_id=in.('+cids.join(',')+')'
+        +'&court_id=eq.'+courtId
+        +'&status=in.(scheduled,warmup,in_progress)'
+        +'&scheduled_at=not.is.null'
+      ).catch(()=>[]);
+      const newDt=new Date(dt);
+      const collisions=existing.filter(ex=>{
+        if(ex.id===id)return false; // editing same match
+        const exDt=new Date(ex.scheduled_at);
+        const diff=Math.abs(newDt-exDt)/60000; // diff in minutes
+        return diff<120; // within 2h = potential collision
+      });
+      if(collisions.length){
+        const court=allCourts.find(c=>c.id===courtId);
+        const msg=collisions.map(ex=>'  • '+new Date(ex.scheduled_at).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})).join('\n');
+        if(!confirm('⚠️ Collision potentielle sur le terrain "'+( court?.name||'?')+'" :\n\n'+msg+'\n\nConfirmer quand même ?'))return;
+      }
+    }
+  }
+
+  try{
+    if(id)await sb.patch('match','id=eq.'+id,body);
+    else await sb.post('match',body);
+    closeModal('modal-match');toast('Match enregistré');loadMatchesTable();
+  }catch(e){toast(e.message,'error');}
 }
 async function deleteMatch(id){if(!confirm('Supprimer ce match ?'))return;try{await sb.delete('match','id=eq.'+id);loadMatchesTable();toast('Supprimé');}catch(e){toast(e.message,'error');}}
 

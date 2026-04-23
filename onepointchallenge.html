@@ -172,7 +172,7 @@ async function startTournament(){
   const p1=shuffled[0], p2=shuffled[1];
   remaining=shuffled.slice(2);
   try{
-    const r=await sb.post('match',{competition_id:currentComp.id,team1_id:p1.id,team2_id:p2.id,round:'R1',status:'scheduled'});
+    const r=await sb.post('match',{competition_id:currentComp.id,team1_id:p1.id,team2_id:p2.id,round:'pool',status:'scheduled'});
     bracket=[{id:r[0].id,p1,p2,winner:null,done:false}];
     champion=null;
     document.getElementById('btn-start').style.display='none';
@@ -232,7 +232,7 @@ async function confirmWinner(){
     const r=await sb.post('match',{
       competition_id:currentComp.id,
       team1_id:winnerTeam.id,team2_id:nextOpponent.id,
-      round:'R'+roundNum,status:'scheduled'
+      round:'pool',status:'scheduled'
     });
     bracket.push({id:r[0].id,p1:winnerTeam,p2:nextOpponent,winner:null,done:false});
     renderBracket();

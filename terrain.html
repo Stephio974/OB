@@ -273,11 +273,11 @@ async function init(){
   if(!tid){show('<div style="padding:48px 20px;text-align:center;color:var(--text3)">🏖️<br>Aucun tournoi. <a href="portal.html" style="color:var(--cp)">Portail</a></div>');return;}
   const ts=await sb.get('tournament','id=eq.'+tid).catch(()=>[]);
   applyBrand(ts[0]);
-  // Load current staff assignment for this court
-  await loadCurrentStaff(tid);
   courts=await sb.get('court','tournament_id=eq.'+tid+'&is_active=eq.true&order=sort_order').catch(()=>[]);
   if(!courts.length){show('<div style="padding:40px;text-align:center;color:var(--text3)">Aucun terrain configuré.</div>');return;}
   if(forcedCourt){const i=courts.findIndex(c=>c.id===forcedCourt);if(i>=0)terrainIdx=i;}
+  // Load staff AFTER courts so updateStaffDisplay can find the right court
+  await loadCurrentStaff(tid);
   await loadCourt();
 }
 
@@ -295,24 +295,26 @@ function applyBrand(t){
 let staffAssignCache=[], staffCache=[];
 async function loadCurrentStaff(tid){
   try{
-    // Fetch assignments and staff separately to avoid FK join issues
-    staffAssignCache=await sb.get('staff_assignment',
-      'tournament_id=eq.'+tid+'&order=assign_date,slot'
-    ).catch(()=>[]);
-    staffCache=await sb.get('staff',
-      'tournament_id=eq.'+tid
-    ).catch(()=>[]);
-  }catch{staffAssignCache=[];staffCache=[];}
-  updateStaffDisplay();
+    staffAssignCache=await sb.get('staff_assignment','tournament_id=eq.'+tid+'&order=assign_date,slot');
+    staffCache=await sb.get('staff','tournament_id=eq.'+tid);
+  }catch(e){
+    // Tables may not exist yet (migration not run) — silently ignore
+    staffAssignCache=[];staffCache=[];
+  }
+  // Don't call updateStaffDisplay here — courts may not be loaded yet
 }
 function updateStaffDisplay(){
-  const court=courts[terrainIdx];if(!court)return;
+  const el=document.getElementById('terrain-staff');
+  if(!el){return;}
+  const court=courts[terrainIdx];
+  if(!court){el.style.display='none';return;}
+  if(!staffAssignCache.length&&!staffCache.length){el.style.display='none';return;}
+
   const now=new Date();
   const dateStr=localDateStr(now);
   const slot=now.getHours()<13?'AM':'PM';
-  const el=document.getElementById('terrain-staff');if(!el)return;
 
-  // Find responsable for this court
+  // Find responsable for this court + today + current slot
   const resp=staffAssignCache.find(x=>
     x.assign_date===dateStr&&x.slot===slot&&
     x.role==='responsable'&&x.court_id===court.id
