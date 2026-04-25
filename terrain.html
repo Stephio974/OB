@@ -294,25 +294,22 @@ function applyBrand(t){
 // Load staff assignment for current court + slot, display in topbar
 let staffAssignCache=[], staffCache=[];
 async function loadCurrentStaff(tid){
-  try{
-    staffAssignCache=await sb.get('staff_assignment','tournament_id=eq.'+tid+'&order=assign_date,slot');
-    staffCache=await sb.get('staff','tournament_id=eq.'+tid);
-  }catch(e){
-    // Tables may not exist yet (migration not run) — silently ignore
-    staffAssignCache=[];staffCache=[];
-  }
-  // Don't call updateStaffDisplay here — courts may not be loaded yet
+  // Individual catches so one failure doesn't clear both arrays
+  staffAssignCache=await sb.get('staff_assignment','tournament_id=eq.'+tid+'&order=assign_date,slot').catch(()=>[]);
+  staffCache=await sb.get('staff','tournament_id=eq.'+tid).catch(()=>[]);
 }
 function updateStaffDisplay(){
   const el=document.getElementById('terrain-staff');
-  if(!el){return;}
+  if(!el)return;
   const court=courts[terrainIdx];
   if(!court){el.style.display='none';return;}
-  if(!staffAssignCache.length&&!staffCache.length){el.style.display='none';return;}
 
   const now=new Date();
   const dateStr=localDateStr(now);
   const slot=now.getHours()<13?'AM':'PM';
+
+  // Show debug count so we can diagnose
+  const dbg='['+staffAssignCache.length+' assigns / '+staffCache.length+' staff / '+dateStr+' '+slot+']';
 
   // Find responsable for this court + today + current slot
   const resp=staffAssignCache.find(x=>
@@ -339,7 +336,9 @@ function updateStaffDisplay(){
     el.innerHTML=lines.join(' &nbsp;·&nbsp; ');
     el.style.display='block';
   } else {
-    el.style.display='none';
+    // Show debug info on screen to diagnose the issue
+    el.innerHTML='<span style="color:rgba(255,255,255,.4);font-size:9px">'+dbg+'</span>';
+    el.style.display='block';
   }
 }
 
