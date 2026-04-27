@@ -258,7 +258,7 @@
   <div class="modal-section">Équipe</div>
   <div class="form-row cols3">
     <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="ete-name"></div>
-    <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="ete-nat" maxlength="3"></div>
+    <div class="form-group"><label class="form-label">Nationalité</label><input class="form-input" id="ete-nat" placeholder="ex: FRA / FRA"></div>
     <div class="form-group"><label class="form-label">Tête de série</label><input class="form-input" type="number" id="ete-seed"></div>
   </div>
   <div class="form-row cols2">
@@ -632,6 +632,18 @@ async function openTeamEditModal(teamId){
 async function saveTeamEdit(){
   const teamId=document.getElementById('ete-id').value;
   const t=teamsWithPlayers.find(x=>x.id===teamId);if(!t)return;
+  // Auto-rebuild team nationality from player nats if team nat looks like old 3-char format
+  const teamNatEl=document.getElementById('ete-nat');
+  const p1nat=(document.getElementById('ete-p1-nat')?.value||'').trim().toUpperCase();
+  const p2nat=(document.getElementById('ete-p2-nat')?.value||'').trim().toUpperCase();
+  const curNat=(teamNatEl?.value||'').trim();
+  // If current nationality is 3 chars or less (old format), auto-rebuild it
+  const comp=allCompetitions.find(cc=>cc.id===t.competition_id);
+  const isSimple=comp?.category==='Simple';
+  if(teamNatEl&&curNat.length<=3){
+    const nats=[p1nat,!isSimple&&p2nat&&p2nat!==p1nat?p2nat:null].filter(Boolean);
+    if(nats.length)teamNatEl.value=nats.join(' / ');
+  }
   try{
     await sb.patch('team','id=eq.'+teamId,{competition_id:document.getElementById('ete-comp').value,name:document.getElementById('ete-name').value.trim(),nationality:document.getElementById('ete-nat').value.trim()||null,seed:parseInt(document.getElementById('ete-seed').value)||null,itf_ranking:parseInt(document.getElementById('ete-rank').value)||null,withdrawn:document.getElementById('ete-wd').value==='true'});
     if(t.p1id)await sb.patch('player','id=eq.'+t.p1id,{first_name:document.getElementById('ete-p1-first').value,last_name:document.getElementById('ete-p1-last').value,nationality:document.getElementById('ete-p1-nat').value||null,birth_date:document.getElementById('ete-p1-birth').value||null});
@@ -925,7 +937,7 @@ async function openMatchModal(m){
     document.getElementById('ma-comp').value=m.competition_id||'';
     document.getElementById('ma-round').value=m.round||'pool';
     document.getElementById('ma-court').value=m.court_id||'';
-    timeEl.value=m.scheduled_at?m.scheduled_at.slice(0,16):'';
+    timeEl.value=m.scheduled_at?isoToLocal(m.scheduled_at):'';
     await loadTeamsForComp(m.competition_id,m.team1_id,m.team2_id);
   } else {
     timeEl.value='';
@@ -951,14 +963,14 @@ async function saveMatch(){
     court_id:courtId,
     team1_id:document.getElementById('ma-t1').value||null,
     team2_id:document.getElementById('ma-t2').value||null,
-    scheduled_at:dt?new Date(dt).toISOString():null,
+    scheduled_at:dt?localToISO(dt):null,
     status:'scheduled'
   };
   if(!body.competition_id){toast('Compétition obligatoire','error');return;}
 
   // ── Vérification de collision terrain ──
   if(courtId&&dt){
-    const scheduledISO=new Date(dt).toISOString();
+    const scheduledISO=localToISO(dt);
     // Check: any match on same court with scheduled_at within ±2 hours
     const cids=allCompetitions.map(c=>c.id);
     if(cids.length){
@@ -968,7 +980,7 @@ async function saveMatch(){
         +'&status=in.(scheduled,warmup,in_progress)'
         +'&scheduled_at=not.is.null'
       ).catch(()=>[]);
-      const newDt=new Date(dt);
+      const newDt=new Date(localToISO(dt));
       const collisions=existing.filter(ex=>{
         if(ex.id===id)return false; // editing same match
         const exDt=new Date(ex.scheduled_at);
@@ -1006,7 +1018,7 @@ function csvFile(file,type){
   document.getElementById('preview-'+type).innerHTML='<div class="alert alert-success" style="margin-top:8px">✓ '+rows.length+' lignes</div>';document.getElementById('btn-import-'+type).style.display='block';};r.readAsText(file);
 }
 async function importTeams(){let ok=0;for(const row of parsedTeams){try{let comp=allCompetitions.find(c=>c.name===row.competition_name&&c.category===row.category);if(!comp){const cr=await sb.post('competition',{tournament_id:activeTournamentId,name:row.competition_name,category:row.category});comp=cr[0];allCompetitions.push(comp);}const team=await sb.post('team',{competition_id:comp.id,name:row.team_name,nationality:row.nationality||null,seed:parseInt(row.seed)||null,itf_ranking:parseInt(row.itf_ranking)||null});const tid=team[0].id;for(const pos of[1,2]){const fn=row['p'+pos+'_first'],ln=row['p'+pos+'_last'];if(!fn&&!ln)continue;const p=await sb.post('player',{first_name:fn||'',last_name:ln||'',nationality:row['p'+pos+'_nat']||null,birth_date:row['p'+pos+'_birth']||null});await sb.post('team_player',{team_id:tid,player_id:p[0].id,position:pos});}ok++;}catch(e){console.warn(e);}}toast('Import : '+ok+' équipes','success');await loadAll();}
-async function importMatches(){let ok=0;for(const row of parsedMatches){try{const comp=allCompetitions.find(c=>c.name===row.competition_name);const court=allCourts.find(c=>c.name===row.court_name);const t1=allTeams.find(t=>t.name===row.team1_name);const t2=allTeams.find(t=>t.name===row.team2_name);const dt=row.scheduled_date&&row.scheduled_time?new Date(row.scheduled_date+'T'+row.scheduled_time+':00').toISOString():null;await sb.post('match',{competition_id:comp?.id,court_id:court?.id||null,team1_id:t1?.id||null,team2_id:t2?.id||null,round:row.round||'pool',scheduled_at:dt,status:'scheduled'});ok++;}catch(e){console.warn(e);}}toast('Import : '+ok+' matchs','success');}
+async function importMatches(){let ok=0;for(const row of parsedMatches){try{const comp=allCompetitions.find(c=>c.name===row.competition_name);const court=allCourts.find(c=>c.name===row.court_name);const t1=allTeams.find(t=>t.name===row.team1_name);const t2=allTeams.find(t=>t.name===row.team2_name);const dt=row.scheduled_date&&row.scheduled_time?localToISO(row.scheduled_date+'T'+row.scheduled_time):null;await sb.post('match',{competition_id:comp?.id,court_id:court?.id||null,team1_id:t1?.id||null,team2_id:t2?.id||null,round:row.round||'pool',scheduled_at:dt,status:'scheduled'});ok++;}catch(e){console.warn(e);}}toast('Import : '+ok+' matchs','success');}
 
 function updateMatchFmtPreview(){
   const g=parseInt(document.getElementById('co-games')?.value||6);
@@ -1103,6 +1115,23 @@ function spSetView(v){
 }
 
 function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+// Convert datetime-local value to ISO string preserving LOCAL time with timezone offset
+// This prevents UTC conversion from shifting dates/times for UTC+4 (La Réunion)
+function localToISO(dtLocalStr){
+  if(!dtLocalStr)return null;
+  const d=new Date(dtLocalStr);
+  const off=-d.getTimezoneOffset(); // minutes, positive for UTC+X
+  const sign=off>=0?'+':'-';
+  const hh=String(Math.floor(Math.abs(off)/60)).padStart(2,'0');
+  const mm=String(Math.abs(off)%60).padStart(2,'0');
+  return dtLocalStr.slice(0,16)+':00'+sign+hh+':'+mm;
+}
+// Convert ISO/UTC string to datetime-local input value (local time)
+function isoToLocal(isoStr){
+  if(!isoStr)return '';
+  const d=new Date(isoStr);
+  return localDateStr(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
 function spFmtDate(d){return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});}
 
 function spGetAvail(staffId,date,slot){

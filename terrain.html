@@ -337,7 +337,15 @@ function updateStaffDisplay(){
     el.style.display='block';
   } else {
     // Show debug info on screen to diagnose the issue
-    el.innerHTML='<span style="color:rgba(255,255,255,.4);font-size:9px">'+dbg+'</span>';
+    let dbgLines='<div style="background:rgba(0,0,0,.4);border-radius:6px;padding:6px;font-size:9px;color:rgba(255,255,255,.6)">';
+    dbgLines+=dbg+'<br>Court ID: '+court.id+'<br>';
+    staffAssignCache.slice(0,10).forEach(x=>{
+      const match=(x.assign_date===dateStr&&x.slot===slot)?'✓':'✗';
+      const courtMatch=(x.court_id===court.id)?'✓court':'';
+      dbgLines+=match+' '+x.assign_date+' '+x.slot+' '+x.role+' '+courtMatch+'<br>';
+    });
+    dbgLines+='</div>';
+    el.innerHTML=dbgLines;
     el.style.display='block';
   }
 }
@@ -388,8 +396,8 @@ async function loadCourt(){
 
   const dm={};
   matches.forEach(m=>{
-    const d=m.scheduled_at?m.scheduled_at.slice(0,10):'x';
-    if(!dm[d])dm[d]={date:d,label:d==='x'?'Sans date':new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}),matches:[]};
+    const d=m.scheduled_at?localDateStr(new Date(m.scheduled_at)):'x';
+    if(!dm[d])dm[d]={date:d,label:d==='x'?'Sans date':new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}),matches:[]};
     dm[d].matches.push(m);
   });
   days=Object.values(dm).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
